@@ -7,8 +7,7 @@ from .db import db
 migrate = Migrate(compare_type=True)
 
 
-def create_app(test_config=None):
-    # create and configure the app
+def create_app(test_config: dict = None) -> Flask:
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY="dev",
@@ -17,7 +16,7 @@ def create_app(test_config=None):
     )
 
     # This is needed for Migrate to see changes.
-    from . import models
+    from . import models  # noqa: F401
 
     if test_config is None:
         app.config.from_pyfile("config.py", silent=True)
@@ -29,7 +28,7 @@ def create_app(test_config=None):
     migrate.init_app(app, db)
 
     @app.route("/")
-    def index():
+    def index() -> str:
         return "TEST"
 
     return app

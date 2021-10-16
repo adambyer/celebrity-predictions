@@ -1,8 +1,17 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
 )
 import functools
+from typing import Any, Callable, Union
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.wrappers import Response
 
 from .db import db
 from .models import User
@@ -10,19 +19,19 @@ from .models import User
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
-def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
+def login_required(f: Callable) -> Callable:
+    @functools.wraps(f)
+    def wrapped_view(**kwargs: Any) -> Callable:
         if g.user is None:
             return redirect(url_for("auth.login"))
 
-        return view(**kwargs)
+        return f(**kwargs)
 
     return wrapped_view
 
 
 @bp.before_app_request
-def load_logged_in_user():
+def load_logged_in_user() -> None:
     user_id = session.get("user_id")
 
     if user_id:
@@ -32,7 +41,7 @@ def load_logged_in_user():
 
 
 @bp.route("/register", methods=("GET", "POST"))
-def register():
+def register() -> Union[str, Response]:
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -47,7 +56,9 @@ def register():
         if error is None:
             try:
                 password = generate_password_hash(password)
-                user = User(username=username, password=password, email_address=email_address)
+                user = User(
+                    username=username, password=password, email_address=email_address
+                )
                 db.session.add(user)
                 db.session.commit()
             except Exception as e:
@@ -62,11 +73,11 @@ def register():
 
 
 @bp.route("/login", methods=("GET", "POST"))
-def login():
+def login() -> Union[str, Response]:
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        error = "Incorrect username or password."
+        error: Union[str, None] = "Incorrect username or password."
         user = User.query.filter(
             (User.username == username) | (User.email_address == username),
         ).first()
@@ -85,6 +96,6 @@ def login():
 
 
 @bp.route("/logout")
-def logout():
+def logout() -> Response:
     session.clear()
     return redirect(url_for("index"))

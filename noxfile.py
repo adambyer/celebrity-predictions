@@ -1,0 +1,30 @@
+import nox
+
+nox.options.reuse_existing_virtualenvs = True
+locations = ("app", "noxfile.py")
+
+
+@nox.session
+def black(session: nox.Session) -> None:
+    args = session.posargs or locations
+    session.install("black")
+    session.run("black", *args)
+
+
+@nox.session
+def lint(session: nox.Session) -> None:
+    args = session.posargs or locations
+    session.install("flake8")
+    session.run("flake8", *args)
+
+
+@nox.session
+def mypy(session: nox.Session) -> None:
+    session.install("mypy")
+    session.run(
+        "mypy",
+        "--disallow-untyped-defs",
+        "--warn-unused-ignores",
+        "--ignore-missing-imports",
+        "app",
+    )
