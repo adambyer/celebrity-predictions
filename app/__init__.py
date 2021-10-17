@@ -1,9 +1,12 @@
 from flask import Flask
+from flask_login import LoginManager, login_required, current_user
 from flask_migrate import Migrate
 import os
+from typing import Union
 
 from .auth import bp
 from .db import db
+from .models import User
 
 migrate = Migrate(compare_type=True)
 
@@ -27,6 +30,13 @@ def create_app(test_config: dict = None) -> Flask:
         # TODO: better way?
         from . import admin
 
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id: str) -> Union[User, None]:
+        return User.query.filter_by(id=user_id).first()
+
     app.register_blueprint(bp)
     db.init_app(app)
     migrate.init_app(app, db)
@@ -34,5 +44,10 @@ def create_app(test_config: dict = None) -> Flask:
     @app.route("/")
     def index() -> str:
         return "TEST"
+
+    @app.route("/secured")
+    @login_required
+    def secured() -> str:
+        return "You are logged in."
 
     return app

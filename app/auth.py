@@ -1,15 +1,13 @@
 from flask import (
     Blueprint,
     flash,
-    g,
     redirect,
     render_template,
     request,
-    session,
     url_for,
 )
-import functools
-from typing import Any, Callable, Union
+from flask_login import login_user, logout_user
+from typing import Union
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.wrappers import Response
 
@@ -17,27 +15,6 @@ from .db import db
 from .models import User
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
-
-
-def login_required(f: Callable) -> Callable:
-    @functools.wraps(f)
-    def wrapped_view(**kwargs: Any) -> Callable:
-        if g.user is None:
-            return redirect(url_for("auth.login"))
-
-        return f(**kwargs)
-
-    return wrapped_view
-
-
-@bp.before_app_request
-def load_logged_in_user() -> None:
-    user_id = session.get("user_id")
-
-    if user_id:
-        g.user = User.query.filter_by(id=user_id).first()
-    else:
-        g.user = None
 
 
 @bp.route("/register", methods=("GET", "POST"))
@@ -86,9 +63,9 @@ def login() -> Union[str, Response]:
             error = None
 
         if error is None:
-            session.clear()
-            session["user_id"] = user.id
-            return redirect(url_for("index"))
+            login_user(user)
+            next = request.args.get('next')
+            return redirect(next or url_for('index'))
 
         flash(error)
 
@@ -97,5 +74,5 @@ def login() -> Union[str, Response]:
 
 @bp.route("/logout")
 def logout() -> Response:
-    session.clear()
+    logout_user()
     return redirect(url_for("index"))
