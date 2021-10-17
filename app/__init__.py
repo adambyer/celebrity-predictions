@@ -43,7 +43,8 @@ def create_app(test_config: dict = None) -> Flask:
 
     @app.route("/")
     def index() -> str:
-        return "TEST"
+        logged_in = f"You are {'' if current_user.is_authenticated else 'not'} logged in"
+        return f"Index page: {logged_in}"
 
     @app.route("/secured")
     @login_required
