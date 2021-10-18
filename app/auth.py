@@ -11,7 +11,6 @@ from typing import Union
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.wrappers import Response
 
-from .db import db
 from .models import User
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -36,8 +35,7 @@ def register() -> Union[str, Response]:
                 user = User(
                     username=username, password=password, email_address=email_address
                 )
-                db.session.add(user)
-                db.session.commit()
+                user.save()
             except Exception as e:
                 error = f"User {username} is already registered."
                 print("*** register", str(e))
@@ -64,8 +62,8 @@ def login() -> Union[str, Response]:
 
         if error is None:
             login_user(user)
-            next = request.args.get('next')
-            return redirect(next or url_for('index'))
+            next = request.args.get("next")
+            return redirect(next or url_for("index"))
 
         flash(error)
 

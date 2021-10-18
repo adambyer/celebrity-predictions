@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def _get(url: str, params: dict = {}) -> Optional[dict]:
     url = f"{TWITTER_BASE_URL}{url}"
     headers = {
-        'Authorization': 'Bearer {}'.format(TWITTER_TOKEN),
+        "Authorization": "Bearer {}".format(TWITTER_TOKEN),
     }
 
     try:
@@ -35,10 +35,20 @@ def _get(url: str, params: dict = {}) -> Optional[dict]:
     return None
 
 
-def get_users_by_handles(handles: list) -> Optional[list]:
+def get_user_by_username(username: str) -> Optional[dict]:
+    url = f"/users/by/username/{username}"
+    payload = _get(url)
+
+    if payload:
+        return payload["data"]
+
+    return None
+
+
+def get_users_by_usernames(usernames: list) -> Optional[list]:
     url = "/users/by"
     params = {
-        "usernames": ",".join(handles),
+        "usernames": ",".join(usernames),
     }
 
     payload = _get(url, params)

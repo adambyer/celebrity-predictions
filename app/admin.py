@@ -5,7 +5,7 @@ from flask_login import current_user
 from typing import Any
 
 from .db import db
-from .models import User
+from .models import User, Celebrity
 
 
 class BaseModelView:
@@ -14,7 +14,7 @@ class BaseModelView:
 
 
 class SecureAdminIndexView(AdminIndexView):
-    @expose('/')
+    @expose("/")
     def index(self) -> Any:
         if current_user.is_authenticated and current_user.is_staff:
             return super().index()
@@ -28,3 +28,4 @@ class UserModelView(BaseModelView, ModelView):
 
 admin = Admin(current_app, index_view=SecureAdminIndexView())
 admin.add_view(UserModelView(User, db.session))
+admin.add_view(ModelView(Celebrity, db.session))

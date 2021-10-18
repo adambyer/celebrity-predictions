@@ -24,7 +24,6 @@ def mypy(session: nox.Session) -> None:
     session.run(
         "mypy",
         "--disallow-untyped-defs",
-        "--warn-unused-ignores",
         "--ignore-missing-imports",
         "app",
     )

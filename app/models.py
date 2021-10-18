@@ -10,9 +10,14 @@ class BaseModel(Model):
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
     updated_at = Column(DateTime, onupdate=datetime.utcnow())
 
+    def save(self) -> None:
+        if not self.id:
+            db.session.add(self)
+
+        db.session.commit()
+
 
 class User(BaseModel, db.Model):
-    # is_staff = db.Column(db.Boolean)
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     email_address = db.Column(db.String(120), unique=True, nullable=False)
@@ -29,3 +34,11 @@ class User(BaseModel, db.Model):
 
     def get_id(self) -> str:
         return self.id
+
+
+class Celebrity(BaseModel, db.Model):
+    twitter_username = db.Column(db.String(100), unique=True, nullable=False)
+
+    # These are nullable because we will start with their username and then fetch the rest.
+    twitter_id = db.Column(db.Integer(), unique=True)
+    twitter_name = db.Column(db.String(100))

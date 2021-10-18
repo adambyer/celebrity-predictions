@@ -1,5 +1,5 @@
-from flask import Flask
-from flask_login import LoginManager, login_required, current_user
+from flask import Flask, render_template
+from flask_login import LoginManager, login_required
 from flask_migrate import Migrate
 import os
 from typing import Union
@@ -22,13 +22,15 @@ def create_app(test_config: dict = None) -> Flask:
         SQLALCHEMY_DATABASE_URI="postgresql://localhost/celebrity_predictions",
     )
 
+    # TODO: better way than importing all this stuff here??
+
     # This is needed for Migrate to see changes.
-    # TODO: better way?
     from . import models  # noqa: F401
 
+    from . import events  # noqa: F401
+
     with app.app_context():
-        # TODO: better way?
-        from . import admin
+        from . import admin  # noqa: F401
 
     login_manager = LoginManager()
     login_manager.init_app(app)
@@ -43,8 +45,7 @@ def create_app(test_config: dict = None) -> Flask:
 
     @app.route("/")
     def index() -> str:
-        logged_in = f"You are {'' if current_user.is_authenticated else 'not'} logged in"
-        return f"Index page: {logged_in}"
+        return render_template("index.html")
 
     @app.route("/secured")
     @login_required
