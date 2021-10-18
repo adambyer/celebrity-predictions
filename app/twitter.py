@@ -38,11 +38,7 @@ def _get(url: str, params: dict = {}) -> Optional[dict]:
 def get_user_by_username(username: str) -> Optional[dict]:
     url = f"/users/by/username/{username}"
     payload = _get(url)
-
-    if payload:
-        return payload["data"]
-
-    return None
+    return payload["data"] if payload else None
 
 
 def get_users_by_usernames(usernames: list) -> Optional[list]:
@@ -52,8 +48,30 @@ def get_users_by_usernames(usernames: list) -> Optional[list]:
     }
 
     payload = _get(url, params)
+    return payload["data"] if payload else None
 
-    if payload:
-        return payload["data"]
 
-    return None
+def get_user_tweets(
+    twitter_id: int,
+    max_results: Optional[int] = None,
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
+) -> Optional[list]:
+    """If no times, returns the most recent tweets."""
+    url = f"/users/{twitter_id}/tweets"
+    params = {
+        "max_results": 100,
+        "tweet.fields": "public_metrics,created_at",
+    }
+
+    if max_results:
+        params["max_results"] = max_results
+
+    if start_time:
+        params["start_time"] = start_time
+
+    if end_time:
+        params["end_time"] = end_time
+
+    payload = _get(url, params)
+    return payload["data"] if payload else None

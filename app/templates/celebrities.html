@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Celebrities{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    {% for celebrity in celebrities %}
+        <p><a href="{{ url_for('celebrity.celebrity', twitter_username=celebrity['twitter_username']) }}">{{ celebrity["twitter_name"] }}</a></p>
+    {% endfor %}
+{% endblock %}

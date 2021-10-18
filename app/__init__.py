@@ -1,10 +1,12 @@
-from flask import Flask, render_template
-from flask_login import LoginManager, login_required
+from flask import Flask
+from flask_login import LoginManager
 from flask_migrate import Migrate
 import os
 from typing import Union
 
-from .auth import bp
+from .routes.auth import bp as auth_bp
+from .routes.base import bp as base_bp
+from .routes.celebrity import bp as celebrity_bp
 from .db import db
 from .models import User
 
@@ -39,17 +41,11 @@ def create_app(test_config: dict = None) -> Flask:
     def load_user(user_id: str) -> Union[User, None]:
         return User.query.filter_by(id=user_id).first()
 
-    app.register_blueprint(bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(base_bp)
+    app.register_blueprint(celebrity_bp)
+
     db.init_app(app)
     migrate.init_app(app, db)
-
-    @app.route("/")
-    def index() -> str:
-        return render_template("index.html")
-
-    @app.route("/secured")
-    @login_required
-    def secured() -> str:
-        return "You are logged in."
 
     return app

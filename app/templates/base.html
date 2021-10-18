@@ -1,15 +1,16 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} - Flaskr</title>
+<title>{% block title %}Celebrity Predictions{% endblock %}</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
-  <h1>Flaskr</h1>
+  <h1>Celebrity Predictions</h1>
   <ul>
+    <li><a href="{{ url_for('celebrity.celebrities') }}">Celebrities</a></li>
     {% if current_user.is_authenticated %}
       <li><span>{{ current_user['username'] }}</span>
-      <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
+      <li><a href="{{ url_for('auth.logout') }}">Logout</a>
     {% else %}
       <li><a href="{{ url_for('auth.register') }}">Register</a>
-      <li><a href="{{ url_for('auth.login') }}">Log In</a>
+      <li><a href="{{ url_for('auth.login') }}">Login</a>
     {% endif %}
     <li><a href="{{ url_for('admin.index') }}">Admin</a>
   </ul>

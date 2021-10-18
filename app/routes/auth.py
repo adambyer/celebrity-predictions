@@ -11,7 +11,7 @@ from typing import Union
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.wrappers import Response
 
-from .models import User
+from app.models import User
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 

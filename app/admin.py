@@ -28,4 +28,6 @@ class UserModelView(BaseModelView, ModelView):
 
 admin = Admin(current_app, index_view=SecureAdminIndexView())
 admin.add_view(UserModelView(User, db.session))
-admin.add_view(ModelView(Celebrity, db.session))
+
+# Need endpoint here to avoid collision with other celebrity route.
+admin.add_view(ModelView(Celebrity, db.session, endpoint="celebrity_admin"))
