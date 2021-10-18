@@ -40,5 +40,5 @@ class Celebrity(BaseModel, db.Model):
     twitter_username = db.Column(db.String(100), unique=True, nullable=False)
 
     # These are nullable because we will start with their username and then fetch the rest.
-    twitter_id = db.Column(db.Integer(), unique=True)
+    twitter_id = db.Column(db.BigInteger(), unique=True)
     twitter_name = db.Column(db.String(100))

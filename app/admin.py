@@ -8,7 +8,9 @@ from .db import db
 from .models import User, Celebrity
 
 
-class BaseModelView:
+class BaseModelView(ModelView):
+    column_display_pk = True
+
     def is_accessible(self) -> bool:
         return current_user.is_authenticated
 
@@ -22,7 +24,7 @@ class SecureAdminIndexView(AdminIndexView):
         return "Access denied", 403
 
 
-class UserModelView(BaseModelView, ModelView):
+class UserModelView(BaseModelView):
     column_exclude_list = ["password"]
 
 
@@ -30,4 +32,4 @@ admin = Admin(current_app, index_view=SecureAdminIndexView())
 admin.add_view(UserModelView(User, db.session))
 
 # Need endpoint here to avoid collision with other celebrity route.
-admin.add_view(ModelView(Celebrity, db.session, endpoint="celebrity_admin"))
+admin.add_view(BaseModelView(Celebrity, db.session, endpoint="celebrity_admin"))

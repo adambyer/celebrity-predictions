@@ -29,7 +29,7 @@ def celebrity(twitter_username: str) -> str:
         tweets = get_list(cache_key) or []
 
         if not tweets:
-            tweets = get_user_tweets(celebrity.twitter_id) or []
+            tweets = get_user_tweets(celebrity.twitter_id)
             set_list(cache_key, tweets, ex=CELEBRITY_TWEETS_CACHE_SECONDS)
 
     if celebrity.twitter_name:

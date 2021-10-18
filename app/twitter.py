@@ -56,7 +56,7 @@ def get_user_tweets(
     max_results: Optional[int] = None,
     start_time: Optional[str] = None,
     end_time: Optional[str] = None,
-) -> Optional[list]:
+) -> list:
     """If no times, returns the most recent tweets."""
     url = f"/users/{twitter_id}/tweets"
     params = {
@@ -73,5 +73,20 @@ def get_user_tweets(
     if end_time:
         params["end_time"] = end_time
 
-    payload = _get(url, params)
-    return payload["data"] if payload else None
+    tweets = None
+
+    while tweets is None or "pagination_token" in params:
+        payload = _get(url, params)
+
+        if payload:
+            tweets = (tweets or []) + payload["data"]
+            next_token = payload["meta"].get("next_token")
+
+            if next_token:
+                params["pagination_token"] = next_token
+            else:
+                del params["pagination_token"]
+        else:
+            tweets = []
+
+    return tweets
