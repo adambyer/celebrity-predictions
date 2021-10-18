@@ -18,6 +18,9 @@ Launch Postgres App and start a PostgreSQL v14 server, then...
 
 `> db.create_all()`
 
+## Install Redis
+https://redis.io/
+
 ## Migrations
 
 #### Create migrations
@@ -27,4 +30,5 @@ Launch Postgres App and start a PostgreSQL v14 server, then...
 
 ## Run the app
 
+`$ redis-server`
 `$ flask run`

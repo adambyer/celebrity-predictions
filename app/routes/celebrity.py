@@ -1,5 +1,8 @@
+from datetime import datetime
 from flask import Blueprint, render_template
 
+from app.cache import get_list, set_list
+from app.constants import CACHE_KEY_CELEBRITY_TWEETS, CELEBRITY_TWEETS_CACHE_SECONDS
 from app.models import Celebrity
 from app.twitter import get_user_tweets
 
@@ -22,7 +25,12 @@ def celebrity(twitter_username: str) -> str:
     name = twitter_username
 
     if celebrity.twitter_id:
-        tweets = get_user_tweets(celebrity.twitter_id) or []
+        cache_key = CACHE_KEY_CELEBRITY_TWEETS.format(celebrity.id)
+        tweets = get_list(cache_key) or []
+
+        if not tweets:
+            tweets = get_user_tweets(celebrity.twitter_id) or []
+            set_list(cache_key, tweets, ex=CELEBRITY_TWEETS_CACHE_SECONDS)
 
     if celebrity.twitter_name:
         name = celebrity.twitter_name

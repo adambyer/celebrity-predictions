@@ -25,10 +25,6 @@ def create_app(test_config: dict = None) -> Flask:
     )
 
     # TODO: better way than importing all this stuff here??
-
-    # This is needed for Migrate to see changes.
-    from . import models  # noqa: F401
-
     from . import events  # noqa: F401
 
     with app.app_context():
