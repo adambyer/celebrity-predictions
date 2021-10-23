@@ -1,14 +1,14 @@
 from flask import Flask
-from flask_login import LoginManager
+# from flask_login import LoginManager
 from flask_migrate import Migrate
 import os
 from typing import Union
 
-from .routes.auth import bp as auth_bp
-from .routes.base import bp as base_bp
-from .routes.celebrity import bp as celebrity_bp
+# from .routes.auth import bp as auth_bp
+# from .routes.base import bp as base_bp
+# from .routes.celebrity import bp as celebrity_bp
 from .db import db
-from .models import User
+# from .models import User
 
 migrate = Migrate(compare_type=True)
 
@@ -30,16 +30,9 @@ def create_app(test_config: dict = None) -> Flask:
     with app.app_context():
         from . import admin  # noqa: F401
 
-    login_manager = LoginManager()
-    login_manager.init_app(app)
-
-    @login_manager.user_loader
-    def load_user(user_id: str) -> Union[User, None]:
-        return User.query.filter_by(id=user_id).first()
-
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(base_bp)
-    app.register_blueprint(celebrity_bp)
+    # app.register_blueprint(auth_bp)
+    # app.register_blueprint(base_bp)
+    # app.register_blueprint(celebrity_bp)
 
     db.init_app(app)
     migrate.init_app(app, db)

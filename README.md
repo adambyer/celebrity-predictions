@@ -10,13 +10,7 @@
 
 ## Setup Database
 
-Launch Postgres App and start a PostgreSQL v14 server, then...
-
-`$ python3`
-
-`> from .db import db`
-
-`> db.create_all()`
+Launch Postgres App, start a PostgreSQL v14 server, and create the `celebrity_predictions` database.
 
 ## Install Redis
 https://redis.io/
@@ -24,11 +18,18 @@ https://redis.io/
 ## Migrations
 
 #### Create migrations
-`$ flask db migrate -m "explain changes"`
+`$ alembic revision --autogenerate -m "explain changes"`
+
 #### Apply migrations
-`$ flask db upgrade`
+`$ alembic upgrade head`
 
 ## Run the app
 
+#### Redis
 `$ redis-server`
+
+### Admin
 `$ flask run`
+
+### API
+`$ uvicorn api.main:app --reload`

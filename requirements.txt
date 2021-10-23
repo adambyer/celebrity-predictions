@@ -1,6 +1,7 @@
 alembic==1.7.4
 anyio==3.3.3
 argcomplete==1.12.3
+asgiref==3.4.1
 backports.entry-points-selectable==1.1.0
 certifi==2021.10.8
 charset-normalizer==2.0.7
@@ -12,10 +13,11 @@ filelock==3.3.1
 flake8==4.0.1
 Flask==2.0.2
 Flask-Admin==1.5.8
-Flask-Login==0.5.0
 Flask-Migrate==3.1.0
 Flask-SQLAlchemy==2.5.1
 greenlet==1.1.2
+h11==0.12.0
+httptools==0.2.0
 idna==3.3
 itsdangerous==2.0.1
 Jinja2==3.0.2
@@ -34,6 +36,7 @@ pydantic==1.8.2
 pyflakes==2.4.0
 pyparsing==2.4.7
 python-dotenv==0.19.1
+PyYAML==6.0
 redis==3.5.3
 requests==2.26.0
 six==1.16.0
@@ -41,9 +44,14 @@ sniffio==1.2.0
 SQLAlchemy==1.4.25
 starlette==0.16.0
 toml==0.10.2
+types-redis==3.5.15
 types-requests==2.25.11
 typing-extensions==3.10.0.2
 urllib3==1.26.7
+uvicorn==0.15.0
+uvloop==0.16.0
 virtualenv==20.8.1
+watchgod==0.7
+websockets==10.0
 Werkzeug==2.0.2
 WTForms==2.3.3
