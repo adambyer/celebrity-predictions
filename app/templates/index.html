@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-
-{% block header %}
-  <h1>{% block title %}Index Page{% endblock %}</h1>
-{% endblock %}
-
-{% block content %}
-  <p>You are {% if not current_user.is_authenticated %} not {% endif %} logged in.</p>
-{% endblock %}
