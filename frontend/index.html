@@ -1,18 +1,24 @@
 <!doctype html>
-<title>celebrity Predictions</title>
 
-<script
-    src="require.js"
-    data-main="index.js"
-></script>
-<!-- <script src="index.js"></script> -->
+<head>
+  <title>celebrity Predictions</title>
+
+  <script
+      src="require.js"
+      data-main="index.js"
+  ></script>
+
+  <style>
+    td {
+      border: 1 px solid black;
+    }
+  </style>
+</head>
 
 <nav>
   <h1>Celebrity Predictions</h1>
   <ul>
-    <li><a href="">Celebrities</a></li>
-    <li><a href="">Login</a></li>
-    <li><a href="">Logout</a></li>
+    <li><button onclick="getCelebrities()">Celebrities</button></li>
   </ul>
 </nav>
 
@@ -20,4 +26,14 @@
   Username: <input id="username"/><br/>
   Password: <input id="password" type="password"/><br/>
   <button id="login" onclick="login()">Login</button>
+</section>
+
+<section>
+  <h2>Celebrities</h2>
+  <table id="celebrity_table"></table>
+</section>
+
+<section>
+  <h2>Selected Celebrity</h2>
+  <img id="celebrity_image"/>
 </section>

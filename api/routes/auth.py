@@ -21,7 +21,7 @@ router = APIRouter(
 def _authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
     user = get_user_by_username(db, username)
 
-    if not user:
+    if not user or not user.is_active:
         return None
 
     if not verify_password(password, user.password):

@@ -28,15 +28,12 @@ class CurrentUserType(UserType):
     email_address: str
 
 
-class CelebrityBaseType(BaseModel):
+class CelebrityType(BaseModel):
     twitter_username: str
-    twitter_id: Optional[int] = None
     twitter_name: Optional[str] = None
+    twitter_description: Optional[str] = None
+    twitter_verified: Optional[bool] = False
+    twitter_profile_image_url: Optional[str] = None
 
     class Config:
         orm_mode = True
-
-
-class CelebrityType(CelebrityBaseType):
-    created_at: datetime
-    updated_at: Optional[datetime] = None

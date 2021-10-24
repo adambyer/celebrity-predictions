@@ -9,7 +9,7 @@ from .models import (
     User,
 )
 from .types import (
-    CelebrityBaseType,
+    CelebrityType,
     UserCreateType,
 )
 
@@ -52,7 +52,7 @@ def create_user(
 
 def create_celebrity(
     db: Session,
-    celebrity: CelebrityBaseType,
+    celebrity: CelebrityType,
 ):
     db_celebrity = Celebrity(**celebrity.dict())
     db.add(db_celebrity)
@@ -66,6 +66,13 @@ def get_celebrity(
     celebrity_id: int,
 ):
     return db.query(Celebrity).filter(Celebrity.id == celebrity_id).first()
+
+
+def get_celebrity_by_twitter_username(
+    db: Session,
+    twitter_username: str,
+):
+    return db.query(Celebrity).filter(Celebrity.twitter_username == twitter_username).first()
 
 
 def update_celebrity(
@@ -88,5 +95,9 @@ def update_celebrity(
             )
 
 
-def get_celebrities(skip: int = 0, limit: int = 100, db: Session = None):
-    return db.query(Celebrity).offset(skip).limit(limit).all()
+def get_celebrities(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100,
+):
+    return db.query(Celebrity).filter(Celebrity.twitter_id.isnot(None)).offset(skip).limit(limit).all()
