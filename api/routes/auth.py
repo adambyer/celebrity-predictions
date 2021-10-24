@@ -1,10 +1,15 @@
 from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
+from typing import Optional
 
+from api.crud import create_user, get_user_by_username
 from api.db import Session
-from api.types import TokenType
-from .auth_utils import authenticate_user, create_access_token
+from api.models import User
+from api.types import TokenType, UserCreateType, UserType
+from api.auth_utils import create_access_token, verify_password
+
 from .dependencies import get_db
+
 
 router = APIRouter(
     prefix="",  # FastAPI docs doesn't work if this isn't at the root.
@@ -13,12 +18,41 @@ router = APIRouter(
 )
 
 
+def _authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
+    user = get_user_by_username(db, username)
+
+    if not user:
+        return None
+
+    if not verify_password(password, user.password):
+        return None
+
+    return user
+
+
+@router.post("/register", response_model=UserType)
+async def register(
+    user: UserCreateType,
+    db: Session = Depends(get_db),
+) -> dict:
+    # TODO: validate password requirements.
+    try:
+        db_user = create_user(db, user)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Username or email address is already registered.",
+        ) from e
+
+    return db_user
+
+
 @router.post("/token", response_model=TokenType)
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ) -> dict:
-    user = authenticate_user(db, form_data.username, form_data.password)
+    user = _authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

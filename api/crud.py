@@ -2,6 +2,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from typing import Optional
 
+from .auth_utils import get_password_hash
 from .db import engine
 from .models import (
     Celebrity,
@@ -37,10 +38,11 @@ def create_user(
     db: Session,
     user: UserCreateType,
 ):
-    fake_hashed_password = user.password + "notreallyhashed"
+    password = get_password_hash(user.password)
     db_user = User(
+        username=user.username,
         email_address=user.email_address,
-        password=fake_hashed_password,
+        password=password,
     )
     db.add(db_user)
     db.commit()

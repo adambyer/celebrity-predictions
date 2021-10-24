@@ -2,7 +2,6 @@ const url_root = "http://127.0.0.1:8000"
 let axios = null
 
 requirejs(["axios"], (a) => {
-    console.log("*** axios loaded")
     axios = a
 })
 

@@ -8,6 +8,7 @@ app = FastAPI()
 app.include_router(auth_router)
 app.include_router(user_router)
 
+# TODO: make this local only.
 origins = [
     "http://127.0.0.1:8080",
 ]

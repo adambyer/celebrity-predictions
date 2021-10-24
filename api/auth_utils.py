@@ -3,12 +3,11 @@ from jose import jwt
 from passlib.context import CryptContext
 from typing import Optional
 
-from api.crud import get_user_by_username
-from api.db import Session
-from api.models import User
-from api.constants import JWT_SECRET_KEY, JWT_ALGORITHM, JWT_EXPIRE_MINUTES
+from .constants import JWT_SECRET_KEY, JWT_ALGORITHM, JWT_EXPIRE_MINUTES
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# TODO: how to refresh the token when it expires.
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -17,18 +16,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
-
-
-def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
-    user = get_user_by_username(db, username)
-
-    if not user:
-        return None
-
-    if not verify_password(password, user.password):
-        return None
-
-    return user
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:

@@ -9,8 +9,11 @@ from .twitter import get_user_by_username, get_user_tweets
 def update_celebrity_data(celebrity_id: int) -> None:
     db = Session()
     celebrity = get_celebrity(db, celebrity_id)
-    data = get_user_by_username(celebrity.twitter_username)
 
+    if celebrity.twitter_id and celebrity.twitter_name:
+        return
+
+    data = get_user_by_username(celebrity.twitter_username)
     if not data:
         return
 
@@ -20,7 +23,14 @@ def update_celebrity_data(celebrity_id: int) -> None:
     if True:  # celery always eager
         db = None
 
-    update_celebrity(db, celebrity, twitter_id=data["id"], twitter_name=data["name"])
+    updates = {
+        "twitter_id": data["id"],
+        "twitter_name": data["name"],
+        "twitter_verified": data["verified"],
+        "twitter_description": data["description"],
+        "twitter_profile_image_url": data["profile_image_url"],
+    }
+    update_celebrity(db, celebrity, **updates)
 
 
 def fetch_celebrity_daily_tweets(celebrity_id: int, dt: datetime) -> None:

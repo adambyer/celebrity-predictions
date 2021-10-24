@@ -28,8 +28,12 @@ class UserModelView(BaseModelView):
     column_exclude_list = ["password"]
 
 
+class CelebrityModelView(BaseModelView):
+    column_exclude_list = ["twitter_profile_image_url", "twitter_description"]
+
+
 admin = Admin(current_app, index_view=SecureAdminIndexView())
 admin.add_view(UserModelView(User, Session()))
 
 # Need endpoint here to avoid collision with other celebrity route.
-admin.add_view(BaseModelView(Celebrity, Session(), endpoint="celebrity_admin"))
+admin.add_view(CelebrityModelView(Celebrity, Session(), endpoint="celebrity_admin"))

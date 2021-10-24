@@ -37,7 +37,10 @@ def _get(url: str, params: dict = {}) -> Optional[dict]:
 
 def get_user_by_username(username: str) -> Optional[dict]:
     url = f"/users/by/username/{username}"
-    payload = _get(url)
+    params = {
+        "user.fields": "description,profile_image_url,verified",
+    }
+    payload = _get(url, params)
     return payload["data"] if payload else None
 
 
