@@ -33,3 +33,9 @@ https://redis.io/
 
 ### API
 `$ uvicorn api.main:app --reload`
+
+### Frontend
+Install http-server if needed: https://www.npmjs.com/package/http-server
+
+`$ cd frontend`
+`$ http-server`
