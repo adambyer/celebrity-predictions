@@ -33,10 +33,9 @@ function getCelebrities() {
         url: `${url_root}/celebrity`,
     })
     .then(function (response) {
-        console.log("*** getCelebrities success", response)
+        const table = document.getElementById("celebrity-table")
         response.data.forEach(c => {
-            const table = document.getElementById("celebrity_table")
-            const row = `<tr><td><a href="javascript:void(0)" onclick="showCelebrity('${c.twitter_profile_image_url}');event.preventDefault();">${c.twitter_username}</a></td><td>${c.twitter_name}</td><td>${c.twitter_description}</td></tr>`
+            const row = `<tr><td><a href="javascript:void(0)" onclick="showCelebrity('${c.twitter_username}');event.preventDefault();">${c.twitter_username}</a></td><td>${c.twitter_name}</td><td>${c.twitter_description}</td></tr>`
             table.insertAdjacentHTML('beforeend', row)
         })
     })
@@ -45,8 +44,24 @@ function getCelebrities() {
     })
 }
 
-function showCelebrity(image_url) {
-    console.log("*** showCelebrity", image_url)
-    const img = document.getElementById("celebrity_image")
-    img.setAttribute("src", image_url)
+function showCelebrity(twitter_username) {
+    console.log("*** showCelebrity", twitter_username)
+    axios({
+        method: "get",
+        url: `${url_root}/celebrity/${twitter_username}`,
+    })
+    .then(function (response) {
+        console.log("*** showCelebrity success", response)
+        const img = document.getElementById("celebrity-image")
+        img.setAttribute("src", response.data.twitter_profile_image_url)
+
+        const table = document.getElementById("tweet-table")
+        response.data.tweets.forEach(t => {
+            const row = `<tr><td><a href="javascript:void(0)">${t.text}</a></td><td>Likes: ${t.public_metrics.like_count}</td><td>${t.created_at}</td></tr>`
+            table.insertAdjacentHTML('beforeend', row)
+        })
+    })
+    .catch(function (error) {
+        console.log("*** showCelebrity error", error)
+    })
 }

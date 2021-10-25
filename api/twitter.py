@@ -13,7 +13,7 @@ def _get(url: str, params: dict = {}) -> Optional[dict]:
     headers = {
         "Authorization": "Bearer {}".format(TWITTER_TOKEN),
     }
-
+    print("*** _get", url, headers, params)
     try:
         response = requests.get(
             url,
@@ -56,19 +56,22 @@ def get_users_by_usernames(usernames: list) -> Optional[list]:
 
 def get_user_tweets(
     twitter_id: int,
-    max_results: Optional[int] = None,
+    limit: Optional[int] = None,
     start_time: Optional[str] = None,
     end_time: Optional[str] = None,
 ) -> list:
-    """If no times, returns the most recent tweets."""
+    """Get user tweets from Twitter.
+
+    - If no times, returns the most recent tweets.
+    """
     url = f"/users/{twitter_id}/tweets"
     params = {
-        "max_results": 100,
+        "max_results": 100,  # 100 is the max for each request
         "tweet.fields": "public_metrics,created_at",
     }
 
-    if max_results:
-        params["max_results"] = max_results
+    if limit and limit < 100:
+        params["max_results"] = limit
 
     if start_time:
         params["start_time"] = start_time
@@ -78,7 +81,11 @@ def get_user_tweets(
 
     tweets = None
 
-    while tweets is None or "pagination_token" in params:
+    while (
+        tweets is None
+        or "pagination_token" in params
+        or (limit and len(tweets) < limit)
+    ):
         payload = _get(url, params)
 
         if payload:

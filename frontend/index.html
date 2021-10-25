@@ -10,7 +10,7 @@
 
   <style>
     td {
-      border: 1 px solid black;
+      border: 1px solid black;
     }
   </style>
 </head>
@@ -18,7 +18,7 @@
 <nav>
   <h1>Celebrity Predictions</h1>
   <ul>
-    <li><button onclick="getCelebrities()">Celebrities</button></li>
+    <li><a href="javascript:void(0)" onclick="getCelebrities();event.preventDefault();">Celebrities</a></li>
   </ul>
 </nav>
 
@@ -30,10 +30,11 @@
 
 <section>
   <h2>Celebrities</h2>
-  <table id="celebrity_table"></table>
+  <table id="celebrity-table"></table>
 </section>
 
 <section>
   <h2>Selected Celebrity</h2>
-  <img id="celebrity_image"/>
+  <img id="celebrity-image"/>
+  <table id="tweet-table"></table>
 </section>

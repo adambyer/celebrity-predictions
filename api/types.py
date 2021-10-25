@@ -34,6 +34,7 @@ class CelebrityType(BaseModel):
     twitter_description: Optional[str] = None
     twitter_verified: Optional[bool] = False
     twitter_profile_image_url: Optional[str] = None
+    tweets: Optional[list] = []
 
     class Config:
         orm_mode = True

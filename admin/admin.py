@@ -4,8 +4,8 @@ from flask_admin.contrib.sqla import ModelView
 # from flask_login import current_user
 from typing import Any
 
-from ..api.db import Session
-from ..api.models import User, Celebrity
+from api.db import Session
+from api.models import User, Celebrity, Prediction, PredictionResult
 
 
 class BaseModelView(ModelView):
@@ -26,14 +26,20 @@ class SecureAdminIndexView(AdminIndexView):
 
 class UserModelView(BaseModelView):
     column_exclude_list = ["password"]
+    form_excluded_columns = ["predictions"]
 
 
 class CelebrityModelView(BaseModelView):
     column_exclude_list = ["twitter_profile_image_url", "twitter_description"]
+    form_excluded_columns = ["predictions"]
+
+
+class PredictionModelView(BaseModelView):
+    form_excluded_columns = ["results"]
 
 
 admin = Admin(current_app, index_view=SecureAdminIndexView())
 admin.add_view(UserModelView(User, Session()))
-
-# Need endpoint here to avoid collision with other celebrity route.
-admin.add_view(CelebrityModelView(Celebrity, Session(), endpoint="celebrity_admin"))
+admin.add_view(CelebrityModelView(Celebrity, Session()))
+admin.add_view(PredictionModelView(Prediction, Session()))
+admin.add_view(BaseModelView(PredictionResult, Session()))

@@ -1,5 +1,6 @@
 from datetime import datetime
-from sqlalchemy import Column, DateTime, Integer, String, Boolean, BigInteger
+from sqlalchemy import Column, DateTime, Integer, String, Boolean, BigInteger, ForeignKey
+from sqlalchemy.orm import relationship
 
 from .db import Base
 
@@ -19,6 +20,11 @@ class User(BaseMixin, Base):
     is_active = Column(Boolean, default=True, nullable=False)
     is_staff = Column(Boolean, default=False, nullable=False)
 
+    predictions = relationship("Prediction", backref="user")
+
+    def __repr__(self):
+        return f"{self.username} ({self.id})"
+
 
 class Celebrity(BaseMixin, Base):
     __tablename__ = "celebrity"
@@ -31,3 +37,35 @@ class Celebrity(BaseMixin, Base):
     twitter_name = Column(String(100))
     twitter_profile_image_url = Column(String(1000))
     twitter_description = Column(String(1000))
+
+    predictions = relationship("Prediction", backref="celebrity")
+
+    def __repr__(self):
+        return f"{self.twitter_username} ({self.id})"
+
+
+class Prediction(BaseMixin, Base):
+    __tablename__ = "prediction"
+
+    user_id = Column(Integer, ForeignKey("user.id"))
+    celebrity_id = Column(Integer, ForeignKey("celebrity.id"))
+
+    is_enabled = Column(Boolean, default=True, nullable=False)
+    is_auto_disabled = Column(Boolean, default=False, nullable=False)
+    amount = Column(Integer, nullable=False)
+
+    results = relationship("PredictionResult", backref="prediction")
+
+    def __repr__(self):
+        return f"user:{self.user_id} celebrity:{self.celebrity_id} amount:{self.amount} ({self.id})"
+
+
+class PredictionResult(BaseMixin, Base):
+    __tablename__ = "prediction_result"
+
+    prediction_id = Column(Integer, ForeignKey("prediction.id"))
+
+    # Amount can change on the prediction, so we need to maintain it from the day the prediction was run.
+    amount = Column(Integer, nullable=False)
+
+    points = Column(Integer, nullable=False)
