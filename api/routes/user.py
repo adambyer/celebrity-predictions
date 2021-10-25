@@ -14,7 +14,9 @@ router = APIRouter(
 
 
 @router.get("/me/", response_model=CurrentUserType)
-async def get_current_user_route(current_user: CurrentUserType = Depends(get_current_user)) -> CurrentUserType:
+async def get_current_user_route(
+    current_user: CurrentUserType = Depends(get_current_user),
+) -> CurrentUserType:
     return current_user
 
 

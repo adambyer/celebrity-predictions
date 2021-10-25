@@ -1,6 +1,7 @@
 from flask import current_app
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
+
 # from flask_login import current_user
 from typing import Any
 

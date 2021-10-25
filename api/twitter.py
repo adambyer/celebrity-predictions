@@ -81,12 +81,8 @@ def get_user_tweets(
 
     tweets = None
 
-    while (
-        tweets is None
-        or (
-            "pagination_token" in params
-            and (limit and len(tweets) < limit)
-        )
+    while tweets is None or (
+        "pagination_token" in params and (limit and len(tweets) < limit)
     ):
         payload = _get(url, params)
 

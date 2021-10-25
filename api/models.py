@@ -1,5 +1,13 @@
 from datetime import datetime
-from sqlalchemy import Column, DateTime, Integer, String, Boolean, BigInteger, ForeignKey
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Integer,
+    String,
+    Boolean,
+    BigInteger,
+    ForeignKey,
+)
 from sqlalchemy.orm import relationship
 
 from .db import Base
@@ -22,7 +30,7 @@ class User(BaseMixin, Base):
 
     predictions = relationship("Prediction", backref="user")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.username} ({self.id})"
 
 
@@ -40,7 +48,7 @@ class Celebrity(BaseMixin, Base):
 
     predictions = relationship("Prediction", backref="celebrity")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.twitter_username} ({self.id})"
 
 
@@ -56,7 +64,7 @@ class Prediction(BaseMixin, Base):
 
     results = relationship("PredictionResult", backref="prediction")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"user:{self.user_id} celebrity:{self.celebrity_id} amount:{self.amount} ({self.id})"
 
 

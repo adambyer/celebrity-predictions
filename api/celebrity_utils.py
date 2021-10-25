@@ -15,7 +15,7 @@ def get_tweets(celebrity_: Union[Celebrity, int]) -> list:
         celebrity = get_celebrity(db, celebrity_)
     else:
         celebrity = celebrity_
-    print("*** get_tweets", celebrity.twitter_id)
+
     if not celebrity or not celebrity.twitter_id:
         return []
 

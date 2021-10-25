@@ -26,12 +26,17 @@ def user_taken(
     username: str,
     email_address: str,
 ) -> bool:
-    return db.query(User).filter(
-        or_(
-            User.username == username,
-            User.email_address == email_address,
+    return (
+        db.query(User)
+        .filter(
+            or_(
+                User.username == username,
+                User.email_address == email_address,
+            )
         )
-    ).first() is not None
+        .first()
+        is not None
+    )
 
 
 def create_user(
@@ -72,7 +77,11 @@ def get_celebrity_by_twitter_username(
     db: Session,
     twitter_username: str,
 ) -> Optional[Celebrity]:
-    return db.query(Celebrity).filter(Celebrity.twitter_username == twitter_username).first()
+    return (
+        db.query(Celebrity)
+        .filter(Celebrity.twitter_username == twitter_username)
+        .first()
+    )
 
 
 def update_celebrity(
@@ -90,9 +99,7 @@ def update_celebrity(
         with engine.begin() as connection:
             table = Celebrity.__table__
             connection.execute(
-                table.update().
-                where(table.c.id == celebrity.id).
-                values(**kwargs)
+                table.update().where(table.c.id == celebrity.id).values(**kwargs)
             )
 
 
@@ -101,4 +108,10 @@ def get_celebrities(
     skip: int = 0,
     limit: int = 100,
 ) -> List[Celebrity]:
-    return db.query(Celebrity).filter(Celebrity.twitter_id.isnot(None)).offset(skip).limit(limit).all()
+    return (
+        db.query(Celebrity)
+        .filter(Celebrity.twitter_id.isnot(None))
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )

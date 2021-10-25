@@ -1,7 +1,7 @@
 import nox
 
 nox.options.reuse_existing_virtualenvs = True
-locations = ("app", "noxfile.py")
+locations = ("api", "admin", "noxfile.py")
 
 
 @nox.session
@@ -25,5 +25,6 @@ def mypy(session: nox.Session) -> None:
         "mypy",
         "--disallow-untyped-defs",
         "--ignore-missing-imports",
-        "app",
+        "api",
+        "admin",
     )
