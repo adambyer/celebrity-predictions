@@ -13,7 +13,7 @@ def _get(url: str, params: dict = {}) -> Optional[dict]:
     headers = {
         "Authorization": "Bearer {}".format(TWITTER_TOKEN),
     }
-    print("*** _get", url, headers, params)
+
     try:
         response = requests.get(
             url,
@@ -83,8 +83,10 @@ def get_user_tweets(
 
     while (
         tweets is None
-        or "pagination_token" in params
-        or (limit and len(tweets) < limit)
+        or (
+            "pagination_token" in params
+            and (limit and len(tweets) < limit)
+        )
     ):
         payload = _get(url, params)
 
@@ -97,6 +99,6 @@ def get_user_tweets(
             else:
                 del params["pagination_token"]
         else:
-            tweets = []
+            return []
 
     return tweets
