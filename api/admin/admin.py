@@ -2,11 +2,12 @@ from flask import current_app
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 
+# TODO: auth
 # from flask_login import current_user
 from typing import Any
 
-from api.db import Session
-from api.models import User, Celebrity, Prediction, PredictionResult
+from ..db import Session
+from ..models import User, Celebrity, Prediction, PredictionResult
 
 
 class BaseModelView(ModelView):

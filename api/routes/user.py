@@ -1,8 +1,9 @@
 from fastapi import Depends, HTTPException, APIRouter
 
-from api.crud import get_user_by_username
-from api.db import Session
-from api.types import UserType, CurrentUserType
+from ..crud import get_user_by_username
+from ..db import Session
+from ..model_types import UserType, CurrentUserType
+
 from .dependencies import get_db, get_current_user
 
 router = APIRouter(

@@ -28,12 +28,13 @@ function login() {
 }
 
 function getCelebrities() {
+    const table = document.getElementById("celebrity-table")
+    table.innerHTML = ""
     axios({
         method: "get",
         url: `${url_root}/celebrity`,
     })
     .then(function (response) {
-        const table = document.getElementById("celebrity-table")
         response.data.forEach(c => {
             const row = `<tr><td><a href="javascript:void(0)" onclick="showCelebrity('${c.twitter_username}');event.preventDefault();">${c.twitter_username}</a></td><td>${c.twitter_name}</td><td>${c.twitter_description}</td></tr>`
             table.insertAdjacentHTML('beforeend', row)
@@ -45,17 +46,16 @@ function getCelebrities() {
 }
 
 function showCelebrity(twitter_username) {
-    console.log("*** showCelebrity", twitter_username)
+    const table = document.getElementById("tweet-table")
+    table.innerHTML = ""
     axios({
         method: "get",
         url: `${url_root}/celebrity/${twitter_username}`,
     })
     .then(function (response) {
-        console.log("*** showCelebrity success", response)
         const img = document.getElementById("celebrity-image")
         img.setAttribute("src", response.data.twitter_profile_image_url)
 
-        const table = document.getElementById("tweet-table")
         response.data.tweets.forEach(t => {
             const row = `<tr><td><a href="javascript:void(0)">${t.text}</a></td><td>Likes: ${t.public_metrics.like_count}</td><td>${t.created_at}</td></tr>`
             table.insertAdjacentHTML('beforeend', row)

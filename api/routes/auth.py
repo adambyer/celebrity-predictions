@@ -2,11 +2,11 @@ from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Optional
 
-from api.crud import create_user, get_user_by_username
-from api.db import Session
-from api.models import User
-from api.types import TokenType, UserCreateType, UserType
-from api.auth_utils import create_access_token, verify_password
+from ..crud import create_user, get_user_by_username
+from ..db import Session
+from ..models import User
+from ..model_types import TokenType, UserCreateType, UserType
+from ..auth_utils import create_access_token, verify_password
 
 from .dependencies import get_db
 

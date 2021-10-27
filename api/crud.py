@@ -8,7 +8,7 @@ from .models import (
     Celebrity,
     User,
 )
-from .types import (
+from .model_types import (
     CelebrityType,
     UserCreateType,
 )

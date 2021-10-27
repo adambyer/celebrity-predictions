@@ -6,7 +6,7 @@
 
 `$ source venv/bin/activate`
 
-`$ pip install -r requirements.txt`
+`$ pip install -r api/requirements.txt`
 
 ## Setup Database
 
@@ -29,9 +29,12 @@ https://redis.io/
 `$ redis-server`
 
 ### Admin
+`$ source venv/bin/activate`
+`$ cd api`
 `$ flask run`
 
 ### API
+`$ source venv/bin/activate`
 `$ uvicorn api.main:app --reload`
 
 ### Frontend

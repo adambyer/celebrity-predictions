@@ -1,10 +1,10 @@
 from fastapi import Depends, HTTPException, status, APIRouter
 from typing import List
 
-from api.celebrity_utils import get_tweets
-from api.crud import get_celebrity_by_twitter_username, get_celebrities
-from api.db import Session
-from api.types import CelebrityType
+from ..celebrity_utils import get_tweets
+from ..crud import get_celebrity_by_twitter_username, get_celebrities
+from ..db import Session
+from ..model_types import CelebrityType
 
 from .dependencies import get_db
 
@@ -47,7 +47,6 @@ async def get_celebrity_route(
 
     if db_celebrity:
         celebrity = db_celebrity.__dict__
-        print("*** celebrity", celebrity)
         celebrity["tweets"] = get_tweets(db_celebrity)
         return celebrity
 

@@ -3,15 +3,16 @@ import os
 import requests
 from typing import Optional
 
-TWITTER_TOKEN = os.environ.get("TWITTER_API_TOKEN")
+TWITTER_API_TOKEN = os.environ.get("TWITTER_API_TOKEN")
 TWITTER_BASE_URL = "https://api.twitter.com/2"
 logger = logging.getLogger(__name__)
 
 
 def _get(url: str, params: dict = {}) -> Optional[dict]:
+    print("*** _get", TWITTER_API_TOKEN)
     url = f"{TWITTER_BASE_URL}{url}"
     headers = {
-        "Authorization": "Bearer {}".format(TWITTER_TOKEN),
+        "Authorization": "Bearer {}".format(TWITTER_API_TOKEN),
     }
 
     try:
@@ -81,12 +82,16 @@ def get_user_tweets(
 
     tweets = None
 
-    while tweets is None or (
-        "pagination_token" in params and (limit and len(tweets) < limit)
+    while (
+        tweets is None
+        or (
+            "pagination_token" in params
+            and (limit and len(tweets) < limit)
+        )
     ):
         payload = _get(url, params)
 
-        if payload:
+        if payload and "data" in payload:
             tweets = (tweets or []) + payload["data"]
             next_token = payload["meta"].get("next_token")
 
