@@ -55,8 +55,8 @@ class Celebrity(BaseMixin, Base):
 class Prediction(BaseMixin, Base):
     __tablename__ = "prediction"
 
-    user_id = Column(Integer, ForeignKey("user.id"))
-    celebrity_id = Column(Integer, ForeignKey("celebrity.id"))
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    celebrity_id = Column(Integer, ForeignKey("celebrity.id"), nullable=False)
 
     is_enabled = Column(Boolean, default=True, nullable=False)
     is_auto_disabled = Column(Boolean, default=False, nullable=False)
@@ -71,7 +71,7 @@ class Prediction(BaseMixin, Base):
 class PredictionResult(BaseMixin, Base):
     __tablename__ = "prediction_result"
 
-    prediction_id = Column(Integer, ForeignKey("prediction.id"))
+    prediction_id = Column(Integer, ForeignKey("prediction.id"), nullable=False)
 
     # Amount can change on the prediction, so we need to maintain it from the day the prediction was run.
     amount = Column(Integer, nullable=False)

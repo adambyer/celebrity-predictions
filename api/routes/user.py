@@ -1,28 +1,46 @@
 from fastapi import Depends, HTTPException, APIRouter
+from typing import List
 
-from ..crud import get_user_by_username
+from ..crud import get_user_by_username, get_user_predictions
 from ..db import Session
-from ..model_types import UserType, CurrentUserType
+from ..models import User
+from ..model_types import PredictionType, UserType, CurrentUserType
 
 from .dependencies import get_db, get_current_user
 
 router = APIRouter(
     prefix="/user",
     tags=["user"],
-    dependencies=[Depends(get_current_user)],
+    # dependencies=[Depends(get_current_user)],
     responses={404: {"description": "Not found"}},
 )
 
 
-@router.get("/me/", response_model=CurrentUserType)
+@router.get("/me", response_model=CurrentUserType)
 async def get_current_user_route(
-    current_user: CurrentUserType = Depends(get_current_user),
-) -> CurrentUserType:
+    current_user: User = Depends(get_current_user),
+) -> dict:
     return current_user
 
 
+@router.get("/predictions", response_model=List[PredictionType])
+def get_user_predictions_route(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> list:
+    try:
+        predictions = get_user_predictions(db, current_user.id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Unknown error.")
+
+    return predictions
+
+
 @router.get("/{username}", response_model=UserType)
-def get_user_route(username: str, db: Session = Depends(get_db)) -> UserType:
+def get_user_route(
+    username: str,
+    db: Session = Depends(get_db),
+) -> dict:
     user = get_user_by_username(db, username)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found.")

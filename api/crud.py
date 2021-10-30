@@ -6,10 +6,15 @@ from .auth_utils import get_password_hash
 from .db import engine
 from .models import (
     Celebrity,
+    Prediction,
+    PredictionResult,
     User,
 )
 from .model_types import (
     CelebrityType,
+    PredictionCreateType,
+    PredictionType,
+    PredictionResultType,
     UserCreateType,
 )
 
@@ -113,5 +118,52 @@ def get_celebrities(
         .filter(Celebrity.twitter_id.isnot(None))
         .offset(skip)
         .limit(limit)
+        .all()
+    )
+
+
+def create_prediction(
+    db: Session,
+    prediction: PredictionCreateType,
+) -> Prediction:
+    db_prediction = Prediction(**prediction.dict())
+    db.add(db_prediction)
+    db.commit()
+    db.refresh(db_prediction)
+    return db_prediction
+
+
+def create_prediction_result(
+    db: Session,
+    prediction_result: PredictionResultType,
+) -> PredictionResult:
+    db_prediction_result = PredictionResult(**prediction_result.dict())
+    db.add(db_prediction_result)
+    db.commit()
+    db.refresh(db_prediction_result)
+    return db_prediction_result
+
+
+def get_predictions(
+    db: Session,
+    limit: int = 10,
+) -> List[Prediction]:
+    return (
+        db.query(Prediction)
+        .filter(Prediction.is_enabled.is_(True))
+        .order_by(Prediction.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+
+def get_user_predictions(
+    db: Session,
+    user_id: int,
+) -> List[PredictionType]:
+    return (
+        db.query(Prediction)
+        .filter(Prediction.user_id == user_id)
+        .order_by(Prediction.created_at.desc())
         .all()
     )
