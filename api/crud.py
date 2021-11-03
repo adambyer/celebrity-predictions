@@ -1,20 +1,24 @@
+from datetime import date
 from sqlalchemy import or_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload, raiseload
 from typing import Optional, List
 
 from .auth_utils import get_password_hash
 from .db import engine
 from .models import (
     Celebrity,
+    CelebrityDailyMetric,
     Prediction,
     PredictionResult,
     User,
 )
 from .model_types import (
+    CelebrityDailyMetricCreateType,
+    CelebrityDailyMetricType,
     CelebrityType,
     PredictionCreateType,
     PredictionType,
-    PredictionResultType,
+    PredictionResultCreateType,
     UserCreateType,
 )
 
@@ -74,8 +78,15 @@ def create_celebrity(
 def get_celebrity(
     db: Session,
     celebrity_id: int,
+    include_predictions: bool = False
 ) -> Optional[Celebrity]:
-    return db.query(Celebrity).filter(Celebrity.id == celebrity_id).first()
+    query = db.query(Celebrity).filter(Celebrity.id == celebrity_id)
+
+    if include_predictions:
+        query = query.options(selectinload("predictions"), raiseload("*"))
+
+    # query = query.options(raiseload("*"))
+    return query.first()
 
 
 def get_celebrity_by_twitter_username(
@@ -118,6 +129,7 @@ def get_celebrities(
         .filter(Celebrity.twitter_id.isnot(None))
         .offset(skip)
         .limit(limit)
+        .options(raiseload("*"))
         .all()
     )
 
@@ -135,7 +147,7 @@ def create_prediction(
 
 def create_prediction_result(
     db: Session,
-    prediction_result: PredictionResultType,
+    prediction_result: PredictionResultCreateType,
 ) -> PredictionResult:
     db_prediction_result = PredictionResult(**prediction_result.dict())
     db.add(db_prediction_result)
@@ -146,15 +158,19 @@ def create_prediction_result(
 
 def get_predictions(
     db: Session,
-    limit: int = 10,
+    limit: Optional[int] = None,
 ) -> List[Prediction]:
-    return (
+    query = (
         db.query(Prediction)
         .filter(Prediction.is_enabled.is_(True))
         .order_by(Prediction.created_at.desc())
-        .limit(limit)
-        .all()
+        .options(raiseload("*"))
     )
+
+    if limit:
+        query = query.limit(limit)
+
+    return query.all()
 
 
 def get_user_predictions(
@@ -165,5 +181,29 @@ def get_user_predictions(
         db.query(Prediction)
         .filter(Prediction.user_id == user_id)
         .order_by(Prediction.created_at.desc())
+        .options(raiseload("*"))
         .all()
     )
+
+
+def get_celebrity_ids_for_predictions(
+    db: Session,
+) -> set:
+    return [
+        p.celebrity_id for p in (
+            db.query(Prediction.celebrity_id)
+            .filter(Prediction.is_enabled.is_(True))
+            .all()
+        )
+    ]
+
+
+def create_celebrity_daily_metric(
+    db: Session,
+    daily_metric: CelebrityDailyMetricCreateType,
+) -> CelebrityDailyMetricType:
+    db_daily_metric = CelebrityDailyMetric(**daily_metric.dict())
+    db.add(db_daily_metric)
+    db.commit()
+    db.refresh(db_daily_metric)
+    return db_daily_metric

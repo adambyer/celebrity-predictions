@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 def _get(url: str, params: dict = {}) -> Optional[dict]:
-    print("*** _get", TWITTER_API_TOKEN)
     url = f"{TWITTER_BASE_URL}{url}"
     headers = {
         "Authorization": "Bearer {}".format(TWITTER_API_TOKEN),
@@ -31,7 +30,7 @@ def _get(url: str, params: dict = {}) -> Optional[dict]:
     if response.status_code == 200:
         return response.json()
     else:
-        logger.error(f"request error: status: {response.status_code}")
+        logger.error(f"request error: {response.text} status: {response.status_code} url:{url}", extra=params)
 
     return None
 
@@ -97,7 +96,7 @@ def get_user_tweets(
 
             if next_token:
                 params["pagination_token"] = next_token
-            else:
+            elif "pagination_token" in params:
                 del params["pagination_token"]
         else:
             return []

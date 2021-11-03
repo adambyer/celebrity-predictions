@@ -26,4 +26,5 @@ def get_tweets(celebrity_: Union[Celebrity, int]) -> list:
         tweets = get_user_tweets(celebrity.twitter_id, limit=10)
         set_list(cache_key, tweets, ex=CELEBRITY_TWEETS_CACHE_SECONDS)
 
+    db.close()
     return tweets

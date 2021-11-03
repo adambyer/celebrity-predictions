@@ -1,12 +1,14 @@
 from datetime import datetime
 from sqlalchemy import (
     Column,
+    Date,
     DateTime,
     Integer,
     String,
     Boolean,
     BigInteger,
     ForeignKey,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
 
@@ -47,33 +49,60 @@ class Celebrity(BaseMixin, Base):
     twitter_description = Column(String(1000))
 
     predictions = relationship("Prediction", backref="celebrity")
+    daily_metrics = relationship("CelebrityDailyMetric", backref="celebrity")
 
     def __repr__(self) -> str:
         return f"{self.twitter_username} ({self.id})"
 
 
+class CelebrityDailyMetric(BaseMixin, Base):
+    __tablename__ = "celebrity_daily_metric"
+    __table_args__ = (
+        UniqueConstraint('celebrity_id', 'metric_date', 'metric'),
+    )
+
+    celebrity_id = Column(Integer, ForeignKey("celebrity.id"), nullable=False)
+    metric_date = Column(Date, nullable=False)
+
+    # like, retweet, reply, quote
+    metric = Column(String(20), nullable=False)
+
+    amount = Column(Integer, nullable=False)
+
+
 class Prediction(BaseMixin, Base):
     __tablename__ = "prediction"
+    __table_args__ = (
+        UniqueConstraint('user_id', 'celebrity_id', 'metric'),
+    )
 
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     celebrity_id = Column(Integer, ForeignKey("celebrity.id"), nullable=False)
 
     is_enabled = Column(Boolean, default=True, nullable=False)
     is_auto_disabled = Column(Boolean, default=False, nullable=False)
+    is_deleted = Column(Boolean, default=False, nullable=False)
     amount = Column(Integer, nullable=False)
 
-    results = relationship("PredictionResult", backref="prediction")
+    # like, retweet, reply, quote
+    metric = Column(String(20), nullable=False)
 
     def __repr__(self) -> str:
         return f"user:{self.user_id} celebrity:{self.celebrity_id} amount:{self.amount} ({self.id})"
 
 
 class PredictionResult(BaseMixin, Base):
+    # Note: these are created at scoring time and are not related to Prediction
+    # since those can change or be deleted.
     __tablename__ = "prediction_result"
+    __table_args__ = (
+        UniqueConstraint('user_id', 'celebrity_id', 'metric', 'metric_date'),
+    )
 
-    prediction_id = Column(Integer, ForeignKey("prediction.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    celebrity_id = Column(Integer, ForeignKey("celebrity.id"), nullable=False)
 
-    # Amount can change on the prediction, so we need to maintain it from the day the prediction was run.
+    metric_date = Column(Date, nullable=False)
     amount = Column(Integer, nullable=False)
-
+    metric = Column(String(20), nullable=False)
     points = Column(Integer, nullable=False)

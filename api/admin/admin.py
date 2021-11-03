@@ -1,5 +1,6 @@
-from flask import current_app
+from flask import current_app, flash
 from flask_admin import Admin, AdminIndexView, expose
+from flask_admin.actions import action
 from flask_admin.contrib.sqla import ModelView
 
 # TODO: auth
@@ -7,7 +8,8 @@ from flask_admin.contrib.sqla import ModelView
 from typing import Any
 
 from ..db import Session
-from ..models import User, Celebrity, Prediction, PredictionResult
+from ..tasks import import_celebrity_daily_tweet_metrics
+from ..models import User, Celebrity, Prediction, PredictionResult, CelebrityDailyMetric
 
 
 class BaseModelView(ModelView):
@@ -33,7 +35,18 @@ class UserModelView(BaseModelView):
 
 class CelebrityModelView(BaseModelView):
     column_exclude_list = ["twitter_profile_image_url", "twitter_description"]
-    form_excluded_columns = ["predictions"]
+    form_excluded_columns = ["predictions", "daily_metrics"]
+
+    @action(
+        "import-yesterdays-tweet-metrics",
+        "Import Yesterday's Tweet Metrics",
+        "Are you sure you want to import yesterday's tweet metrics for the selected celebrities?",
+    )
+    def import_tweet_metrics_action(self, ids: list) -> None:
+        for celebrity_id in ids:
+            import_celebrity_daily_tweet_metrics(celebrity_id)
+
+        flash("Tweet Metrics imported")
 
 
 class PredictionModelView(BaseModelView):
@@ -41,7 +54,9 @@ class PredictionModelView(BaseModelView):
 
 
 admin = Admin(current_app, index_view=SecureAdminIndexView())
-admin.add_view(UserModelView(User, Session()))
+
 admin.add_view(CelebrityModelView(Celebrity, Session()))
+admin.add_view(BaseModelView(CelebrityDailyMetric, Session()))
 admin.add_view(PredictionModelView(Prediction, Session()))
 admin.add_view(BaseModelView(PredictionResult, Session()))
+admin.add_view(UserModelView(User, Session()))

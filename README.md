@@ -23,6 +23,15 @@ https://redis.io/
 #### Apply migrations
 `$ alembic upgrade head`
 
+#### Get Migration History
+`$ alembic history`
+
+#### Get Current Revision
+`$ alembic current`
+
+#### Downgrade to Specific Revision
+`$ alembic downgrade <revision>`
+
 ## Run the app
 
 #### Redis
