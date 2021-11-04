@@ -7,14 +7,14 @@ from .auth_utils import get_password_hash
 from .db import engine
 from .models import (
     Celebrity,
-    CelebrityDailyMetric,
+    CelebrityDailyMetrics,
     Prediction,
     PredictionResult,
     User,
 )
 from .model_types import (
-    CelebrityDailyMetricCreateType,
-    CelebrityDailyMetricType,
+    CelebrityDailyMetricsCreateType,
+    CelebrityDailyMetricsType,
     CelebrityType,
     PredictionCreateType,
     PredictionType,
@@ -121,17 +121,22 @@ def update_celebrity(
 
 def get_celebrities(
     db: Session,
-    skip: int = 0,
-    limit: int = 100,
+    offset: int = 0,
+    limit: int = None,
 ) -> List[Celebrity]:
-    return (
+    query = (
         db.query(Celebrity)
         .filter(Celebrity.twitter_id.isnot(None))
-        .offset(skip)
-        .limit(limit)
         .options(raiseload("*"))
-        .all()
     )
+
+    if offset:
+        query = query.offset(offset)
+
+    if limit:
+        query = query.limit(limit)
+
+    return query.all()
 
 
 def create_prediction(
@@ -186,24 +191,28 @@ def get_user_predictions(
     )
 
 
-def get_celebrity_ids_for_predictions(
+def create_celebrity_daily_metrics(
     db: Session,
-) -> set:
-    return [
-        p.celebrity_id for p in (
-            db.query(Prediction.celebrity_id)
-            .filter(Prediction.is_enabled.is_(True))
-            .all()
-        )
-    ]
-
-
-def create_celebrity_daily_metric(
-    db: Session,
-    daily_metric: CelebrityDailyMetricCreateType,
-) -> CelebrityDailyMetricType:
-    db_daily_metric = CelebrityDailyMetric(**daily_metric.dict())
-    db.add(db_daily_metric)
+    daily_metrics: CelebrityDailyMetricsCreateType,
+) -> CelebrityDailyMetricsType:
+    db_daily_metrics = CelebrityDailyMetrics(**daily_metrics.dict())
+    db.add(db_daily_metrics)
     db.commit()
-    db.refresh(db_daily_metric)
-    return db_daily_metric
+    db.refresh(db_daily_metrics)
+    return db_daily_metrics
+
+
+def get_celebrity_daily_metrics(
+    db: Session,
+    celebrity_id: int,
+    metric_date: date,
+) -> Optional[CelebrityDailyMetricsType]:
+    return (
+        db.query(CelebrityDailyMetrics)
+        .filter(
+            CelebrityDailyMetrics.celebrity_id == celebrity_id,
+            CelebrityDailyMetrics.metric_date == metric_date,
+        )
+        .options(raiseload("*"))
+        .first()
+    )

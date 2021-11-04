@@ -1,3 +1,25 @@
+from typing import Optional
+
+from .constants import PredictionMetricEnum
+from .model_types import CelebrityDailyMetricsType
+
+
+def get_metric_total(
+    metrics: CelebrityDailyMetricsType,
+    metric: str,
+) -> Optional[int]:
+    if metric == PredictionMetricEnum.LIKE.value:
+        return metrics.like_count
+    elif metric == PredictionMetricEnum.QUOTE.value:
+        return metrics.quote_count
+    elif metric == PredictionMetricEnum.REPLY.value:
+        return metrics.reply_count
+    elif metric == PredictionMetricEnum.RETWEET.value:
+        return metrics.retweet_count
+    elif metric == PredictionMetricEnum.TWEET.value:
+        return metrics.tweet_count
+
+    return None
 
 
 def get_prediction_points(prediction_amount: int, actual_amount: int) -> int:

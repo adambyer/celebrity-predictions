@@ -13,6 +13,7 @@ JWT_EXPIRE_MINUTES = 30
 
 class PredictionMetricEnum(Enum):
     LIKE = "like"
+    QUOTE = "quote"
     REPLY = "reply"
     RETWEET = "retweet"
-    QUOTE = "quote"
+    TWEET = "tweet"

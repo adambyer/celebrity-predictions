@@ -55,14 +55,17 @@ class PredictionType(PredictionCreateType):
     id: int
 
 
-class CelebrityDailyMetricCreateType(OrmBaseModel):
+class CelebrityDailyMetricsCreateType(OrmBaseModel):
     celebrity_id: int
     metric_date: date
-    metric: str
-    amount: int
+    like_count: int
+    quote_count: int
+    reply_count: int
+    retweet_count: int
+    tweet_count: int
 
 
-class CelebrityDailyMetricType(CelebrityDailyMetricCreateType):
+class CelebrityDailyMetricsType(CelebrityDailyMetricsCreateType):
     id: int
 
 

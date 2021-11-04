@@ -9,7 +9,7 @@ from typing import Any
 
 from ..db import Session
 from ..tasks import import_celebrity_daily_tweet_metrics
-from ..models import User, Celebrity, Prediction, PredictionResult, CelebrityDailyMetric
+from ..models import User, Celebrity, Prediction, PredictionResult, CelebrityDailyMetrics
 
 
 class BaseModelView(ModelView):
@@ -56,7 +56,7 @@ class PredictionModelView(BaseModelView):
 admin = Admin(current_app, index_view=SecureAdminIndexView())
 
 admin.add_view(CelebrityModelView(Celebrity, Session()))
-admin.add_view(BaseModelView(CelebrityDailyMetric, Session()))
+admin.add_view(BaseModelView(CelebrityDailyMetrics, Session()))
 admin.add_view(PredictionModelView(Prediction, Session()))
 admin.add_view(BaseModelView(PredictionResult, Session()))
 admin.add_view(UserModelView(User, Session()))

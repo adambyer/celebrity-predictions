@@ -49,25 +49,25 @@ class Celebrity(BaseMixin, Base):
     twitter_description = Column(String(1000))
 
     predictions = relationship("Prediction", backref="celebrity")
-    daily_metrics = relationship("CelebrityDailyMetric", backref="celebrity")
+    daily_metrics = relationship("CelebrityDailyMetrics", backref="celebrity")
 
     def __repr__(self) -> str:
         return f"{self.twitter_username} ({self.id})"
 
 
-class CelebrityDailyMetric(BaseMixin, Base):
-    __tablename__ = "celebrity_daily_metric"
+class CelebrityDailyMetrics(BaseMixin, Base):
+    __tablename__ = "celebrity_daily_metrics"
     __table_args__ = (
-        UniqueConstraint('celebrity_id', 'metric_date', 'metric'),
+        UniqueConstraint('celebrity_id', 'metric_date'),
     )
 
     celebrity_id = Column(Integer, ForeignKey("celebrity.id"), nullable=False)
     metric_date = Column(Date, nullable=False)
-
-    # like, retweet, reply, quote
-    metric = Column(String(20), nullable=False)
-
-    amount = Column(Integer, nullable=False)
+    like_count = Column(Integer, nullable=False)
+    quote_count = Column(Integer, nullable=False)
+    reply_count = Column(Integer, nullable=False)
+    retweet_count = Column(Integer, nullable=False)
+    tweet_count = Column(Integer, nullable=False)
 
 
 class Prediction(BaseMixin, Base):
