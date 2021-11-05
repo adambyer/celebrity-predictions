@@ -2,7 +2,6 @@ from datetime import date, datetime, timedelta
 import logging
 from sqlalchemy.exc import IntegrityError
 
-from .constants import PredictionMetricEnum
 from .crud import (
     create_celebrity_daily_metrics,
     create_prediction_result,
@@ -14,29 +13,10 @@ from .crud import (
 from .db import Session
 from .model_types import CelebrityDailyMetricsCreateType, PredictionResultCreateType
 from .prediction_utils import get_prediction_points, get_metric_total
-from .twitter import get_user_by_username, get_user_tweets
+from .twitter_api import get_user_by_username, get_user_tweets
+from .twitter_utils import get_tweet_metric_totals
 
 logger = logging.getLogger(__name__)
-
-
-def _get_tweet_metric_totals(tweets: list) -> tuple:
-    like_total = 0
-    quote_total = 0
-    reply_total = 0
-    retweet_total = 0
-
-    for t in tweets:
-        like_total += t["public_metrics"]["like_count"]
-        quote_total += t["public_metrics"]["quote_count"]
-        reply_total += t["public_metrics"]["reply_count"]
-        retweet_total += t["public_metrics"]["retweet_count"]
-
-    return (
-        like_total,
-        quote_total,
-        reply_total,
-        retweet_total,
-    )
 
 
 def update_celebrity_data(celebrity_id: int) -> None:
@@ -100,20 +80,14 @@ def import_celebrity_daily_tweet_metrics(
         return
 
     tweets = get_user_tweets(celebrity.twitter_id, start_time=start, end_time=end)
-    like_total, quote_total, reply_total, retweet_total = _get_tweet_metric_totals(tweets)
+    metrics = get_tweet_metric_totals(tweets)
 
-    daily_metrics = {
-        "celebrity_id": celebrity.id,
-        "metric_date": scoring_date,
-        "like_count": like_total,
-        "quote_count": quote_total,
-        "reply_count": reply_total,
-        "retweet_count": retweet_total,
-        "tweet_count": len(tweets),
-    }
+    metrics["celebrity_id"] = celebrity_id
+    metrics["metric_date"] = scoring_date
+    metrics["tweet_count"] = len(tweets)
 
     try:
-        create_celebrity_daily_metrics(db, CelebrityDailyMetricsCreateType(**daily_metrics))
+        create_celebrity_daily_metrics(db, CelebrityDailyMetricsCreateType(**metrics))
     except IntegrityError:
         # TODO: this seems to be needed. Is it the correct way?
         db.rollback()

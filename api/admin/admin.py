@@ -9,7 +9,13 @@ from typing import Any
 
 from ..db import Session
 from ..tasks import import_celebrity_daily_tweet_metrics
-from ..models import User, Celebrity, Prediction, PredictionResult, CelebrityDailyMetrics
+from ..models import (
+    User,
+    Celebrity,
+    Prediction,
+    PredictionResult,
+    CelebrityDailyMetrics,
+)
 
 
 class BaseModelView(ModelView):

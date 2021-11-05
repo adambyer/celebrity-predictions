@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status, APIRouter
 from typing import List
 
-from ..celebrity_utils import get_tweets
+from ..celebrity_utils import get_tweet_data
 from ..crud import get_celebrity_by_twitter_username, get_celebrities
 from ..db import Session
 from ..model_types import CelebrityType
@@ -47,7 +47,11 @@ async def get_celebrity_route(
 
     if db_celebrity:
         celebrity = db_celebrity.__dict__
-        celebrity["tweets"] = get_tweets(db_celebrity)
+
+        # TODO: paging for tweets.
+        tweet_data = get_tweet_data(db_celebrity)
+        celebrity["tweets"] = tweet_data["tweets"]
+        celebrity["metrics"] = tweet_data["metrics"]
         return celebrity
 
     return {}

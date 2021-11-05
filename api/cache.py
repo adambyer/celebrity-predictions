@@ -1,6 +1,6 @@
 import json
 import redis
-from typing import Optional
+from typing import Union
 
 r = redis.Redis(
     host="localhost",
@@ -9,12 +9,12 @@ r = redis.Redis(
 )
 
 
-def set_list(key: str, value: list, ex: int = None) -> None:
+def set_structure(key: str, value: Union[list, dict], ex: int = None) -> None:
     value_encoded = json.dumps(value)
     r.set(key, value_encoded, ex=ex)
 
 
-def get_list(key: str) -> Optional[list]:
+def get_structure(key: str) -> Union[list, dict, None]:
     value = r.get(key)
 
     if value:
