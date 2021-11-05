@@ -1,7 +1,9 @@
+from celery import shared_task
 from datetime import date, datetime, timedelta
 import logging
 from sqlalchemy.exc import IntegrityError
 
+from .celery_config import task_always_eager
 from .crud import (
     create_celebrity_daily_metrics,
     create_prediction_result,
@@ -19,6 +21,7 @@ from .twitter_utils import get_tweet_metric_totals
 logger = logging.getLogger(__name__)
 
 
+@shared_task
 def update_celebrity_data(celebrity_id: int) -> None:
     db = Session()
     celebrity = get_celebrity(db, celebrity_id)
@@ -36,7 +39,7 @@ def update_celebrity_data(celebrity_id: int) -> None:
     # When in an event, the db session cannot be used for any more updates.
     # Omitting the `db` param will force `update_celebrity` to create a separate db connection.
     # TODO: is there a cleaner way to do this??
-    if True:  # celery always eager
+    if task_always_eager:
         db = None
 
     updates = {
@@ -47,10 +50,13 @@ def update_celebrity_data(celebrity_id: int) -> None:
         "twitter_profile_image_url": data["profile_image_url"],
     }
     update_celebrity(db, celebrity, **updates)
-    db.close()
+
+    if db:
+        db.close()
 
 
 # TODO: make this a scheduled task.
+@shared_task
 def start_daily_scoring(
     # Default to yesterday.
     scoring_date: date = (datetime.utcnow() - timedelta(days=1)).date(),
@@ -59,12 +65,12 @@ def start_daily_scoring(
     celebrities = get_celebrities(db)
 
     for celebrity in celebrities:
-        # TODO: make this a task
-        import_celebrity_daily_tweet_metrics(celebrity.id, scoring_date)
+        import_celebrity_daily_tweet_metrics.delay(celebrity.id, scoring_date)
 
     db.close()
 
 
+@shared_task
 def import_celebrity_daily_tweet_metrics(
     celebrity_id: int,
 
@@ -92,11 +98,12 @@ def import_celebrity_daily_tweet_metrics(
         # TODO: this seems to be needed. Is it the correct way?
         db.rollback()
 
-    create_prediction_results(db, celebrity.id, scoring_date)
+    create_prediction_results.delay(db, celebrity.id, scoring_date)
 
     db.close()
 
 
+@shared_task
 def create_prediction_results(
     db: Session,
     celebrity_id: int,

@@ -37,6 +37,12 @@ https://redis.io/
 #### Redis
 `$ redis-server`
 
+#### RabbitMQ (if task_always_eager is False)
+`$ rabbitmq-server`
+
+#### Celery (if task_always_eager is False)
+`$ celery -A api worker -l info`
+
 ### Admin
 `$ source venv/bin/activate`
 `$ cd api`

@@ -3,6 +3,7 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.orm import Mapper
 from threading import Thread
 
+from .celery_config import task_always_eager
 from .models import Celebrity
 from .tasks import update_celebrity_data
 
@@ -11,8 +12,7 @@ from .tasks import update_celebrity_data
 def celebrity_after_insert(
     mapper: Mapper, connection: Connection, target: Celebrity
 ) -> None:
-    if True:  # celery always eager
+    if task_always_eager:
         Thread(target=update_celebrity_data, args=(target.id,)).start()
     else:
-        # update_celebrity_data.delay(target.id)
-        pass
+        update_celebrity_data.delay(target.id)
