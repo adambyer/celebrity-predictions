@@ -41,7 +41,12 @@ https://redis.io/
 `$ rabbitmq-server`
 
 #### Celery (if task_always_eager is False)
+`$ source venv/bin/activate`
 `$ celery -A api worker -l info`
+
+#### Celery Beat
+`$ source venv/bin/activate`
+`$ celery -A api beat`
 
 ### Admin
 `$ source venv/bin/activate`

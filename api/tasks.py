@@ -55,7 +55,6 @@ def update_celebrity_data(celebrity_id: int) -> None:
         db.close()
 
 
-# TODO: make this a scheduled task.
 @shared_task
 def start_daily_scoring(
     # Default to yesterday.
