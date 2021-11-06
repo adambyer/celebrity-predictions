@@ -1,10 +1,12 @@
 <script>
     import {celebrity} from "../store"
+
+    $: console.log("*** celebrity", $celebrity)
 </script>
 
 <section>
     {#if $celebrity.id}
-        <h2>Selected Celebrity</h2>
+        <h2>{$celebrity.twitter_name || $celebrity.twitter_username}</h2>
         <img alt="Celebrity" src={$celebrity.twitter_profile_image_url}/>
         <table>
             {#each $celebrity.tweets as tweet}

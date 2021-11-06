@@ -1,17 +1,11 @@
 <script>
-    import {celebrities} from "../store"
-    import api from '../api'
+    import {currentPage} from "../store"
+    import {gotoPage} from "../nav"
 
-    async function getCelebrities() {
-        const response = await api.get("/celebrity")
-        $celebrities = response.data
-    }
+    $: console.log("*** Nav currentPage", $currentPage)
 </script>
 
 <nav>
-    <ul>
-        <li><a href="/" on:click|preventDefault={getCelebrities}>Celebrities</a></li>
-    </ul>
     <div class="w3-top">
         <div class="w3-bar w3-theme-d2 w3-left-align w3-large">
             <a href="/" class="w3-bar-item w3-button w3-padding-large w3-theme-d4"><i class="fa fa-home w3-margin-right"></i>Logo</a>
@@ -19,7 +13,7 @@
                 href="/celebrities"
                 class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white"
                 title="Celebrities"
-                on:click|preventDefault={getCelebrities}
+                on:click|preventDefault={() => gotoPage("celebrity-list")}
             ><i class="fa fa-globe"></i></a>
             <a href="/" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white" title="Messages"><i class="fa fa-envelope"></i></a>
             <div class="w3-dropdown-hover w3-hide-small">
@@ -30,7 +24,23 @@
                     <a href="/" class="w3-bar-item w3-button">Jane likes your post</a>
                 </div>
             </div>
-            <a href="/" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-white" title="Account Settings"><i class="fa fa-user"></i></a>
+
+            <div class="w3-dropdown-hover w3-hide-small w3-right">
+                <button class="w3-button w3-padding-large">
+                    <i class="fa fa-user"></i>
+                </button>     
+                <div class="w3-dropdown-content w3-card-4 w3-bar-block account-options">
+                    <a href="/" class="w3-bar-item w3-button" on:click|preventDefault={() => gotoPage("login")}>Login</a>
+                    <a href="/" class="w3-bar-item w3-button">Account Settings</a>
+                </div>
+            </div>
         </div>
     </div>
 </nav>
+
+<style>
+    .account-options {
+        right: 0;
+        width: 300px;
+    }
+</style>

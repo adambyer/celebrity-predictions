@@ -1,11 +1,14 @@
 <script>
-    import {celebrities, celebrity} from "../store"
+    import {celebrities, celebrityTwitterUsername} from "../store"
     import API from "../api"
+    import {gotoPage} from "../nav"
 
-    async function showCelebrity(twitter_username) {
-        const response = await API.get(`celebrity/${twitter_username}`)
-        $celebrity = response.data
+    async function showCelebrity(twitterUsername) {
+        $celebrityTwitterUsername = twitterUsername
+        gotoPage("celebrity")
     }
+
+    $: console.log("*** celebrityTwitterUsername", $celebrityTwitterUsername)
 </script>
 
 <section>
