@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -34,10 +35,14 @@ async def get_current_user(
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
         username: str = payload.get("sub")
+        expires = payload.get("exp")
 
         if username is None:
             raise credentials_exception
     except JWTError:
+        raise credentials_exception
+
+    if not expires or datetime.utcnow() > expires:
         raise credentials_exception
 
     user = get_user_by_username(db, username=username)

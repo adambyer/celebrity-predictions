@@ -15,6 +15,7 @@ app.include_router(user_router)
 # TODO: do this when running locally only.
 origins = [
     "http://127.0.0.1:8080",
+    "http://localhost:5000",
 ]
 
 app.add_middleware(

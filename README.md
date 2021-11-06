@@ -48,17 +48,19 @@ https://redis.io/
 `$ source venv/bin/activate`
 `$ celery -A api beat`
 
-### Admin
+#### Admin
 `$ source venv/bin/activate`
 `$ cd api`
-`$ flask run`
+`$ flask run --port=5001`
 
-### API
+#### API
 `$ source venv/bin/activate`
 `$ uvicorn api.main:app --reload`
 
-### Frontend
-Install http-server if needed: https://www.npmjs.com/package/http-server
-
+#### Frontend
 `$ cd frontend`
-`$ http-server`
+`$ npm install`
+`$ npm run dev`
+
+#### Build Frontend
+`$ npm run build`
