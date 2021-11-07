@@ -150,6 +150,42 @@ def create_prediction(
     return db_prediction
 
 
+def get_prediction(
+    db: Session,
+    prediction_id: int,
+) -> Prediction:
+    return (
+        db.query(Prediction)
+        .filter(Prediction.id == prediction_id)
+        .first()
+    )
+
+
+def update_prediction(
+    db: Session,
+    prediction: Prediction,
+    metric: Optional[str],
+    amount: Optional[int],
+    is_enabled: Optional[bool],
+    is_auto_disabled: Optional[bool],
+) -> Prediction:
+    if metric:
+        prediction.metric = metric
+
+    if amount:
+        prediction.amount = amount
+
+    if is_enabled is not None:
+        prediction.is_enabled = is_enabled
+
+    if is_auto_disabled is not None:
+        prediction.is_auto_disabled = is_auto_disabled
+
+    db.commit()
+    db.refresh(prediction)
+    return prediction
+
+
 def create_prediction_result(
     db: Session,
     prediction_result: PredictionResultCreateType,
@@ -186,7 +222,7 @@ def get_user_predictions(
         db.query(Prediction)
         .filter(Prediction.user_id == user_id)
         .order_by(Prediction.created_at.desc())
-        .options(raiseload("*"))
+        .join(Celebrity)
         .all()
     )
 

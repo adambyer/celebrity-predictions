@@ -81,7 +81,10 @@ class Prediction(BaseMixin, Base):
 
     is_enabled = Column(Boolean, default=True, nullable=False)
     is_auto_disabled = Column(Boolean, default=False, nullable=False)
+
+    # TODO: delete this??
     is_deleted = Column(Boolean, default=False, nullable=False)
+
     amount = Column(Integer, nullable=False)
 
     # like, retweet, reply, quote

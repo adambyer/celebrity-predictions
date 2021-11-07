@@ -21,7 +21,7 @@
                 href="/predictions"
                 class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white"
                 title="Predictions"
-                on:click|preventDefault={() => gotoPage("predictions")}
+                on:click|preventDefault={() => gotoPage("user-predictions")}
             ><i class="far fa-list-alt"></i></a>
 
             <div class="w3-dropdown-hover w3-hide-small w3-right">

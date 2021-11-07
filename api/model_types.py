@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class OrmBaseModel(BaseModel):
+class OrmBaseType(BaseModel):
     class Config:
         orm_mode = True
 
@@ -13,7 +13,7 @@ class TokenType(BaseModel):
     token_type: str
 
 
-class UserBaseType(OrmBaseModel):
+class UserBaseType(OrmBaseType):
     username: str
 
 
@@ -30,7 +30,7 @@ class CurrentUserType(UserType):
     email_address: str
 
 
-class CelebrityType(OrmBaseModel):
+class CelebrityType(OrmBaseType):
     id: int
     twitter_username: str
     twitter_name: Optional[str] = None
@@ -40,11 +40,12 @@ class CelebrityType(OrmBaseModel):
     tweets: Optional[list] = []
 
 
-class PredictionBaseType(OrmBaseModel):
+class PredictionBaseType(OrmBaseType):
     celebrity_id: int
     is_enabled: bool
     is_auto_disabled: bool
     amount: int
+    metric: str
 
 
 class PredictionCreateType(PredictionBaseType):
@@ -53,9 +54,17 @@ class PredictionCreateType(PredictionBaseType):
 
 class PredictionType(PredictionCreateType):
     id: int
+    celebrity: Optional[CelebrityType] = None
 
 
-class CelebrityDailyMetricsCreateType(OrmBaseModel):
+class PredictionUpdateType(OrmBaseType):
+    is_enabled: Optional[bool]
+    is_auto_disabled: Optional[bool]
+    amount: Optional[int]
+    metric: Optional[str]
+
+
+class CelebrityDailyMetricsCreateType(OrmBaseType):
     celebrity_id: int
     metric_date: date
     like_count: int
@@ -69,7 +78,7 @@ class CelebrityDailyMetricsType(CelebrityDailyMetricsCreateType):
     id: int
 
 
-class PredictionResultCreateType(OrmBaseModel):
+class PredictionResultCreateType(OrmBaseType):
     user_id: int
     celebrity_id: int
     amount: int

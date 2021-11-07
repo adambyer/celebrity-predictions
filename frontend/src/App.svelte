@@ -5,6 +5,8 @@
 	import LoginForm from "./components/LoginForm.svelte"
 	import CelebrityList from "./components/CelebrityList.svelte"
 	import Celebrity from "./components/Celebrity.svelte"
+	import userPredictions from "./components/UserPredictions.svelte"
+import UserPredictions from "./components/UserPredictions.svelte"
 </script>
 
 <Nav/>
@@ -16,5 +18,7 @@
 		<CelebrityList/>
 	{:else if $currentPage === "celebrity"}
 		<Celebrity/>
+	{:else if $currentPage === "user-predictions"}
+		<UserPredictions/>
 	{/if}
 </div>

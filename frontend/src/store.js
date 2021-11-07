@@ -4,7 +4,7 @@ export const currentPage = writable("home")
 export const celebrities = writable([])
 export const celebrityTwitterUsername = writable("")
 export const celebrity = writable({})
-export const predictions = writable([])
+export const userPredictions = writable([])
 
 // TODO: cookie?
 export const accessToken = writable("")

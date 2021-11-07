@@ -1,10 +1,15 @@
 from fastapi import Depends, HTTPException, APIRouter
 from typing import List
 
-from ..crud import get_user_by_username, get_user_predictions
+from ..crud import (
+    get_prediction,
+    get_user_by_username,
+    get_user_predictions,
+    update_prediction,
+)
 from ..db import Session
 from ..models import User
-from ..model_types import PredictionType, UserType, CurrentUserType
+from ..model_types import PredictionType, PredictionUpdateType, UserType, CurrentUserType
 
 from .dependencies import get_db, get_current_user
 
@@ -34,6 +39,30 @@ def get_user_predictions_route(
         raise HTTPException(status_code=400, detail="Unknown error.")
 
     return predictions
+
+
+@router.patch("/prediction/{prediction_id}", response_model=PredictionType)
+def patch_user_predictions_route(
+    prediction_id: int,
+    prediction_: PredictionUpdateType,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> PredictionType:
+    prediction = get_prediction(db, prediction_id)
+
+    if not prediction:
+        raise HTTPException(status_code=400, detail="Invalid id.")
+
+    if prediction.user_id != current_user.id:
+        raise HTTPException(status_code=401, detail="Access denied.")
+
+    print("*** patch_user_predictions_route", prediction, prediction_.dict())
+    # try:
+    updated_prediction = update_prediction(db, prediction, **prediction_.dict())
+    # except Exception:
+    #     raise HTTPException(status_code=400, detail="Unknown error.")
+
+    return updated_prediction
 
 
 @router.get("/{username}", response_model=UserType)
