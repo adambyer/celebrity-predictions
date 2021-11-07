@@ -42,7 +42,7 @@ async def get_current_user(
     except JWTError:
         raise credentials_exception
 
-    if not expires or datetime.utcnow() > expires:
+    if not expires or datetime.utcnow() > datetime.utcfromtimestamp(expires):
         raise credentials_exception
 
     user = get_user_by_username(db, username=username)

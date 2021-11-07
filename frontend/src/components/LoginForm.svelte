@@ -1,4 +1,5 @@
 <script>
+    import {accessToken} from "../store"
     import api from '../api'
 
     let username = ""
@@ -18,14 +19,14 @@
         })
         .then(function (response) {
             console.log("*** success", response)
+            $accessToken = response.data.access_token
         })
         .catch(function (error) {
             console.log("*** error", error)
         })
     }
 
-    // $: console.log("*** username", username)
-    // $: console.log("*** password", password)
+    $: console.log("*** accessToken", $accessToken)
 </script>
 
 <section>

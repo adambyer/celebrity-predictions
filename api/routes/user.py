@@ -23,7 +23,7 @@ async def get_current_user_route(
     return current_user
 
 
-@router.get("/predictions", response_model=List[PredictionType])
+@router.get("/prediction", response_model=List[PredictionType])
 def get_user_predictions_route(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
