@@ -31,6 +31,7 @@ class User(BaseMixin, Base):
     is_staff = Column(Boolean, default=False, nullable=False)
 
     predictions = relationship("Prediction", backref="user")
+    prediction_results = relationship("PredictionResult", backref="user")
 
     def __repr__(self) -> str:
         return f"{self.username} ({self.id})"
@@ -49,6 +50,7 @@ class Celebrity(BaseMixin, Base):
     twitter_description = Column(String(1000))
 
     predictions = relationship("Prediction", backref="celebrity")
+    prediction_results = relationship("PredictionResult", backref="celebrity")
     daily_metrics = relationship("CelebrityDailyMetrics", backref="celebrity")
 
     def __repr__(self) -> str:

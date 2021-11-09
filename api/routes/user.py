@@ -1,12 +1,12 @@
 from fastapi import Depends, HTTPException, APIRouter
 from typing import List
 
-from ..crud import (
+from ..crud.prediction_crud import (
     get_prediction,
-    get_user_by_username,
     get_user_predictions,
     update_prediction,
 )
+from ..crud.user_crud import get_user_by_username
 from ..db import Session
 from ..models import User
 from ..model_types import PredictionType, PredictionUpdateType, UserType, CurrentUserType

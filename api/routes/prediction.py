@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status, APIRouter
 from typing import List
 
-from ..crud import create_prediction, get_predictions
+from ..crud.prediction_crud import create_prediction, get_predictions
 from ..db import Session
 from ..models import User
 from ..model_types import PredictionType, PredictionBaseType, PredictionCreateType

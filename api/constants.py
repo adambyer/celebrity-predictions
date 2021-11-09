@@ -10,6 +10,8 @@ JWT_SECRET_KEY = "5837e037766240342d37ce3ce7444ff5fc14c26f4d4e8a4be64da4c70a62e8
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRE_MINUTES = 30
 
+DATE_FORMAT = "%Y-%m-%d"
+
 
 class PredictionMetricEnum(Enum):
     LIKE = "like"

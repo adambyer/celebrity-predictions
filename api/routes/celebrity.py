@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, status, APIRouter
 from typing import List
 
 from ..celebrity_utils import get_tweet_data
-from ..crud import get_celebrity_by_twitter_username, get_celebrities
+from ..crud.celebrity_crud import get_celebrity_by_twitter_username, get_celebrities
 from ..db import Session
 from ..model_types import CelebrityType
 

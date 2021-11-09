@@ -1,6 +1,10 @@
 from flask import Flask
 import os
 
+# This is needed for Admin to create tasks.
+from ..celery import app as celery_app  # noqa: F401
+
+
 # This will be overridden by an environment variable in prod.
 SECRET_KEY = "d8ce4cde7950de5b9dd0093beca9aa59156f094354721165d0b5505f3c43633d"
 

@@ -4,14 +4,15 @@ import logging
 from sqlalchemy.exc import IntegrityError
 
 from .celery_config import task_always_eager
-from .crud import (
+from .constants import DATE_FORMAT
+from .crud.celebrity_crud import (
     create_celebrity_daily_metrics,
-    create_prediction_result,
     get_celebrity,
     get_celebrity_daily_metrics,
     get_celebrities,
     update_celebrity,
 )
+from .crud.prediction_crud import create_prediction_result
 from .db import Session
 from .model_types import CelebrityDailyMetricsCreateType, PredictionResultCreateType
 from .prediction_utils import get_prediction_points, get_metric_total
@@ -86,7 +87,6 @@ def import_celebrity_daily_tweet_metrics(
 
     tweets = get_user_tweets(celebrity.twitter_id, start_time=start, end_time=end)
     metrics = get_tweet_metric_totals(tweets)
-
     metrics["celebrity_id"] = celebrity_id
     metrics["metric_date"] = scoring_date
     metrics["tweet_count"] = len(tweets)
@@ -94,20 +94,24 @@ def import_celebrity_daily_tweet_metrics(
     try:
         create_celebrity_daily_metrics(db, CelebrityDailyMetricsCreateType(**metrics))
     except IntegrityError:
+        # Record already exists.
         # TODO: this seems to be needed. Is it the correct way?
         db.rollback()
 
-    create_prediction_results.delay(db, celebrity.id, scoring_date)
+    scoring_date_string = date.strftime(scoring_date, DATE_FORMAT)
+    create_prediction_results.delay(celebrity.id, scoring_date_string)
 
     db.close()
 
 
 @shared_task
 def create_prediction_results(
-    db: Session,
     celebrity_id: int,
-    scoring_date: date,
+
+    # Has to be a string because tasks use JSON.
+    scoring_date_string: str,
 ) -> None:
+    scoring_date = datetime.strptime(scoring_date_string, DATE_FORMAT).date()
     db = Session()
     celebrity = get_celebrity(db, celebrity_id)
     metrics = get_celebrity_daily_metrics(db, celebrity_id, scoring_date)
@@ -122,17 +126,21 @@ def create_prediction_results(
             logger.error(f"invalid metric: {p.metric}")
             continue
 
-        pr = PredictionResultCreateType(**{
-            "user_id": p.user_id,
-            "celebrity_id": p.celebrity_id,
-            "amount": p.amount,
-            "metric": p.metric,
-            "metric_date": scoring_date,
-            "points": get_prediction_points(p.amount, actual_amount),
-        })
+        try:
+            pr = PredictionResultCreateType(**{
+                "user_id": p.user_id,
+                "celebrity_id": p.celebrity_id,
+                "amount": p.amount,
+                "metric": p.metric,
+                "metric_date": scoring_date,
+                "points": get_prediction_points(p.amount, actual_amount),
+            })
+        except Exception as e:
+            logger.exception(f"Why is this being swallowed up? {str(e)}", extra=pr.dict())
 
         try:
             create_prediction_result(db, pr)
         except IntegrityError:
+            # Record already exists.
             # TODO: this seems to be needed. Is it the correct way?
             db.rollback()

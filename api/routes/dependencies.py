@@ -5,7 +5,7 @@ from jose import JWTError, jwt
 from typing import Generator
 
 from ..constants import JWT_ALGORITHM, JWT_SECRET_KEY
-from ..crud import get_user_by_username
+from ..crud.user_crud import get_user_by_username
 from ..db import Session
 from ..models import User
 

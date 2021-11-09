@@ -50,19 +50,15 @@ class CelebrityModelView(BaseModelView):
     )
     def import_tweet_metrics_action(self, ids: list) -> None:
         for celebrity_id in ids:
-            import_celebrity_daily_tweet_metrics(celebrity_id)
+            import_celebrity_daily_tweet_metrics.delay(celebrity_id)
 
         flash("Tweet Metrics imported")
-
-
-class PredictionModelView(BaseModelView):
-    form_excluded_columns = ["results"]
 
 
 admin = Admin(current_app, index_view=SecureAdminIndexView())
 
 admin.add_view(CelebrityModelView(Celebrity, Session()))
 admin.add_view(BaseModelView(CelebrityDailyMetrics, Session()))
-admin.add_view(PredictionModelView(Prediction, Session()))
+admin.add_view(BaseModelView(Prediction, Session()))
 admin.add_view(BaseModelView(PredictionResult, Session()))
 admin.add_view(UserModelView(User, Session()))
