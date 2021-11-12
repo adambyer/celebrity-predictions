@@ -1,11 +1,19 @@
 <script>
+    import Tooltip, { Wrapper } from '@smui/tooltip';
+
     import {userPredictions} from "../store"
     import {patchRequest} from "../api"
 
     async function handleIsEnabledClick(predictionId, isChecked) {
-        console.log("*** handleIsEnabledClick", predictionId, isChecked)
         const data = {
             is_enabled: isChecked,
+        }
+        const response = await patchRequest(`/user/prediction/${predictionId}`, data)
+    }
+
+    async function handleIsAutoDisabledClick(predictionId, isChecked) {
+        const data = {
+            is_auto_disabled: isChecked,
         }
         const response = await patchRequest(`/user/prediction/${predictionId}`, data)
     }
@@ -22,7 +30,13 @@
                 <th>Metric</th>
                 <th>Amount</th>
                 <th>Is Enabled</th>
-                <th>Is Auto Disabled</th>
+                <th>
+                    <span>Is Auto Disabled</span>
+                    <Wrapper>
+                        <i class="far fa-question-circle"></i>
+                        <Tooltip>When turned on, this will cause the prediction to be automatically disabled after the next scoring occurs.</Tooltip>
+                    </Wrapper>
+                </th>
             </tr>
         </thead>
 
@@ -41,10 +55,23 @@
                     />
                 </td>
                 <td>
-                    <input type="checkbox" checked={prediction.is_auto_disabled}/>
+                    <input
+                        type="checkbox"
+                        checked={prediction.is_auto_disabled}
+                        on:click|preventDefault={(event) => handleIsAutoDisabledClick(prediction.id, event.target.checked)}
+                    />
                 </td>
             </tr>
             {/each}
         </tbody>
     </table>
 </section>
+
+<style>
+    th, td {
+        padding: 0 40px 5px 0
+    }
+    .fa-question-circle {
+        cursor: help;
+    }
+</style>
