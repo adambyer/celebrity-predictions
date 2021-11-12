@@ -1,6 +1,16 @@
 <script>
-    import {accessToken} from "../store"
-    import api from '../api'
+    import Cookies from "js-cookie"
+
+    import api from "../api"
+    import {
+        COOKIE_ACCESS_TOKEN,
+        PAGE_HOME,
+    } from "../constants"
+    import {
+        alertMessage,
+        requestedPage,
+    } from "../store"
+    import {gotoPage} from "../nav"
 
     let username = ""
     let password = ""
@@ -18,15 +28,15 @@
             headers: {"Content-Type": "multipart/form-data"},
         })
         .then(function (response) {
-            console.log("*** success", response)
-            $accessToken = response.data.access_token
+            Cookies.set(COOKIE_ACCESS_TOKEN, response.data.access_token)
+            $alertMessage = "You are now logged in!"
+            const page = $requestedPage || PAGE_HOME
+            gotoPage(page)
         })
         .catch(function (error) {
-            console.log("*** error", error)
+            $alertMessage = "Invalid username or password. Please try again."
         })
     }
-
-    $: console.log("*** accessToken", $accessToken)
 </script>
 
 <section>

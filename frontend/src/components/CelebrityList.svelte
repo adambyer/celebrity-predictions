@@ -6,8 +6,6 @@
         $celebrityTwitterUsername = twitterUsername
         gotoPage("celebrity")
     }
-
-    $: console.log("*** celebrityTwitterUsername", $celebrityTwitterUsername)
 </script>
 
 <section>

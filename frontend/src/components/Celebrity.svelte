@@ -1,7 +1,5 @@
 <script>
     import {celebrity} from "../store"
-
-    $: console.log("*** celebrity", $celebrity)
 </script>
 
 <section>
