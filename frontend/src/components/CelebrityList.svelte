@@ -1,6 +1,5 @@
 <script>
     import {celebrities, celebrityTwitterUsername} from "../store"
-    import API from "../api"
     import {gotoPage} from "../nav"
 
     async function showCelebrity(twitterUsername) {

@@ -1,7 +1,6 @@
 # Celebrity Predictions
 
 ## Create and activate a virtual environment
-
 `$ python3 -m venv venv`
 
 `$ source venv/bin/activate`
@@ -42,25 +41,34 @@ https://redis.io/
 
 #### Celery (if task_always_eager is False)
 `$ source venv/bin/activate`
+
 `$ celery -A api worker -l info`
 
 #### Celery Beat
 `$ source venv/bin/activate`
+
 `$ celery -A api beat`
 
 #### Admin
 `$ source venv/bin/activate`
+
 `$ cd api`
+
 `$ flask run --port=5001`
 
 #### API
 `$ source venv/bin/activate`
+
 `$ uvicorn api.main:app --reload`
 
 #### Frontend
 `$ cd frontend`
+
 `$ npm install`
+
 `$ npm run dev`
+
+NOTE: The circular dependencies warning can be ignored... https://github.com/axios/axios/issues/4177
 
 #### Build Frontend
 `$ npm run build`
