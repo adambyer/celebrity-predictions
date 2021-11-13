@@ -5,6 +5,7 @@
 		PAGE_CELEBRITY,
 		PAGE_CELEBRITY_LIST,
 		PAGE_USER_PREDICTIONS,
+		PAGE_CREATE_PREDICTION,
 		PAGE_LOGIN,
 	} from "./constants"
 
@@ -15,6 +16,7 @@
 	import Celebrity from "./components/Celebrity.svelte"
 	import UserPredictions from "./components/UserPredictions.svelte"
 	import Alert from "./components/Alert.svelte"
+	import CreatePrediction from "./components/CreatePrediction.svelte"
 </script>
 
 <Nav/>
@@ -32,5 +34,7 @@
 		<Celebrity/>
 	{:else if $currentPage === PAGE_USER_PREDICTIONS}
 		<UserPredictions/>
+	{:else if $currentPage === PAGE_CREATE_PREDICTION}
+		<CreatePrediction/>
 	{/if}
 </div>

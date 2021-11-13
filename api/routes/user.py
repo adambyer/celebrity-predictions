@@ -1,7 +1,8 @@
-from fastapi import Depends, HTTPException, APIRouter
+from fastapi import Depends, HTTPException, APIRouter, status
 from typing import List
 
 from ..crud.prediction_crud import (
+    create_prediction,
     get_prediction,
     get_user_predictions,
     update_prediction,
@@ -9,7 +10,14 @@ from ..crud.prediction_crud import (
 from ..crud.user_crud import get_user_by_username
 from ..db import Session
 from ..models import User
-from ..model_types import PredictionType, PredictionUpdateType, UserType, CurrentUserType
+from ..model_types import (
+    CurrentUserType,
+    PredictionBaseType,
+    PredictionCreateType,
+    PredictionType,
+    PredictionUpdateType,
+    UserType,
+)
 
 from .dependencies import get_db, get_current_user
 
@@ -39,6 +47,24 @@ def get_user_predictions_route(
         raise HTTPException(status_code=400, detail="Unknown error.")
 
     return predictions
+
+
+@router.post("/", response_model=PredictionType)
+async def create_prediction_route(
+    prediction: PredictionBaseType,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> dict:
+    prediction = PredictionCreateType(**prediction.dict(), user_id=current_user.id)
+    try:
+        db_prediction = create_prediction(db, prediction)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unknown error.",
+        ) from e
+
+    return db_prediction
 
 
 @router.patch("/prediction/{prediction_id}", response_model=PredictionType)

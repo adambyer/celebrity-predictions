@@ -6,13 +6,11 @@ from ..db import engine
 from ..models import (
     Celebrity,
     CelebrityDailyMetrics,
-    Prediction,
 )
 from ..model_types import (
     CelebrityDailyMetricsCreateType,
     CelebrityDailyMetricsType,
     CelebrityType,
-    PredictionCreateType,
 )
 
 
@@ -89,28 +87,6 @@ def get_celebrities(
         query = query.limit(limit)
 
     return query.all()
-
-
-def create_prediction(
-    db: Session,
-    prediction: PredictionCreateType,
-) -> Prediction:
-    db_prediction = Prediction(**prediction.dict())
-    db.add(db_prediction)
-    db.commit()
-    db.refresh(db_prediction)
-    return db_prediction
-
-
-def get_prediction(
-    db: Session,
-    prediction_id: int,
-) -> Prediction:
-    return (
-        db.query(Prediction)
-        .filter(Prediction.id == prediction_id)
-        .first()
-    )
 
 
 def create_celebrity_daily_metrics(
