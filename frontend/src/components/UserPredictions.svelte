@@ -1,5 +1,5 @@
 <script>
-    import Tooltip, { Wrapper } from '@smui/tooltip';
+    import Tooltip, {Wrapper} from '@smui/tooltip';
 
     import {userPredictions} from "../store"
     import {patchRequest} from "../api"
@@ -20,7 +20,11 @@
 </script>
 
 <section>
-    <h2>Predictions</h2>
+    <div class="header">
+        <h2>Predictions</h2>
+        
+        <i class="fas fa-plus-circle fa-2x add-icon"></i>
+    </div>
     
     <table>
         <thead>
@@ -67,11 +71,28 @@
     </table>
 </section>
 
-<style>
+<style lang="scss">
     th, td {
         padding: 0 40px 5px 0
     }
     .fa-question-circle {
         cursor: help;
+    }
+    .header {
+        display: flex;
+        justify-content: start;
+        align-items: center;
+
+        h2 {
+            margin-right: 10px
+        }
+        .add-icon {
+            cursor: pointer;
+            color: blue;
+
+            &:hover {
+                color: gray;
+            }
+        }
     }
 </style>

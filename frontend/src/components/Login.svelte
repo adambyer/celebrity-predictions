@@ -1,9 +1,7 @@
 <script>
-    import Cookies from "js-cookie"
-
+    import {onMount} from "svelte"
     import api from "../api"
     import {
-        COOKIE_ACCESS_TOKEN,
         PAGE_HOME,
     } from "../constants"
     import {
@@ -11,9 +9,15 @@
         requestedPage,
     } from "../store"
     import {gotoPage} from "../nav"
+    import {setAccessToken} from "../auth_helpers"
 
+    let usernameInput = null
     let username = ""
     let password = ""
+
+    onMount(() => {
+        usernameInput.focus()
+    })
 
     async function login() {
         const formData = new FormData()
@@ -23,12 +27,12 @@
 
         await api({
             method: "post",
-            url: "/token",
+            url: "/login",
             data: formData,
             headers: {"Content-Type": "multipart/form-data"},
         })
         .then(function (response) {
-            Cookies.set(COOKIE_ACCESS_TOKEN, response.data.access_token)
+            setAccessToken(response.data.access_token)
             $alertMessage = "You are now logged in!"
             const page = $requestedPage || PAGE_HOME
             gotoPage(page)
@@ -41,7 +45,7 @@
 
 <section>
     <form on:submit|preventDefault={login}>
-        Username: <input bind:value={username}/><br/>
+        Username: <input bind:value={username} bind:this={usernameInput}/><br/>
         Password: <input bind:value={password} type="password"/><br/>
         <button>Login</button>
     </form>

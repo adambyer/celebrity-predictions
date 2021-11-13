@@ -1,30 +1,38 @@
-import Cookies from "js-cookie"
 import axios from "axios"
 
-import {COOKIE_ACCESS_TOKEN} from "./constants"
+import {
+    authRequired,
+    getAccessToken,
+} from "./auth_helpers"
 
 const API = axios.create({
     baseURL: 'http://127.0.0.1:8000',
 })
 
-function _getAccessToken() {
-    return Cookies.get(COOKIE_ACCESS_TOKEN)
-}
+
 
 export async function getRequest(url) {
-    const accessToken = _getAccessToken()
+    const accessToken = getAccessToken()
     const config = {
         headers: { Authorization: `Bearer ${accessToken}`}
     }
-    return await API.get(url, config)
+    return await API.get(url, config).catch((error) => {
+        if (error.response.status === 401) {
+            authRequired()
+        }
+    })
 }
 
 export async function patchRequest(url, data) {
-    const accessToken = _getAccessToken()
+    const accessToken = getAccessToken()
     const config = {
         headers: { Authorization: `Bearer ${accessToken}`}
     }
-    return await API.patch(url, data, config)
+    return await API.patch(url, data, config).catch((error) => {
+        if (error.response.status === 401) {
+            authRequired()
+        }
+    })
 }
 
 export default API

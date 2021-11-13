@@ -8,6 +8,18 @@
         PAGE_LOGIN,
         PAGE_USER_PREDICTIONS,
     } from "../constants"
+    import {
+        currentPage,
+        isLoggedIn,
+    } from "../store"
+    import {
+        deleteAccessToken,
+    } from "../auth_helpers"
+
+    function logOut() {
+        deleteAccessToken()
+        gotoPage(PAGE_LOGIN)
+    }
 </script>
 
 <nav>
@@ -27,6 +39,7 @@
                 <a 
                     href="/celebrities"
                     class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white"
+                    class:current-page={$currentPage === PAGE_CELEBRITY_LIST}
                     on:click|preventDefault={() => gotoPage(PAGE_CELEBRITY_LIST)}
                 ><i class="fa fa-globe"></i></a>
 
@@ -37,6 +50,7 @@
                 <a
                     href="/predictions"
                     class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white"
+                    class:current-page={$currentPage === PAGE_USER_PREDICTIONS}
                     on:click|preventDefault={() => gotoPage(PAGE_USER_PREDICTIONS)}
                 ><i class="far fa-list-alt"></i></a>
 
@@ -49,7 +63,11 @@
                 </button>   
 
                 <div class="w3-dropdown-content w3-card-4 w3-bar-block account-options">
-                    <a href="/" class="w3-bar-item w3-button" on:click|preventDefault={() => gotoPage(PAGE_LOGIN)}>Login</a>
+                    {#if $isLoggedIn}
+                        <a href="/" class="w3-bar-item w3-button" on:click|preventDefault={() => logOut()}>Logout</a>
+                    {:else}
+                        <a href="/" class="w3-bar-item w3-button" on:click|preventDefault={() => gotoPage(PAGE_LOGIN)}>Login</a>
+                    {/if}
                     <a href="/" class="w3-bar-item w3-button">Account Settings</a>
                 </div>
             </div>
@@ -57,9 +75,12 @@
     </div>
 </nav>
 
-<style>
+<style lang="scss">
     .account-options {
         right: 0;
         width: 300px;
+    }
+    .current-page {
+        background-color: #5f7683;
     }
 </style>
