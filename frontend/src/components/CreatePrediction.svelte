@@ -5,6 +5,9 @@
     import Checkbox from "@smui/checkbox"
     import Tooltip, {Wrapper} from "@smui/tooltip"
 
+    import Autocomplete from "./common/Autocomplete.svelte"
+    import {celebritySearch} from "../autocomplete"
+
     async function handleIsEnabledClick(predictionId, isChecked) {
         const data = {
             is_enabled: isChecked,
@@ -25,11 +28,11 @@
     let isAutoDisabled = false
 
     const metrics = [
-        "Like",
-        "Tweet",
-        "Retweet",
-        "Mention",
-        "Quote",
+        {value: "like", label: "Likes"},
+        {value: "tweet", label: "Tweets"},
+        {value: "retweet", label: "Retweets"},
+        {value: "reply", label: "Replies"},
+        {value: "quote", label: "Quotes"},
     ]
 </script>
 
@@ -40,9 +43,15 @@
     
     <form>
         <div>
-            <Select bind:metric label="What action do you want to predict?">
+            <Autocomplete
+                searchMethod={celebritySearch}
+            />
+        </div>
+
+        <div>
+            <Select bind:value={metric} label="What action do you want to predict?">
                 {#each metrics as metric}
-                  <Option value={metric}>{metric}</Option>
+                  <Option value={metric.value}>{metric.label}</Option>
                 {/each}
             </Select>
         </div>

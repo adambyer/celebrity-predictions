@@ -1,5 +1,6 @@
 from datetime import date
 from sqlalchemy.orm import Session, selectinload, raiseload
+from sqlalchemy.sql.expression import or_
 from typing import Optional, List
 
 from ..db import engine
@@ -73,12 +74,21 @@ def get_celebrities(
     db: Session,
     offset: int = 0,
     limit: int = None,
+    search: str = None,
 ) -> List[Celebrity]:
     query = (
         db.query(Celebrity)
         .filter(Celebrity.twitter_id.isnot(None))
         .options(raiseload("*"))
     )
+
+    if search:
+        query = query.filter(
+            or_(
+                Celebrity.twitter_username.ilike(f"%{search}%"),
+                Celebrity.twitter_name.ilike(f"%{search}%"),
+            )
+        )
 
     if offset:
         query = query.offset(offset)

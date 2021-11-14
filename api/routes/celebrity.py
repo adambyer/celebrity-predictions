@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException, status, APIRouter
-from typing import List
+from typing import List, Optional
 
 from ..celebrity_utils import get_tweet_data
 from ..crud.celebrity_crud import get_celebrity_by_twitter_username, get_celebrities
@@ -20,9 +20,11 @@ router = APIRouter(
 @router.get("/", response_model=List[CelebrityType])
 async def get_celebrities_route(
     db: Session = Depends(get_db),
+    limit: Optional[int] = None,
+    search: Optional[str] = None,
 ) -> list:
     try:
-        celebrities = get_celebrities(db)
+        celebrities = get_celebrities(db, limit=limit, search=search)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

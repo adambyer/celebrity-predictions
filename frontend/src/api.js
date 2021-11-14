@@ -11,10 +11,11 @@ const API = axios.create({
 
 
 
-export async function getRequest(url) {
+export async function getRequest(url, params = {}) {
     const accessToken = getAccessToken()
     const config = {
-        headers: { Authorization: `Bearer ${accessToken}`}
+        headers: { Authorization: `Bearer ${accessToken}`},
+        params,
     }
     return await API.get(url, config).catch((error) => {
         if (error.response.status === 401) {
