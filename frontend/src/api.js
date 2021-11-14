@@ -10,11 +10,10 @@ const API = axios.create({
 })
 
 
-
 export async function getRequest(url, params = {}) {
     const accessToken = getAccessToken()
     const config = {
-        headers: { Authorization: `Bearer ${accessToken}`},
+        headers: {Authorization: `Bearer ${accessToken}`},
         params,
     }
     return await API.get(url, config).catch((error) => {
@@ -27,9 +26,21 @@ export async function getRequest(url, params = {}) {
 export async function patchRequest(url, data) {
     const accessToken = getAccessToken()
     const config = {
-        headers: { Authorization: `Bearer ${accessToken}`}
+        headers: {Authorization: `Bearer ${accessToken}`}
     }
     return await API.patch(url, data, config).catch((error) => {
+        if (error.response.status === 401) {
+            authRequired()
+        }
+    })
+}
+
+export async function postRequest(url, data) {
+    const accessToken = getAccessToken()
+    const config = {
+        headers: {Authorization: `Bearer ${accessToken}`}
+    }
+    return await API.post(url, data, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
         }

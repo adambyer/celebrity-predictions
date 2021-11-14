@@ -2,7 +2,10 @@
     import Tooltip, {Wrapper} from "@smui/tooltip"
     import Checkbox from "@smui/checkbox"
 
-    import {userPredictions} from "../store"
+    import {
+        userPredictions,
+        alertMessage,
+    } from "../store"
     import {patchRequest} from "../api"
     import {gotoPage} from "../nav"
     import {PAGE_CREATE_PREDICTION} from "../constants"
@@ -12,6 +15,7 @@
             is_enabled: isChecked,
         }
         const response = await patchRequest(`/user/prediction/${predictionId}`, data)
+        $alertMessage = "Changes Saved"
     }
 
     async function handleIsAutoDisabledClick(predictionId, isChecked) {
@@ -19,6 +23,7 @@
             is_auto_disabled: isChecked,
         }
         const response = await patchRequest(`/user/prediction/${predictionId}`, data)
+        $alertMessage = "Changes Saved"
     }
 </script>
 

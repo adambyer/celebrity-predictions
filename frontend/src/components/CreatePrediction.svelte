@@ -4,9 +4,13 @@
     import Select, {Option} from "@smui/select"
     import Checkbox from "@smui/checkbox"
     import Tooltip, {Wrapper} from "@smui/tooltip"
+    import Button, {Label} from "@smui/button"
 
     import Autocomplete from "./common/Autocomplete.svelte"
     import {celebritySearch} from "../autocomplete"
+
+    import {alertMessage} from "../store"
+    import {postRequest} from "../api"
 
     async function handleIsEnabledClick(predictionId, isChecked) {
         const data = {
@@ -22,10 +26,49 @@
         const response = await patchRequest(`/user/prediction/${predictionId}`, data)
     }
 
-    let amount = ""
-    let metric = ""
+    async function save() {
+        if (isNaN(amount)) {
+            $alertMessage = "Invalid Amount"
+            return
+        }
+
+        const prediction = {
+            celebrity_id: celebrityId,
+            amount: parseInt(amount),
+            metric,
+            is_enabled: isEnabled,
+            is_auto_disabled: isAutoDisabled,
+        }
+        const response = await postRequest("user/prediction", prediction)
+
+        $alertMessage = "Prediction Saved!"
+        reset()
+        celebrityAutocomplete.reset()
+    }
+
+    function reset() {
+        celebrityId = null
+        amount = null
+        metric = undefined
+        isEnabled = true
+        isAutoDisabled = false
+    }
+
+    // Binding this to the Autocomplete component so it can be reset.
+    // TODO: is there a better way?
+    let celebrityAutocomplete = undefined
+
+    let celebrityId = null
+    let amount = null
+    let metric = undefined  // this will be undefined anyway since it's bound to the Select.
     let isEnabled = true
     let isAutoDisabled = false
+
+    $: isReady = !!(
+        celebrityId
+        && amount
+        && metric
+    )
 
     const metrics = [
         {value: "like", label: "Likes"},
@@ -41,17 +84,19 @@
         <h2>New Prediction</h2>
     </div>
     
-    <form>
+    <form on:submit|preventDefault={save}>
         <div>
             <Autocomplete
+                bind:this={celebrityAutocomplete}
                 searchMethod={celebritySearch}
+                on:change={(event) => celebrityId = event.detail}
             />
         </div>
 
         <div>
             <Select bind:value={metric} label="What action do you want to predict?">
-                {#each metrics as metric}
-                  <Option value={metric.value}>{metric.label}</Option>
+                {#each metrics as m}
+                  <Option value={m.value}>{m.label}</Option>
                 {/each}
             </Select>
         </div>
@@ -78,6 +123,15 @@
 
                 <Checkbox bind:checked={isAutoDisabled} touch/>
             </FormField>
+        </div>
+
+        <div>
+            <Button
+                variant="raised"
+                disabled={!isReady}
+            >
+                <Label>Save</Label>
+            </Button>
         </div>
     </form>
 </section>

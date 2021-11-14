@@ -1,15 +1,15 @@
 <script>
+    import {createEventDispatcher} from "svelte"
     import Textfield from "@smui/textfield"
 
-    export let value = null
     export let searchMethod = () => {}
-    
-    let options = []
-    let timer = null
-    let displayValue = null
 
+    export function reset() {
+        options = []
+        displayValue = null
+    }
+    
     function searchFocusHandler() {
-        value = null
         displayValue = null
         options = []
     }
@@ -35,9 +35,14 @@
     function selectOption(option) {
         console.log("*** selectValue", option)
         options = []
-        value = option.value
         displayValue = option.label
+        dispatch("change", option.value)
     }
+
+    const dispatch = createEventDispatcher()
+    let options = []
+    let timer = null
+    let displayValue = null
 </script>
 
 <div>

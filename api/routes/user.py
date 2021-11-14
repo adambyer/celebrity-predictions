@@ -49,7 +49,7 @@ def get_user_predictions_route(
     return predictions
 
 
-@router.post("/", response_model=PredictionType)
+@router.post("/prediction", response_model=PredictionType)
 async def create_prediction_route(
     prediction: PredictionBaseType,
     db: Session = Depends(get_db),
@@ -82,11 +82,10 @@ def patch_user_predictions_route(
     if prediction.user_id != current_user.id:
         raise HTTPException(status_code=401, detail="Access denied.")
 
-    print("*** patch_user_predictions_route", prediction, prediction_.dict())
-    # try:
-    updated_prediction = update_prediction(db, prediction, **prediction_.dict())
-    # except Exception:
-    #     raise HTTPException(status_code=400, detail="Unknown error.")
+    try:
+        updated_prediction = update_prediction(db, prediction, **prediction_.dict())
+    except Exception:
+        raise HTTPException(status_code=400, detail="Unknown error.")
 
     return updated_prediction
 
