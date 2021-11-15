@@ -47,4 +47,16 @@ export async function postRequest(url, data) {
     })
 }
 
+export async function deleteRequest(url, data) {
+    const accessToken = getAccessToken()
+    const config = {
+        headers: {Authorization: `Bearer ${accessToken}`}
+    }
+    return await API.delete(url, config).catch((error) => {
+        if (error.response.status === 401) {
+            authRequired()
+        }
+    })
+}
+
 export default API

@@ -1,12 +1,17 @@
 <script>
     import Tooltip, {Wrapper} from "@smui/tooltip"
     import Checkbox from "@smui/checkbox"
+    import Dialog, { Title, Content, Actions } from "@smui/dialog"
+    import Button, { Label } from "@smui/button"
 
     import {
         userPredictions,
         alertMessage,
     } from "../store"
-    import {patchRequest} from "../api"
+    import {
+        patchRequest,
+        deleteRequest,
+    } from "../api"
     import {gotoPage} from "../nav"
     import {PAGE_CREATE_PREDICTION} from "../constants"
 
@@ -14,7 +19,7 @@
         const data = {
             is_enabled: isChecked,
         }
-        const response = await patchRequest(`/user/prediction/${predictionId}`, data)
+        await patchRequest(`/user/prediction/${predictionId}`, data)
         $alertMessage = "Changes Saved"
     }
 
@@ -22,12 +27,47 @@
         const data = {
             is_auto_disabled: isChecked,
         }
-        const response = await patchRequest(`/user/prediction/${predictionId}`, data)
+        await patchRequest(`/user/prediction/${predictionId}`, data)
         $alertMessage = "Changes Saved"
     }
+
+    function showDeleteDialog(prediction_id) {
+        deletePredictionId = prediction_id
+        isDeleteDialogShown = true
+    }
+
+    async function closeDeleteDialogHandler(event) {
+        if (event.detail.action === "delete") {
+            await deleteRequest(`/user/prediction/${deletePredictionId}`)
+            $userPredictions = $userPredictions.filter(p => p.id !== deletePredictionId)
+            deletePredictionId = null
+            $alertMessage = "Prediction Deleted"
+        }
+    }
+
+    let isDeleteDialogShown = false
+    let deletePredictionId = null
 </script>
 
 <section>
+    <Dialog
+        bind:open={isDeleteDialogShown}
+        on:MDCDialog:closed={closeDeleteDialogHandler}
+    >
+        <Title>Delete Prediction</Title>
+        <Content>
+            Are you sure you want to delete this Prediction?
+        </Content>
+        <Actions>
+            <Button action="cancel" default>
+                <Label>Cancel</Label>
+            </Button>
+            <Button action="delete">
+                <Label>Yep, do it.</Label>
+            </Button>
+        </Actions>
+    </Dialog>
+
     <div class="header">
         <h2>Predictions</h2>
         
@@ -49,6 +89,7 @@
                         <Tooltip>When checked, this will cause the prediction to be automatically disabled after the next scoring occurs.</Tooltip>
                     </Wrapper>
                 </th>
+                <th></th>
             </tr>
         </thead>
 
@@ -70,6 +111,12 @@
                         bind:checked={prediction.is_auto_disabled}
                         on:change={(event) => handleIsAutoDisabledClick(prediction.id, event.target.checked)}
                     />
+                </td>
+                <td>
+                    <Wrapper>
+                        <i class="far fa-trash-alt" on:click={() => showDeleteDialog(prediction.id)}></i>
+                        <Tooltip>Delete</Tooltip>
+                    </Wrapper>
                 </td>
             </tr>
             {/each}

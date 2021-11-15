@@ -3,6 +3,7 @@ from typing import List
 
 from ..crud.prediction_crud import (
     create_prediction,
+    delete_prediction,
     get_prediction,
     get_user_predictions,
     update_prediction,
@@ -90,6 +91,24 @@ def patch_user_predictions_route(
     return updated_prediction
 
 
+@router.delete("/prediction/{prediction_id}")
+async def delete_prediction_route(
+    prediction_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> bool:
+    try:
+        delete_prediction(db, prediction_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unknown error.",
+        ) from e
+
+    return True
+
+
+# This must be last so that it doesn't handle the `prediction` endpoints.
 @router.get("/{username}", response_model=UserType)
 def get_user_route(
     username: str,

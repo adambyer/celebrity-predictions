@@ -60,16 +60,17 @@ def update_prediction(
     return prediction
 
 
-def create_prediction_result(
+def delete_prediction(
     db: Session,
-    prediction_result: PredictionResultCreateType,
-) -> PredictionResult:
-    print("*** create_prediction_result")
-    db_prediction_result = PredictionResult(**prediction_result.dict())
-    db.add(db_prediction_result)
+    prediction_id: int,
+) -> None:
+    prediction = (
+        db.query(Prediction)
+        .filter(Prediction.id == prediction_id)
+        .first()
+    )
+    db.delete(prediction)
     db.commit()
-    db.refresh(db_prediction_result)
-    return db_prediction_result
 
 
 def get_predictions(
@@ -100,3 +101,16 @@ def get_user_predictions(
         .join(Celebrity)
         .all()
     )
+
+
+# TODO: move this to it's own module
+def create_prediction_result(
+    db: Session,
+    prediction_result: PredictionResultCreateType,
+) -> PredictionResult:
+    print("*** create_prediction_result")
+    db_prediction_result = PredictionResult(**prediction_result.dict())
+    db.add(db_prediction_result)
+    db.commit()
+    db.refresh(db_prediction_result)
+    return db_prediction_result
