@@ -1,8 +1,15 @@
 <script>
     import Tooltip, {Wrapper} from "@smui/tooltip"
     import Checkbox from "@smui/checkbox"
-    import Dialog, { Title, Content, Actions } from "@smui/dialog"
-    import Button, { Label } from "@smui/button"
+    import Dialog, {Title, Content, Actions} from "@smui/dialog"
+    import Button, {Label as ButtonLabel} from "@smui/button"
+    import DataTable, {
+        Head,
+        Body,
+        Row,
+        Cell,
+        Label,
+    } from "@smui/data-table"
 
     import {
         userPredictions,
@@ -45,6 +52,16 @@
         }
     }
 
+    function sorter(a, b) {
+        if (a.celebrity.twitter_name > b.celebrity.twitter_name) {
+            return 1
+        } else if (a.celebrity.twitter_name < b.celebrity.twitter_name) {
+            return -1
+        }
+        return 0
+    }
+
+    $: $userPredictions = $userPredictions.sort(sorter)
     let isDeleteDialogShown = false
     let deletePredictionId = null
 </script>
@@ -60,10 +77,10 @@
         </Content>
         <Actions>
             <Button action="cancel" default>
-                <Label>Cancel</Label>
+                <ButtonLabel>Cancel</ButtonLabel>
             </Button>
             <Button action="delete">
-                <Label>Yep, do it.</Label>
+                <ButtonLabel>Yep, do it.</ButtonLabel>
             </Button>
         </Actions>
     </Dialog>
@@ -74,61 +91,66 @@
         <i class="fas fa-plus-circle fa-2x add-icon" on:click={() => gotoPage(PAGE_CREATE_PREDICTION)}></i>
     </div>
     
-    <table>
-        <thead>
-            <tr>
-                <th>Twitter Username</th>
-                <th>Twitter Name</th>
-                <th>Metric</th>
-                <th>Amount</th>
-                <th>Is Enabled</th>
-                <th>
-                    <span>Is Auto Disabled</span>
+    <DataTable>
+        <Head>
+            <Row>
+                <Cell>
+                    <Label>Twitter Name</Label>
+                </Cell>
+                <Cell>
+                    <Label>Twitter Username</Label>
+                </Cell>
+                <Cell>
+                    <Label>Metric</Label>
+                </Cell>
+                <Cell>
+                    <Label>Amount</Label>
+                </Cell>
+                <Cell>
+                    <Label>Is Enabled</Label>
+                </Cell>
+                <Cell>
+                    <Label>Is Auto Disabled</Label>
                     <Wrapper>
                         <i class="far fa-question-circle"></i>
                         <Tooltip>When checked, this will cause the prediction to be automatically disabled after the next scoring occurs.</Tooltip>
                     </Wrapper>
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-
-        <tbody>
+                </Cell>
+                <Cell></Cell>
+            </Row>
+        </Head>
+        <Body>
             {#each $userPredictions as prediction}
-            <tr>
-                <td>{prediction.celebrity.twitter_username}</td>
-                <td>{prediction.celebrity.twitter_name}</td>
-                <td>{prediction.metric}</td>
-                <td>{prediction.amount}</td>
-                <td>
-                    <Checkbox
-                        bind:checked={prediction.is_enabled}
-                        on:change={(event) => handleIsEnabledClick(prediction.id, event.target.checked)}
-                    />
-                </td>
-                <td>
-                    <Checkbox
-                        bind:checked={prediction.is_auto_disabled}
-                        on:change={(event) => handleIsAutoDisabledClick(prediction.id, event.target.checked)}
-                    />
-                </td>
-                <td>
-                    <Wrapper>
-                        <i class="far fa-trash-alt" on:click={() => showDeleteDialog(prediction.id)}></i>
-                        <Tooltip>Delete</Tooltip>
-                    </Wrapper>
-                </td>
-            </tr>
+                <Row>
+                    <Cell>{prediction.celebrity.twitter_name}</Cell>
+                    <Cell>{prediction.celebrity.twitter_username}</Cell>
+                    <Cell>{prediction.metric}</Cell>
+                    <Cell>{prediction.amount}</Cell>
+                    <Cell>
+                        <Checkbox
+                            bind:checked={prediction.is_enabled}
+                            on:change={(event) => handleIsEnabledClick(prediction.id, event.target.checked)}
+                        />
+                    </Cell>
+                    <Cell>
+                        <Checkbox
+                            bind:checked={prediction.is_auto_disabled}
+                            on:change={(event) => handleIsAutoDisabledClick(prediction.id, event.target.checked)}
+                        />
+                    </Cell>
+                    <Cell>
+                        <Wrapper>
+                            <i class="far fa-trash-alt" on:click={() => showDeleteDialog(prediction.id)}></i>
+                            <Tooltip>Delete</Tooltip>
+                        </Wrapper>
+                    </Cell>
+                </Row>
             {/each}
-        </tbody>
-    </table>
+        </Body>
+    </DataTable>
 </section>
 
 <style lang="scss">
-    th, td {
-        padding: 0 40px 5px 0
-    }
-
     .header {
         display: flex;
         justify-content: start;
@@ -145,6 +167,18 @@
             &:hover {
                 color: gray;
             }
+        }
+    }
+
+    :global(.mdc-data-table__row--selected) {
+        background-color: inherit !important;
+    }
+
+    // SMUI has a bug where any checkboxes cause the row selection styling.
+    // This is a hack to prevent that so hover styles still work.
+    :global(.mdc-data-table__row.mdc-data-table__row--selected) {
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.04) !important;
         }
     }
 </style>

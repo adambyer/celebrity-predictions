@@ -13,6 +13,7 @@
     "@smui/button": "^5.0.0",
     "@smui/checkbox": "^5.0.0",
     "@smui/common": "^5.0.0",
+    "@smui/data-table": "^5.0.0",
     "@smui/dialog": "^5.0.0",
     "@smui/form-field": "^5.0.0",
     "@smui/select": "^5.0.0",
