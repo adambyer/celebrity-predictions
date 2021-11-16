@@ -8,3 +8,15 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 .fa-trash-alt {
     cursor: pointer;
 }
+
+.fa-trash-alt:hover {
+    color: blue;
+}
+
+.mdc-tooltip__surface {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.mdc-data-table__header-cell {
+    font-weight: bold !important;
+}

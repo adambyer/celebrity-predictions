@@ -95,7 +95,7 @@
         <Head>
             <Row>
                 <Cell>
-                    <Label>Twitter Name</Label>
+                    <Label>Name</Label>
                 </Cell>
                 <Cell>
                     <Label>Twitter Username</Label>

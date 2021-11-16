@@ -27,7 +27,17 @@ def get_tweet_data(celebrity: Celebrity) -> dict:
         metrics["tweet_count"] = len(tweets)
 
         # But we also need the latest tweets regardless of date.
-        tweets = get_user_tweets(celebrity.twitter_id, limit=10)
+        tweets = [
+            {
+                "text": tweet["text"],
+                "created_at": tweet["created_at"],
+                "like_count": tweet["public_metrics"]["like_count"],
+                "quote_count": tweet["public_metrics"]["quote_count"],
+                "reply_count": tweet["public_metrics"]["reply_count"],
+                "retweet_count": tweet["public_metrics"]["retweet_count"],
+            }
+            for tweet in get_user_tweets(celebrity.twitter_id, limit=10)
+        ]
 
         tweet_data = {
             "tweets": tweets,
