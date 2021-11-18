@@ -1,10 +1,24 @@
 <script>
-    import {celebrity} from "../store"
-    import {formatDate} from "../date_helpers"
-    import {sortByCreatedAt} from "../sort_helpers"
+    import DataTable, {
+        Head,
+        Body,
+        Row,
+        Cell,
+        Label,
+    } from "@smui/data-table"
 
-    $: tweets = $celebrity.tweets ? $celebrity.tweets.sort(sortByCreatedAt) : []
-</script>
+    import {celebrity} from "../store"
+    import {
+        formatDate,
+        formatDateAndTime,
+    } from "../date_helpers"
+    import {sortByDate} from "../sort_helpers"
+
+    $: console.log("*** celebrity", $celebrity)
+
+    $: tweets = $celebrity.tweets ? $celebrity.tweets.sort((a, b) => sortByDate(a, b, "created_at")) : []
+    $: metrics = $celebrity.metrics ? $celebrity.metrics.sort((a, b) => sortByDate(a, b, "metric_date")) : []
+</script> 
 
 <section>
     {#if $celebrity.id}
@@ -15,6 +29,33 @@
 
             <h2>{$celebrity.twitter_name || $celebrity.twitter_username}</h2>
         </div>
+
+        <h3>Recent Totals</h3>
+
+        <DataTable>
+            <Head>
+                <Row>
+                    <Cell></Cell>
+                    <Cell><i class="fab fa-twitter"></i></Cell>
+                    <Cell><i class="far fa-heart"></i></Cell>
+                    <Cell><i class="fas fa-retweet"></i></Cell>
+                    <Cell><i class="fas fa-reply"></i></Cell>
+                    <Cell><i class="fas fa-quote-right"></i></Cell>
+                </Row>
+            </Head>
+            <Body>
+                {#each metrics as metric, i}
+                    <Row>
+                        <Cell>{i === 0 ? "Today so far" : formatDate(metric.metric_date)}</Cell>
+                        <Cell>{metric.tweet_count}</Cell>
+                        <Cell>{metric.like_count}</Cell>
+                        <Cell>{metric.retweet_count}</Cell>
+                        <Cell>{metric.reply_count}</Cell>
+                        <Cell>{metric.quote_count}</Cell>
+                    </Row>
+                {/each}
+            </Body>
+        </DataTable>
 
         <h3>Latest Tweets</h3>
 
@@ -37,7 +78,7 @@
                     </div>
 
                     <div class="tweet-info">
-                        <div>{formatDate(tweet.created_at)}</div>
+                        <div>{formatDateAndTime(tweet.created_at)}</div>
                         <div><i class="far fa-heart metric-icon"></i>{tweet.like_count}</div>
                         <div><i class="fas fa-retweet metric-icon"></i>{tweet.retweet_count}</div>
                         <div><i class="fas fa-reply metric-icon"></i>{tweet.reply_count}</div>

@@ -1,7 +1,7 @@
-export function sortByCreatedAt(a, b) {
-    if (a.created_at > b.created_at) {
+export function sortByDate(a, b, property) {
+    if (a[property] > b[property]) {
         return -1
-    } else if (a.created_at < b.created_at) {
+    } else if (a[property] < b[property]) {
         return 1
     }
     return 0

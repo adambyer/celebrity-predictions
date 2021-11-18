@@ -45,21 +45,21 @@ def get_tweet_data(
     start_date = (now - timedelta(days=5)).date()
     end_date = (now - timedelta(days=1)).date()
     celebrity_daily_metrics = get_celebrity_daily_metrics(db, celebrity.id, start_date, end_date)
-
-    metrics = {
-        now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat(): todays_metrics,
-    }
+    todays_metrics["metric_date"] = now.date().isoformat()
+    metrics = [
+        todays_metrics,
+    ]
 
     if celebrity_daily_metrics:
         for m in celebrity_daily_metrics:
-            metrics[_format_date(m.metric_date)] = {
+            metrics.append({
                 "metric_date": m.metric_date.isoformat(),
                 "like_count": m.like_count,
                 "quote_count": m.quote_count,
                 "reply_count": m.reply_count,
                 "retweet_count": m.retweet_count,
                 "tweet_count": m.tweet_count,
-            }
+            })
 
     # But we also need the latest tweets regardless of date.
     tweets = [
