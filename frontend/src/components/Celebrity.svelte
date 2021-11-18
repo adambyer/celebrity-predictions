@@ -36,11 +36,11 @@
             <Head>
                 <Row>
                     <Cell></Cell>
-                    <Cell><i class="fab fa-twitter"></i></Cell>
-                    <Cell><i class="far fa-heart"></i></Cell>
-                    <Cell><i class="fas fa-retweet"></i></Cell>
-                    <Cell><i class="fas fa-reply"></i></Cell>
-                    <Cell><i class="fas fa-quote-right"></i></Cell>
+                    <Cell><i class="fab fa-twitter" title="Tweets"></i></Cell>
+                    <Cell><i class="far fa-heart" title="Likes"></i></Cell>
+                    <Cell><i class="fas fa-retweet" title="Retweets"></i></Cell>
+                    <Cell><i class="fas fa-reply" title="Replies"></i></Cell>
+                    <Cell><i class="fas fa-quote-right" title="Quotes"></i></Cell>
                 </Row>
             </Head>
             <Body>
@@ -59,34 +59,36 @@
 
         <h3>Latest Tweets</h3>
 
-        <div class="latest-tweets">
-            {#each tweets as tweet}
-                <div class="tweet-row">
-                    <div class="tweet">
-                        <p>{tweet.text}</p>
-                        <div>
-                            {#each tweet.media as media}
-                                <div>
-                                    {#if media.type === "video"}
-                                        <img src={media.preview_image_url} alt={celebrity.twitter_name} class="tweet-image"/>
-                                    {:else}
-                                        <img src={media.url} alt={celebrity.twitter_name} class="tweet-image"/>
-                                    {/if}
-                                </div>
-                            {/each}
-                        </div>
-                    </div>
+        <DataTable class="latest-tweets">
+            <Body>
+                {#each tweets as tweet}
+                    <Row class="tweet-row">
+                        <Cell class="tweet">
+                            <div class="tweet-text">{tweet.text}</div>
+                            <div>
+                                {#each tweet.media as media}
+                                    <div>
+                                        {#if media.type === "video"}
+                                            <img src={media.preview_image_url} alt={celebrity.twitter_name} class="tweet-image"/>
+                                        {:else}
+                                            <img src={media.url} alt={celebrity.twitter_name} class="tweet-image"/>
+                                        {/if}
+                                    </div>
+                                {/each}
+                            </div>
+                        </Cell>
 
-                    <div class="tweet-info">
-                        <div>{formatDateAndTime(tweet.created_at)}</div>
-                        <div><i class="far fa-heart metric-icon"></i>{tweet.like_count}</div>
-                        <div><i class="fas fa-retweet metric-icon"></i>{tweet.retweet_count}</div>
-                        <div><i class="fas fa-reply metric-icon"></i>{tweet.reply_count}</div>
-                        <div><i class="fas fa-quote-right metric-icon"></i>{tweet.quote_count}</div>
-                    </div>
-                </div>
-            {/each}
-        </div>
+                        <Cell class="tweet-info">
+                            <div class="tweet-date">{formatDateAndTime(tweet.created_at)}</div>
+                            <div><i class="far fa-heart metric-icon" title="Likes"></i>{tweet.like_count}</div>
+                            <div><i class="fas fa-retweet metric-icon" title="Retweets"></i>{tweet.retweet_count}</div>
+                            <div><i class="fas fa-reply metric-icon" title="Replies"></i>{tweet.reply_count}</div>
+                            <div><i class="fas fa-quote-right metric-icon" title="Quotes"></i>{tweet.quote_count}</div>
+                        </Cell>
+                    </Row>
+                {/each}
+            </Body>
+        </DataTable>
     {/if}
 </section>
 
@@ -99,32 +101,45 @@
         }
     }
 
-    .latest-tweets {
-        .tweet-row {
-            display: flex;
+    :global(.mdc-data-table) {
+        margin-bottom: 20px;
+    }
 
-            .tweet, .tweet-info {
+    :global(.latest-tweets) {
+        :global(.tweet-row) {
+            :global(.tweet), :global(.tweet-info) {
                 border: 1px solid gray;
                 border-radius: 2px;
-                padding: 10px;
+                padding: 15px;
+                vertical-align: top;
+                font-size: 20px;
             }
 
-            .tweet {
-                flex-basis: 80%;
+            :global(.tweet) {
+                white-space: normal;
 
-                .tweet-image {
+                :global(.tweet-text) {
+                    margin-bottom: 15px;
+                }
+
+                :global(.tweet-image) {
                     width: 300px;
+                    margin-bottom: 5px;
                 }
             }
 
-            .tweet-info {
-                flex-basis: 20%;
+            :global(.tweet-info) {
+                :global(.tweet-date) {
+                    font-weight: bold;
+                    margin-bottom: 30px
+                }
 
-                .metric-icon {
-                    padding-right: 10px;
+                :global(.metric-icon) {
+                    display: inline-block;
+                    margin: 0 15px 12px 0;
+                    min-width: 35px;
                 }
             }
         }
-
     }
 </style>
