@@ -46,8 +46,13 @@ class Celebrity(BaseMixin, Base):
     # These are nullable because we will start with their username and then fetch the rest.
     twitter_id = Column(BigInteger(), unique=True)
     twitter_name = Column(String(100))
-    twitter_profile_image_url = Column(String(1000))
     twitter_description = Column(String(1000))
+
+    # We take this from the Twitter API as is.
+    # It comes with a "_normal" suffix but that can be replaced to get other sizes.
+    # https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/user-profile-images-and-banners
+    twitter_profile_image_url = Column(String(1000))
+    
 
     predictions = relationship("Prediction", backref="celebrity")
     prediction_results = relationship("PredictionResult", backref="celebrity")

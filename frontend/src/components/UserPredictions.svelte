@@ -88,7 +88,10 @@
     <div class="header">
         <h2>Predictions</h2>
         
-        <i class="fas fa-plus-circle fa-2x add-icon" on:click={() => gotoPage(PAGE_CREATE_PREDICTION)}></i>
+        <Wrapper>
+            <i class="fas fa-plus-circle fa-2x add-icon" on:click={() => gotoPage(PAGE_CREATE_PREDICTION)}></i>
+            <Tooltip>Add a Prediction</Tooltip>
+        </Wrapper>
     </div>
     
     <DataTable>
@@ -158,15 +161,6 @@
 
         h2 {
             margin-right: 10px
-        }
-
-        .add-icon {
-            cursor: pointer;
-            color: blue;
-
-            &:hover {
-                color: gray;
-            }
         }
     }
 

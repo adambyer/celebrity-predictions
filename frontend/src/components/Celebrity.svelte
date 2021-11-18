@@ -6,6 +6,7 @@
         Cell,
         Label,
     } from "@smui/data-table"
+    import Tooltip, {Wrapper} from "@smui/tooltip"
 
     import {celebrity} from "../store"
     import {
@@ -19,7 +20,22 @@
     $: tweets = $celebrity ? $celebrity.tweets.sort((a, b) => sortByDate(a, b, "created_at")) : []
     $: metrics = $celebrity ? $celebrity.metrics.sort((a, b) => sortByDate(a, b, "metric_date")) : []
 
-    $: console.log("*** celebrity", $celebrity, isLoading)
+    // Get the original size (larger) profile image so we have more control.
+    $: profileImage = $celebrity ? $celebrity.twitter_profile_image_url.replace("_normal", "") : ""
+
+    // Dynamically set the header image to the same width as the text.
+    // TODO: is there a better way to do this?
+    let headerTextElement = null
+    let headerImageElement = null
+    $: headerTextWidth = headerTextElement ? headerTextElement.offsetWidth : 0
+    $: if (headerTextElement && headerImageElement) {
+        headerImageElement.style.width = `${headerTextWidth}px`
+    }
+
+    $: console.log("*** celebrity", $celebrity)
+    $: console.log("*** isLoading", isLoading)
+    $: console.log("*** headerTextWidth", headerTextWidth)
+    $: console.log("*** headerImageElement.style.width", (headerImageElement ? headerImageElement.style.width : 0))
 </script> 
 
 <section>
@@ -29,39 +45,54 @@
 
     {#if $celebrity}
         <div class="header">
-            <div>
-                <img alt="Celebrity" src={$celebrity.twitter_profile_image_url}/>
+            <div class="header-left">
+                <h2 class="header-top" bind:this={headerTextElement}>
+                    {$celebrity.twitter_name || $celebrity.twitter_username}
+                </h2>
+
+                <div>
+                    <img alt="Celebrity" src={profileImage} bind:this={headerImageElement}/>
+                </div>
             </div>
 
-            <h2>{$celebrity.twitter_name || $celebrity.twitter_username}</h2>
+            <div class="header-right">
+                <div class="header-top">
+                    <div>
+                        <Wrapper>
+                            <i class="fas fa-plus-circle fa-2x add-icon" on:click={() => {}}></i>
+                            <Tooltip>Add a Prediction for {$celebrity.twitter_name}</Tooltip>
+                        </Wrapper>
+                    </div>
+                </div>
+
+                <div class="metrics">
+                    <DataTable>
+                        <Head>
+                            <Row>
+                                <Cell></Cell>
+                                <Cell><i class="fab fa-twitter" title="Tweets"></i></Cell>
+                                <Cell><i class="far fa-heart" title="Likes"></i></Cell>
+                                <Cell><i class="fas fa-retweet" title="Retweets"></i></Cell>
+                                <Cell><i class="fas fa-reply" title="Replies"></i></Cell>
+                                <Cell><i class="fas fa-quote-right" title="Quotes"></i></Cell>
+                            </Row>
+                        </Head>
+                        <Body>
+                            {#each metrics as metric, i}
+                                <Row>
+                                    <Cell>{i === 0 ? "Today so far" : formatDate(metric.metric_date)}</Cell>
+                                    <Cell>{metric.tweet_count}</Cell>
+                                    <Cell>{metric.like_count}</Cell>
+                                    <Cell>{metric.retweet_count}</Cell>
+                                    <Cell>{metric.reply_count}</Cell>
+                                    <Cell>{metric.quote_count}</Cell>
+                                </Row>
+                            {/each}
+                        </Body>
+                    </DataTable>
+                </div>
+            </div>
         </div>
-
-        <h3>Recent Totals</h3>
-
-        <DataTable>
-            <Head>
-                <Row>
-                    <Cell></Cell>
-                    <Cell><i class="fab fa-twitter" title="Tweets"></i></Cell>
-                    <Cell><i class="far fa-heart" title="Likes"></i></Cell>
-                    <Cell><i class="fas fa-retweet" title="Retweets"></i></Cell>
-                    <Cell><i class="fas fa-reply" title="Replies"></i></Cell>
-                    <Cell><i class="fas fa-quote-right" title="Quotes"></i></Cell>
-                </Row>
-            </Head>
-            <Body>
-                {#each metrics as metric, i}
-                    <Row>
-                        <Cell>{i === 0 ? "Today so far" : formatDate(metric.metric_date)}</Cell>
-                        <Cell>{metric.tweet_count}</Cell>
-                        <Cell>{metric.like_count}</Cell>
-                        <Cell>{metric.retweet_count}</Cell>
-                        <Cell>{metric.reply_count}</Cell>
-                        <Cell>{metric.quote_count}</Cell>
-                    </Row>
-                {/each}
-            </Body>
-        </DataTable>
 
         <h3>Latest Tweets</h3>
 
@@ -101,9 +132,18 @@
 <style lang="scss">
     .header {
         display: flex;
+        margin-bottom: 25px;
 
-        h2 {
-            margin-left: 20px;
+        .header-left {
+            margin-right: 50px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            margin: 0 0 15px 0;
+            height: 50px;
         }
     }
 

@@ -1,3 +1,4 @@
+/* TODO: make this scss */
 html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 
 .fa-question-circle {
@@ -19,4 +20,13 @@ html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
 
 .mdc-data-table__header-cell {
     font-weight: bold !important;
+}
+
+.add-icon {
+    cursor: pointer;
+    color: blue;
+}
+
+.add-icon:hover {
+    color: gray;
 }
