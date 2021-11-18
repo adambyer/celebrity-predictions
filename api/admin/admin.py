@@ -37,11 +37,14 @@ class SecureAdminIndexView(AdminIndexView):
 class UserModelView(BaseModelView):
     column_exclude_list = ["password"]
     form_excluded_columns = ["predictions"]
+    column_default_sort = "username"
+    column_filters = ("is_active", "is_staff", "username", "email_address")
 
 
 class CelebrityModelView(BaseModelView):
     column_exclude_list = ["twitter_profile_image_url", "twitter_description"]
     form_excluded_columns = ["predictions", "daily_metrics"]
+    column_default_sort = "twitter_name"
 
     @action(
         "import-yesterdays-tweet-metrics",
@@ -55,10 +58,25 @@ class CelebrityModelView(BaseModelView):
         flash("Tweet Metrics imported")
 
 
+class CelebrityDailyMetricsModelView(BaseModelView):
+    column_default_sort = ("metric_date", True)
+    column_filters = ("celebrity",)
+
+
+class PredictionModelView(BaseModelView):
+    column_default_sort = ("created_at", True)
+    column_filters = ("is_enabled", "is_auto_disabled", "metric", "user", "celebrity")
+
+
+class PredictionResultModelView(BaseModelView):
+    column_default_sort = ("metric_date", True)
+    column_filters = ("user", "celebrity", "metric_date", "amount", "metric", "points")
+
+
 admin = Admin(current_app, index_view=SecureAdminIndexView())
 
 admin.add_view(CelebrityModelView(Celebrity, Session()))
-admin.add_view(BaseModelView(CelebrityDailyMetrics, Session()))
-admin.add_view(BaseModelView(Prediction, Session()))
-admin.add_view(BaseModelView(PredictionResult, Session()))
+admin.add_view(CelebrityDailyMetricsModelView(CelebrityDailyMetrics, Session()))
+admin.add_view(PredictionModelView(Prediction, Session()))
+admin.add_view(PredictionResultModelView(PredictionResult, Session()))
 admin.add_view(UserModelView(User, Session()))

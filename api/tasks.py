@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 @shared_task
 def update_celebrity_data(celebrity_id: int) -> None:
+    logger.info(f"update_celebrity_data. celebrity_id:{celebrity_id}")
     db = Session()
     celebrity = get_celebrity(db, celebrity_id)
 
@@ -61,6 +62,7 @@ def start_daily_scoring(
     # Default to yesterday.
     scoring_date: date = (datetime.utcnow() - timedelta(days=1)).date(),
 ) -> None:
+    logger.info(f"start_daily_scoring. scoring_date:{str(scoring_date)}")
     db = Session()
     celebrities = get_celebrities(db)
 
@@ -77,6 +79,7 @@ def import_celebrity_daily_tweet_metrics(
     # Default to yesterday.
     scoring_date: date = (datetime.utcnow() - timedelta(days=1)).date(),
 ) -> None:
+    logger.info(f"import_celebrity_daily_tweet_metrics begin. celebrity_id:{celebrity_id} scoring_date:{str(scoring_date)}")
     db = Session()
     start = f"{datetime.combine(scoring_date, datetime.min.time()).isoformat()}Z"
     end = f"{datetime.combine(scoring_date, datetime.max.time()).replace(microsecond=0).isoformat()}Z"
@@ -102,6 +105,7 @@ def import_celebrity_daily_tweet_metrics(
     create_prediction_results.delay(celebrity.id, scoring_date_string)
 
     db.close()
+    logger.info(f"import_celebrity_daily_tweet_metrics complete. celebrity_id:{celebrity_id} scoring_date:{str(scoring_date)}")
 
 
 @shared_task
@@ -111,10 +115,12 @@ def create_prediction_results(
     # Has to be a string because tasks use JSON.
     scoring_date_string: str,
 ) -> None:
+    logger.info(f"create_prediction_results. celebrity_id:{celebrity_id} scoring_date:{scoring_date_string}")
     scoring_date = datetime.strptime(scoring_date_string, DATE_FORMAT).date()
     db = Session()
     celebrity = get_celebrity(db, celebrity_id)
-    metrics = get_celebrity_daily_metrics(db, celebrity_id, scoring_date)
+    celebrity_daily_metrics = get_celebrity_daily_metrics(db, celebrity_id, scoring_date, scoring_date)
+    metrics = celebrity_daily_metrics[0] if celebrity_daily_metrics else None
 
     if not celebrity or not metrics:
         return

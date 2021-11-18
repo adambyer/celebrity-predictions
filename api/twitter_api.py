@@ -1,7 +1,7 @@
 import logging
 import os
 import requests
-from typing import Optional
+from typing import Optional, List
 
 TWITTER_API_TOKEN = os.environ.get("TWITTER_API_TOKEN")
 TWITTER_BASE_URL = "https://api.twitter.com/2"
@@ -33,6 +33,28 @@ def _get(url: str, params: dict = {}) -> Optional[dict]:
         logger.error(f"request error: {response.text} status: {response.status_code} url:{url}", extra=params)
 
     return None
+
+
+def _get_tweets_from_payload(payload: dict) -> list:
+    media = {}
+    if "includes" in payload and "media" in payload["includes"]:
+        media = {m["media_key"]: m for m in payload["includes"]["media"]}
+
+    tweets = payload["data"]
+
+    # Media data is separate from the tweets in the response. Put them together.
+    for tweet in tweets:
+        if "media" not in tweet:
+            tweet["media"] = []
+
+        if "attachments" in tweet and "media_keys" in tweet["attachments"]:
+            for media_key in tweet["attachments"]["media_keys"]:
+                if media_key in media:
+                    tweet["media"].append(media[media_key])
+
+            del tweet["attachments"]
+
+    return tweets
 
 
 def get_user_by_username(username: str) -> Optional[dict]:
@@ -68,6 +90,8 @@ def get_user_tweets(
     params = {
         "max_results": 100,  # 100 is the max for each request
         "tweet.fields": "public_metrics,created_at",
+        "expansions": "attachments.media_keys",
+        "media.fields": "preview_image_url,type,url,public_metrics",
     }
 
     if limit and limit < 100:
@@ -79,7 +103,7 @@ def get_user_tweets(
     if end_time:
         params["end_time"] = end_time
 
-    tweets = None
+    tweets: Optional[List[dict]] = None
 
     while (
         tweets is None
@@ -91,7 +115,8 @@ def get_user_tweets(
         payload = _get(url, params)
 
         if payload and "data" in payload:
-            tweets = (tweets or []) + payload["data"]
+            new_tweets = _get_tweets_from_payload(payload)
+            tweets = (tweets or []) + new_tweets
             next_token = payload["meta"].get("next_token")
 
             if next_token:

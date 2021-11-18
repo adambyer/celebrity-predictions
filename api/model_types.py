@@ -38,6 +38,7 @@ class CelebrityType(OrmBaseType):
     twitter_verified: Optional[bool] = False
     twitter_profile_image_url: Optional[str] = None
     tweets: Optional[list] = []
+    metrics: Optional[dict] = {}
 
 
 class PredictionBaseType(OrmBaseType):

@@ -103,29 +103,25 @@ def create_celebrity_daily_metrics(
     db: Session,
     daily_metrics: CelebrityDailyMetricsCreateType,
 ) -> CelebrityDailyMetricsType:
-    print("*** create_celebrity_daily_metrics", daily_metrics)
     db_daily_metrics = CelebrityDailyMetrics(**daily_metrics.dict())
-    print("*** create_celebrity_daily_metrics db_daily_metrics", db_daily_metrics)
     db.add(db_daily_metrics)
-    print("*** create_celebrity_daily_metrics after add")
     db.commit()
-    print("*** create_celebrity_daily_metrics after commit")
     db.refresh(db_daily_metrics)
-    print("*** create_celebrity_daily_metrics after refresh")
     return db_daily_metrics
 
 
 def get_celebrity_daily_metrics(
     db: Session,
     celebrity_id: int,
-    metric_date: date,
-) -> Optional[CelebrityDailyMetricsType]:
+    start_date: date,
+    end_date: date,
+) -> list:
     return (
         db.query(CelebrityDailyMetrics)
         .filter(
             CelebrityDailyMetrics.celebrity_id == celebrity_id,
-            CelebrityDailyMetrics.metric_date == metric_date,
+            CelebrityDailyMetrics.metric_date >= start_date,
+            CelebrityDailyMetrics.metric_date <= end_date,
         )
         .options(raiseload("*"))
-        .first()
     )

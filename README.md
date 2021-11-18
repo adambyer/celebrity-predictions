@@ -72,3 +72,20 @@ NOTE: The circular dependencies warning can be ignored... https://github.com/axi
 
 #### Build Frontend
 `$ npm run build`
+
+## Do Stuff
+Start by adding some celebrities in admin. You only need to set the `twitter_username` field. After saving, the app will fetch the other Twitter fields and update the row.
+
+Next add some predictions, either in the app or in admin.
+
+There's a custom action in celebrity admin to import yesterday's metrics. 
+
+You can also start a shell to run specific methods...
+
+`$ python3 -i shell.py`
+
+`>>> from api.scripts import import_metrics`
+
+`>>> import_metrics(3, 1)`
+
+You can also just run `start_daily_scoring` which will import metrics and score predictions for all celebrities for the specified date.

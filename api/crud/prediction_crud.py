@@ -108,7 +108,6 @@ def create_prediction_result(
     db: Session,
     prediction_result: PredictionResultCreateType,
 ) -> PredictionResult:
-    print("*** create_prediction_result")
     db_prediction_result = PredictionResult(**prediction_result.dict())
     db.add(db_prediction_result)
     db.commit()

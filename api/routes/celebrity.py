@@ -51,7 +51,7 @@ async def get_celebrity_route(
         celebrity = db_celebrity.__dict__
 
         # TODO: paging for tweets.
-        tweet_data = get_tweet_data(db_celebrity)
+        tweet_data = get_tweet_data(db, db_celebrity)
         celebrity["tweets"] = tweet_data["tweets"]
         celebrity["metrics"] = tweet_data["metrics"]
         return celebrity
