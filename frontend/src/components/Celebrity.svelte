@@ -13,15 +13,21 @@
         formatDateAndTime,
     } from "../date_helpers"
     import {sortByDate} from "../sort_helpers"
+    import Loading from "./Loading.svelte"
 
-    $: console.log("*** celebrity", $celebrity)
+    $: isLoading = $celebrity === null
+    $: tweets = $celebrity ? $celebrity.tweets.sort((a, b) => sortByDate(a, b, "created_at")) : []
+    $: metrics = $celebrity ? $celebrity.metrics.sort((a, b) => sortByDate(a, b, "metric_date")) : []
 
-    $: tweets = $celebrity.tweets ? $celebrity.tweets.sort((a, b) => sortByDate(a, b, "created_at")) : []
-    $: metrics = $celebrity.metrics ? $celebrity.metrics.sort((a, b) => sortByDate(a, b, "metric_date")) : []
+    $: console.log("*** celebrity", $celebrity, isLoading)
 </script> 
 
 <section>
-    {#if $celebrity.id}
+    {#if isLoading}
+        <Loading/>
+    {/if}
+
+    {#if $celebrity}
         <div class="header">
             <div>
                 <img alt="Celebrity" src={$celebrity.twitter_profile_image_url}/>

@@ -36,7 +36,7 @@ export async function gotoPage(page) {
             celebrities.set(response.data)
         }
     } else if (page === PAGE_CELEBRITY) {
-        celebrity.set({})
+        celebrity.set(null)
         const response = await getRequest(`/celebrity/${get(celebrityTwitterUsername)}`)
 
         if (response) {
