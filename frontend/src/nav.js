@@ -7,6 +7,7 @@ import {
     celebrityTwitterUsername,
     celebrity,
     userPredictions,
+    userLockedPredictionResults,
     requestedPage,
 } from "./store"
 import {getRequest} from "./api"
@@ -44,10 +45,17 @@ export async function gotoPage(page) {
         }
     } else if (page === PAGE_USER_PREDICTIONS) {
         userPredictions.set([])
-        const response = await getRequest("/user/prediction")
+        let response = await getRequest("/user/prediction")
         
         if (response) {
             userPredictions.set(response.data)
+        }
+
+        userLockedPredictionResults.set([])
+        response = await getRequest("/user/prediction-results/locked")
+        
+        if (response) {
+            userLockedPredictionResults.set(response.data)
         }
     }
 }

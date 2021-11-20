@@ -124,4 +124,5 @@ def get_celebrity_daily_metrics(
             CelebrityDailyMetrics.metric_date <= end_date,
         )
         .options(raiseload("*"))
+        .all()
     )

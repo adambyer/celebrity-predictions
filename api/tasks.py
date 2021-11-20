@@ -12,7 +12,12 @@ from .crud.celebrity_crud import (
     get_celebrities,
     update_celebrity,
 )
-from .crud.prediction_crud import create_prediction_result
+from .crud.prediction_crud import get_predictions
+from .crud.prediction_results import (
+    create_prediction_result,
+    update_prediction_result,
+    get_prediction_results_for_scoring,
+)
 from .db import Session
 from .model_types import CelebrityDailyMetricsCreateType, PredictionResultCreateType
 from .prediction_utils import get_prediction_points, get_metric_total
@@ -20,6 +25,36 @@ from .twitter_api import get_user_by_username, get_user_tweets
 from .twitter_utils import get_tweet_metric_totals
 
 logger = logging.getLogger(__name__)
+
+
+@shared_task
+def create_prediction_results(
+    # Has to be a string because tasks use JSON.
+    metric_date_string: str,
+) -> None:
+    logger.info("create_prediction_results")
+    db = Session()
+    predictions = get_predictions(db)
+    metric_date = datetime.strptime(metric_date_string, DATE_FORMAT).date()
+
+    for p in predictions:
+        try:
+            pr = PredictionResultCreateType(**{
+                "user_id": p.user_id,
+                "celebrity_id": p.celebrity_id,
+                "amount": p.amount,
+                "metric": p.metric,
+                "metric_date": metric_date,
+            })
+        except Exception:
+            logger.exception("Invalid PredictionResultCreateType.", extra=pr.dict())
+
+        try:
+            create_prediction_result(db, pr)
+        except IntegrityError:
+            # Record already exists.
+            # TODO: Rollback seems to be needed. Is it the correct way?
+            db.rollback()
 
 
 @shared_task
@@ -59,15 +94,19 @@ def update_celebrity_data(celebrity_id: int) -> None:
 
 @shared_task
 def start_daily_scoring(
-    # Default to yesterday.
-    scoring_date: date = (datetime.utcnow() - timedelta(days=1)).date(),
+    # Default to yesterday. Has to be a string because tasks use JSON.
+    metric_date_string: str = date.strftime((datetime.utcnow() - timedelta(days=1)).date(), DATE_FORMAT)
 ) -> None:
-    logger.info(f"start_daily_scoring. scoring_date:{str(scoring_date)}")
+    logger.info(f"start_daily_scoring. metric_date:{metric_date_string}")
+
+    # First create the placeholder PredictionResult rows so they will be ready for the next day's scoring.
+    create_prediction_results.delay(metric_date_string)
+
     db = Session()
     celebrities = get_celebrities(db)
 
     for celebrity in celebrities:
-        import_celebrity_daily_tweet_metrics.delay(celebrity.id, scoring_date)
+        import_celebrity_daily_tweet_metrics.delay(celebrity.id, metric_date_string)
 
     db.close()
 
@@ -76,13 +115,14 @@ def start_daily_scoring(
 def import_celebrity_daily_tweet_metrics(
     celebrity_id: int,
 
-    # Default to yesterday.
-    scoring_date: date = (datetime.utcnow() - timedelta(days=1)).date(),
+    # Default to yesterday. Has to be a string because tasks use JSON.
+    metric_date_string: str = date.strftime((datetime.utcnow() - timedelta(days=1)).date(), DATE_FORMAT)
 ) -> None:
-    logger.info(f"import_celebrity_daily_tweet_metrics begin. celebrity_id:{celebrity_id} scoring_date:{str(scoring_date)}")
+    logger.info(f"import_celebrity_daily_tweet_metrics begin. celebrity_id:{celebrity_id} metric_date:{metric_date_string}")
     db = Session()
-    start = f"{datetime.combine(scoring_date, datetime.min.time()).isoformat()}Z"
-    end = f"{datetime.combine(scoring_date, datetime.max.time()).replace(microsecond=0).isoformat()}Z"
+    metric_date = datetime.strptime(metric_date_string, DATE_FORMAT).date()
+    start = f"{datetime.combine(metric_date, datetime.min.time()).isoformat()}Z"
+    end = f"{datetime.combine(metric_date, datetime.max.time()).replace(microsecond=0).isoformat()}Z"
     celebrity = get_celebrity(db, celebrity_id)
 
     if not celebrity:
@@ -91,7 +131,7 @@ def import_celebrity_daily_tweet_metrics(
     tweets = get_user_tweets(celebrity.twitter_id, start_time=start, end_time=end)
     metrics = get_tweet_metric_totals(tweets)
     metrics["celebrity_id"] = celebrity_id
-    metrics["metric_date"] = scoring_date
+    metrics["metric_date"] = metric_date
     metrics["tweet_count"] = len(tweets)
 
     try:
@@ -101,52 +141,37 @@ def import_celebrity_daily_tweet_metrics(
         # TODO: this seems to be needed. Is it the correct way?
         db.rollback()
 
-    scoring_date_string = date.strftime(scoring_date, DATE_FORMAT)
-    create_prediction_results.delay(celebrity.id, scoring_date_string)
+    # Now update the results from the previous day that are waiting to be scored.
+    results_date_string = date.strftime(metric_date - timedelta(days=1), DATE_FORMAT)
+    update_prediction_results.delay(celebrity.id, results_date_string)
 
-    db.close()
-    logger.info(f"import_celebrity_daily_tweet_metrics complete. celebrity_id:{celebrity_id} scoring_date:{str(scoring_date)}")
+    # Can't close the connection if all this is running in the same process.
+    if not task_always_eager:
+        db.close()
+
+    logger.info(f"import_celebrity_daily_tweet_metrics complete. celebrity_id:{celebrity_id} metric_date:{str(metric_date)}")
 
 
 @shared_task
-def create_prediction_results(
+def update_prediction_results(
     celebrity_id: int,
 
     # Has to be a string because tasks use JSON.
-    scoring_date_string: str,
+    metric_date_string: str,
 ) -> None:
-    logger.info(f"create_prediction_results. celebrity_id:{celebrity_id} scoring_date:{scoring_date_string}")
-    scoring_date = datetime.strptime(scoring_date_string, DATE_FORMAT).date()
+    logger.info(f"update_prediction_results. celebrity_id:{celebrity_id} metric_date:{metric_date_string}")
+    metric_date = datetime.strptime(metric_date_string, DATE_FORMAT).date()
     db = Session()
-    celebrity = get_celebrity(db, celebrity_id)
-    celebrity_daily_metrics = get_celebrity_daily_metrics(db, celebrity_id, scoring_date, scoring_date)
+    prediction_results = get_prediction_results_for_scoring(db, celebrity_id, metric_date)
+    celebrity_daily_metrics = get_celebrity_daily_metrics(db, celebrity_id, metric_date, metric_date)
     metrics = celebrity_daily_metrics[0] if celebrity_daily_metrics else None
 
-    if not celebrity or not metrics:
-        return
-
-    for p in celebrity.predictions:
-        actual_amount = get_metric_total(metrics, p.metric)
+    for pr in prediction_results:
+        actual_amount = get_metric_total(metrics, pr.metric)
 
         if actual_amount is None:
-            logger.error(f"invalid metric: {p.metric}")
+            logger.error(f"invalid metric: {pr.metric}")
             continue
 
-        try:
-            pr = PredictionResultCreateType(**{
-                "user_id": p.user_id,
-                "celebrity_id": p.celebrity_id,
-                "amount": p.amount,
-                "metric": p.metric,
-                "metric_date": scoring_date,
-                "points": get_prediction_points(p.amount, actual_amount),
-            })
-        except Exception as e:
-            logger.exception(f"Why is this being swallowed up? {str(e)}", extra=pr.dict())
-
-        try:
-            create_prediction_result(db, pr)
-        except IntegrityError:
-            # Record already exists.
-            # TODO: this seems to be needed. Is it the correct way?
-            db.rollback()
+        points = get_prediction_points(pr.amount, actual_amount)
+        update_prediction_result(db, pr, points)

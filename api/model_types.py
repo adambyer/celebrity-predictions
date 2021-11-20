@@ -85,7 +85,8 @@ class PredictionResultCreateType(OrmBaseType):
     amount: int
     metric: str
     metric_date: date
-    points: int
+    points: Optional[int] = None
+    celebrity: Optional[CelebrityType] = None
 
 
 class PredictionResultType(PredictionResultCreateType):

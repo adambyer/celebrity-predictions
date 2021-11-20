@@ -82,6 +82,8 @@ There's a custom action in celebrity admin to import yesterday's metrics.
 
 You can also start a shell to run specific methods...
 
+`$ source venv/bin/activate`
+
 `$ python3 -i shell.py`
 
 `>>> from api.scripts import import_metrics`

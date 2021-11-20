@@ -13,6 +13,7 @@
 
     import {
         userPredictions,
+        userLockedPredictionResults,
         alertMessage,
     } from "../store"
     import {
@@ -52,6 +53,14 @@
         }
     }
 
+    function showTooltip() {
+        isToolTipOpen = true
+    }
+
+    function hideTooltip() {
+        isToolTipOpen = false
+    }
+
     function sorter(a, b) {
         if (a.celebrity.twitter_name > b.celebrity.twitter_name) {
             return 1
@@ -62,8 +71,11 @@
     }
 
     $: $userPredictions = $userPredictions.sort(sorter)
+    $: $userLockedPredictionResults = $userLockedPredictionResults.sort(sorter)
+
     let isDeleteDialogShown = false
     let deletePredictionId = null
+    let isToolTipOpen = false
 </script>
 
 <section>
@@ -86,11 +98,11 @@
     </Dialog>
 
     <div class="header">
-        <h2>Predictions</h2>
+        <h2>Locked Predictions</h2>
         
         <Wrapper>
-            <i class="fas fa-plus-circle fa-2x add-icon" on:click={() => gotoPage(PAGE_CREATE_PREDICTION)}></i>
-            <Tooltip>Add a Prediction</Tooltip>
+            <i class="far fa-question-circle"></i>
+            <Tooltip>These predictions are locked in and will be scored after all today's ativity has been collected.</Tooltip>
         </Wrapper>
     </div>
     
@@ -98,16 +110,49 @@
         <Head>
             <Row>
                 <Cell>
-                    <Label>Name</Label>
+                    <Label>Who</Label>
                 </Cell>
                 <Cell>
-                    <Label>Twitter Username</Label>
+                    <Label>Action</Label>
                 </Cell>
                 <Cell>
-                    <Label>Metric</Label>
+                    <Label>How Many</Label>
+                </Cell>
+            </Row>
+        </Head>
+        <Body>
+            {#each $userLockedPredictionResults as predictionResult}
+                <Row>
+                    <Cell>{predictionResult.celebrity.twitter_name} (@{predictionResult.celebrity.twitter_username})</Cell>
+                    <Cell>{predictionResult.metric}</Cell>
+                    <Cell>{predictionResult.amount}</Cell>
+                </Row>
+            {/each}
+        </Body>
+    </DataTable>
+
+    <div class="header">
+        <h2>Predictions</h2>
+        
+        <!-- I tried using a Tooltip here but it wouldn't go away when clicked. -->
+        <i
+            class="fas fa-plus-circle fa-2x add-icon"
+            title="Add a Prediction"
+            on:click={() => gotoPage(PAGE_CREATE_PREDICTION)}
+        ></i>
+    </div>
+    
+    <DataTable>
+        <Head>
+            <Row>
+                <Cell>
+                    <Label>Who</Label>
                 </Cell>
                 <Cell>
-                    <Label>Amount</Label>
+                    <Label>Action</Label>
+                </Cell>
+                <Cell>
+                    <Label>Mow Many</Label>
                 </Cell>
                 <Cell>
                     <Label>Is Enabled</Label>
@@ -125,8 +170,7 @@
         <Body>
             {#each $userPredictions as prediction}
                 <Row>
-                    <Cell>{prediction.celebrity.twitter_name}</Cell>
-                    <Cell>{prediction.celebrity.twitter_username}</Cell>
+                    <Cell>{prediction.celebrity.twitter_name} (@{prediction.celebrity.twitter_username})</Cell>
                     <Cell>{prediction.metric}</Cell>
                     <Cell>{prediction.amount}</Cell>
                     <Cell>

@@ -52,7 +52,6 @@ class Celebrity(BaseMixin, Base):
     # It comes with a "_normal" suffix but that can be replaced to get other sizes.
     # https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/user-profile-images-and-banners
     twitter_profile_image_url = Column(String(1000))
-    
 
     predictions = relationship("Prediction", backref="celebrity")
     prediction_results = relationship("PredictionResult", backref="celebrity")
@@ -115,4 +114,6 @@ class PredictionResult(BaseMixin, Base):
     metric_date = Column(Date, nullable=False)
     amount = Column(Integer, nullable=False)
     metric = Column(String(20), nullable=False)
-    points = Column(Integer, nullable=False)
+
+    # This will start as null since we ar creating these rows the day before scoring.
+    points = Column(Integer)

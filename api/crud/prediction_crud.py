@@ -4,12 +4,10 @@ from typing import Optional, List
 from ..models import (
     Celebrity,
     Prediction,
-    PredictionResult,
 )
 from ..model_types import (
     PredictionCreateType,
     PredictionType,
-    PredictionResultCreateType,
 )
 
 
@@ -101,15 +99,3 @@ def get_user_predictions(
         .join(Celebrity)
         .all()
     )
-
-
-# TODO: move this to it's own module
-def create_prediction_result(
-    db: Session,
-    prediction_result: PredictionResultCreateType,
-) -> PredictionResult:
-    db_prediction_result = PredictionResult(**prediction_result.dict())
-    db.add(db_prediction_result)
-    db.commit()
-    db.refresh(db_prediction_result)
-    return db_prediction_result

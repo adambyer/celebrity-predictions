@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from fastapi import Depends, HTTPException, APIRouter, status
 from typing import List
 
@@ -8,6 +9,9 @@ from ..crud.prediction_crud import (
     get_user_predictions,
     update_prediction,
 )
+from ..crud.prediction_results import (
+    get_prediction_results_by_user_id,
+)
 from ..crud.user_crud import get_user_by_username
 from ..db import Session
 from ..models import User
@@ -17,6 +21,7 @@ from ..model_types import (
     PredictionCreateType,
     PredictionType,
     PredictionUpdateType,
+    PredictionResultType,
     UserType,
 )
 
@@ -106,6 +111,21 @@ async def delete_prediction_route(
         ) from e
 
     return True
+
+
+@router.get("/prediction-results/locked", response_model=List[PredictionResultType])
+def get_user_locked_prediction_results_route(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> list:
+    """Get yesterday's prediction results that are locked and waiting to be scored."""
+    metric_date = date.today() - timedelta(days=1)
+    try:
+        prediction_results = get_prediction_results_by_user_id(db, current_user.id, metric_date)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Unknown error.")
+
+    return prediction_results
 
 
 # This must be last so that it doesn't handle the `prediction` endpoints.
