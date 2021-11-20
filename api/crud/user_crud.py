@@ -61,8 +61,8 @@ def get_user_predictions(
 ) -> List[PredictionType]:
     return (
         db.query(Prediction)
+        .join(Celebrity)
         .filter(Prediction.user_id == user_id)
         .order_by(Prediction.created_at.desc())
-        .join(Celebrity)
         .all()
     )

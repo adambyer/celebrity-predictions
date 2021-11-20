@@ -14,7 +14,7 @@
         options = []
     }
 
-    async function searchChangeHandler() {
+    async function handleSearchInput() {
         if (timer) {
             clearTimeout(timer)
         }
@@ -50,7 +50,7 @@
         bind:value={displayValue}
         label="Search..."
         on:focus={searchFocusHandler}
-        on:input={() => searchChangeHandler()}
+        on:input={() => handleSearchInput()}
     />
 </div>
 

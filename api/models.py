@@ -10,6 +10,7 @@ from sqlalchemy import (
     ForeignKey,
     UniqueConstraint,
 )
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from .db import Base
@@ -74,6 +75,16 @@ class CelebrityDailyMetrics(BaseMixin, Base):
     reply_count = Column(Integer, nullable=False)
     retweet_count = Column(Integer, nullable=False)
     tweet_count = Column(Integer, nullable=False)
+
+    @hybrid_property
+    def total_count(self) -> int:
+        return (
+            self.like_count
+            + self.quote_count
+            + self.reply_count
+            + self.retweet_count
+            + self.tweet_count
+        )
 
 
 class Prediction(BaseMixin, Base):

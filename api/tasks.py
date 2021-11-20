@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 import logging
 from sqlalchemy.exc import IntegrityError
 
+from .celebrity_utils import update_celebrity_data as update_celebrity_data_util
 from .celery_config import task_always_eager
 from .constants import DATE_FORMAT
 from .crud.celebrity_crud import (
@@ -10,7 +11,6 @@ from .crud.celebrity_crud import (
     get_celebrity,
     get_celebrity_daily_metrics,
     get_celebrities,
-    update_celebrity,
 )
 from .crud.prediction_crud import get_predictions
 from .crud.prediction_results import (
@@ -21,7 +21,7 @@ from .crud.prediction_results import (
 from .db import Session
 from .model_types import CelebrityDailyMetricsCreateType, PredictionResultCreateType
 from .prediction_utils import get_prediction_points, get_metric_total
-from .twitter_api import get_user_by_username, get_user_tweets
+from .twitter_api import get_user_tweets
 from .twitter_utils import get_tweet_metric_totals
 
 logger = logging.getLogger(__name__)
@@ -61,32 +61,7 @@ def create_prediction_results(
 def update_celebrity_data(celebrity_id: int) -> None:
     logger.info(f"update_celebrity_data. celebrity_id:{celebrity_id}")
     db = Session()
-    celebrity = get_celebrity(db, celebrity_id)
-
-    if not celebrity:
-        return
-
-    if celebrity.twitter_id and celebrity.twitter_name:
-        return
-
-    data = get_user_by_username(celebrity.twitter_username)
-    if not data:
-        return
-
-    # When in an event, the db session cannot be used for any more updates.
-    # Omitting the `db` param will force `update_celebrity` to create a separate db connection.
-    # TODO: is there a cleaner way to do this??
-    if task_always_eager:
-        db = None
-
-    updates = {
-        "twitter_id": data["id"],
-        "twitter_name": data["name"],
-        "twitter_verified": data["verified"],
-        "twitter_description": data["description"],
-        "twitter_profile_image_url": data["profile_image_url"],
-    }
-    update_celebrity(db, celebrity, **updates)
+    update_celebrity_data_util(db, celebrity_id)
 
     if db:
         db.close()

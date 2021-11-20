@@ -45,6 +45,10 @@ class CelebrityModelView(BaseModelView):
     column_exclude_list = ["twitter_profile_image_url", "twitter_description"]
     form_excluded_columns = ["predictions", "daily_metrics"]
     column_default_sort = "twitter_name"
+    column_filters = (
+        "created_at", "updated_at", "twitter_username", "twitter_verified",
+        "twitter_id", "twitter_name",
+    )
 
     @action(
         "import-yesterdays-tweet-metrics",

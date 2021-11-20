@@ -30,13 +30,16 @@ class CurrentUserType(UserType):
     email_address: str
 
 
-class CelebrityType(OrmBaseType):
-    id: int
+class CelebrityCreateType(OrmBaseType):
     twitter_username: str
     twitter_name: Optional[str] = None
     twitter_description: Optional[str] = None
     twitter_verified: Optional[bool] = False
     twitter_profile_image_url: Optional[str] = None
+
+
+class CelebrityType(CelebrityCreateType):
+    id: int
     tweets: Optional[list] = []
     metrics: Optional[list] = []
 

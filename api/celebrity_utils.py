@@ -1,16 +1,27 @@
 from datetime import date, datetime, timedelta
+import logging
 import pytz
 
 from .cache import get_structure, set_structure
+from .celery_config import task_always_eager
 from .constants import (
     CACHE_KEY_CELEBRITY_TWEETS,
     CELEBRITY_TWEETS_CACHE_SECONDS,
 )
-from .crud.celebrity_crud import get_celebrity_daily_metrics
+from .crud.celebrity_crud import (
+    get_celebrity,
+    get_celebrity_daily_metrics,
+    update_celebrity,
+)
 from .db import Session
 from .models import Celebrity
-from .twitter_api import get_user_tweets
+from .twitter_api import (
+    get_user_by_username,
+    get_user_tweets,
+)
 from .twitter_utils import get_tweet_metric_totals
+
+logger = logging.getLogger(__name__)
 
 
 def _format_date(d: date) -> str:
@@ -82,3 +93,34 @@ def get_tweet_data(
     set_structure(cache_key, tweet_data, ex=CELEBRITY_TWEETS_CACHE_SECONDS)
 
     return tweet_data
+
+
+def update_celebrity_data(db: Session, celebrity_id: int) -> None:
+    logger.info(f"update_celebrity_data. celebrity_id:{celebrity_id}")
+    celebrity = get_celebrity(db, celebrity_id)
+
+    if not celebrity:
+        return
+
+    if celebrity.twitter_id and celebrity.twitter_name:
+        return
+
+    data = get_user_by_username(celebrity.twitter_username)
+    if not data:
+        return
+
+    updates = {
+        "twitter_id": data["id"],
+        "twitter_name": data["name"],
+        "twitter_verified": data["verified"],
+        "twitter_description": data["description"],
+        "twitter_profile_image_url": data["profile_image_url"],
+    }
+
+    # When in an event, the db session cannot be used for any more updates.
+    # Omitting the `db` param will force `update_celebrity` to create a separate db connection.
+    # TODO: is there a cleaner way to do this??
+    if task_always_eager:
+        update_celebrity(None, celebrity, **updates)
+    else:
+        update_celebrity(db, celebrity, **updates)

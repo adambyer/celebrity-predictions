@@ -55,10 +55,10 @@ def get_prediction_results_by_user_id(
 ) -> List[PredictionResult]:
     query = (
         db.query(PredictionResult)
+        .join(Celebrity)
         .filter(
             PredictionResult.user_id == user_id,
         )
-        .join(Celebrity)
     )
 
     if metric_date:

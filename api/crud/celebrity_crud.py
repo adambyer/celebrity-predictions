@@ -11,13 +11,13 @@ from ..models import (
 from ..model_types import (
     CelebrityDailyMetricsCreateType,
     CelebrityDailyMetricsType,
-    CelebrityType,
+    CelebrityCreateType,
 )
 
 
 def create_celebrity(
     db: Session,
-    celebrity: CelebrityType,
+    celebrity: CelebrityCreateType,
 ) -> Celebrity:
     db_celebrity = Celebrity(**celebrity.dict())
     db.add(db_celebrity)
@@ -112,17 +112,40 @@ def create_celebrity_daily_metrics(
 
 def get_celebrity_daily_metrics(
     db: Session,
-    celebrity_id: int,
-    start_date: date,
-    end_date: date,
+    celebrity_id: Optional[int] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    limit: Optional[int] = None,
 ) -> list:
-    return (
+    query = (
         db.query(CelebrityDailyMetrics)
-        .filter(
+        .join(Celebrity)
+    )
+
+    if celebrity_id:
+        query = query.filter(
             CelebrityDailyMetrics.celebrity_id == celebrity_id,
+        )
+
+    if start_date:
+        query = query.filter(
             CelebrityDailyMetrics.metric_date >= start_date,
+        )
+
+    if end_date:
+        query = query.filter(
             CelebrityDailyMetrics.metric_date <= end_date,
         )
-        .options(raiseload("*"))
-        .all()
+
+    query = (
+        query
+        .order_by(CelebrityDailyMetrics.created_at.desc())
+
+        # How to do this for all relationships other than those defined above?
+        # .options(raiseload("*"))
     )
+
+    if limit:
+        query = query.limit(limit)
+
+    return query.all()
