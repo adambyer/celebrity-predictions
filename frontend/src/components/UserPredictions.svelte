@@ -22,6 +22,7 @@
     } from "../api"
     import {gotoPage} from "../nav"
     import {PAGE_CREATE_PREDICTION} from "../constants"
+    import {celebrityTitle} from "../celebrity_helpers"
 
     async function handleIsEnabledClick(predictionId, isChecked) {
         const data = {
@@ -123,7 +124,7 @@
         <Body>
             {#each $userLockedPredictionResults as predictionResult}
                 <Row>
-                    <Cell>{predictionResult.celebrity.twitter_name} (@{predictionResult.celebrity.twitter_username})</Cell>
+                    <Cell>{celebrityTitle(predictionResult.celebrity)}</Cell>
                     <Cell>{predictionResult.metric}</Cell>
                     <Cell>{predictionResult.amount}</Cell>
                 </Row>

@@ -1,9 +1,17 @@
 <script>
     import Textfield from "@smui/textfield"
+    import DataTable, {
+        Head,
+        Body,
+        Row,
+        Cell,
+        Label,
+    } from "@smui/data-table"
 
     import {getRequest} from "../api"
     import {celebrities, celebrityTwitterUsername} from "../store"
     import {gotoPage} from "../nav"
+    import {celebrityTitle} from "../celebrity_helpers"
 
     async function showCelebrity(twitterUsername) {
         $celebrityTwitterUsername = twitterUsername
@@ -43,7 +51,7 @@
             {#if searchValue}
                 <span>Celebrities matching "{searchValue}"</span>
             {:else}
-                <span>Most Active Celebrities</span>
+                <span>Most Active Today</span>
             {/if}
         </h2>
 
@@ -56,13 +64,32 @@
         </div>
     </div>
 
-    <table>
-        {#each display_celebrities as celebrity}
-        <tr>
-            <td><a href="/" on:click|preventDefault={showCelebrity(celebrity.twitter_username)}>{celebrity.twitter_name}</a></td>
-        </tr>
-        {/each}
-    </table>
+    <DataTable>
+        <Head>
+            <Row>
+                <Cell></Cell>
+                <Cell><i class="fab fa-twitter" title="Tweets"></i></Cell>
+                <Cell><i class="far fa-heart" title="Likes"></i></Cell>
+                <Cell><i class="fas fa-retweet" title="Retweets"></i></Cell>
+                <Cell><i class="fas fa-reply" title="Replies"></i></Cell>
+                <Cell><i class="fas fa-quote-right" title="Quotes"></i></Cell>
+            </Row>
+        </Head>
+        <Body>
+            {#each display_celebrities as celebrity}
+                <Row>
+                    <Cell>
+                        <a href="/" on:click|preventDefault={showCelebrity(celebrity.twitter_username)}>{celebrityTitle(celebrity)}</a>
+                    </Cell>
+                    <Cell>{celebrity.metrics[0].tweet_count || 0}</Cell>
+                    <Cell>{celebrity.metrics[0].like_count || 0}</Cell>
+                    <Cell>{celebrity.metrics[0].retweet_count || 0}</Cell>
+                    <Cell>{celebrity.metrics[0].reply_count || 0}</Cell>
+                    <Cell>{celebrity.metrics[0].quote_count || 0}</Cell>
+                </Row>
+            {/each}
+        </Body>
+    </DataTable>
 </section>
 
 <style lang="scss">
@@ -72,5 +99,9 @@
         .header-text {
             margin-right: 15px;
         }
+    }
+
+    a {
+        color: blue;
     }
 </style>

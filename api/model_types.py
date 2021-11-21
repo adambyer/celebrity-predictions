@@ -76,6 +76,7 @@ class CelebrityDailyMetricsCreateType(OrmBaseType):
     reply_count: int
     retweet_count: int
     tweet_count: int
+    total_count: Optional[int]
 
 
 class CelebrityDailyMetricsType(CelebrityDailyMetricsCreateType):

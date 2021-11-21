@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import datetime, date, timedelta
 from fastapi import Depends, HTTPException, status, APIRouter
 from typing import List, Optional
 
@@ -6,10 +6,13 @@ from ..celebrity_utils import get_tweet_data
 from ..crud.celebrity_crud import (
     get_celebrity_by_twitter_username,
     get_celebrities,
-    get_celebrity_daily_metrics,
+    get_celebrity_daily_metrics_list,
 )
 from ..db import Session
-from ..model_types import CelebrityType
+from ..model_types import (
+    CelebrityType,
+    CelebrityDailyMetricsType,
+)
 
 from .dependencies import get_db
 
@@ -25,20 +28,35 @@ router = APIRouter(
 @router.get("/", response_model=List[CelebrityType])
 async def get_celebrities_route(
     db: Session = Depends(get_db),
-    limit: Optional[int] = 10,
+    limit: int = 10,
     search: Optional[str] = None,
 ) -> list:
+    metric_date = datetime.utcnow().date() - timedelta(days=1)
     try:
         if search:
-            celebrities = get_celebrities(db, limit=limit, search=search)
-        else:
-            # Get the celebrities with the most activity.
-            start_date = date.today() - timedelta(days=1)
-            metrics = get_celebrity_daily_metrics(db, start_date=start_date, limit=10)
+            db_celebrities = get_celebrities(db, limit=limit, search=search)
+            metrics_lookup = {
+                m.celebrity.id: CelebrityDailyMetricsType(**m.__dict__) for m in
+                get_celebrity_daily_metrics_list(db, celebrity_ids=[c.id for c in db_celebrities], start_date=metric_date, end_date=metric_date)
+            }
             celebrities = [
-                metric.celebrity
-                for metric in sorted(metrics, key=lambda m: m.total_count, reverse=True)
+                {
+                    **{k: v for k, v in c.__dict__.items()},
+                    "metrics": [metrics_lookup[c.id]],
+                }
+                for c in db_celebrities
             ]
+        else:
+            # Get the celebrities with the most activity today.
+            metrics = get_celebrity_daily_metrics_list(db, start_date=datetime.utcnow().date())
+            celebrities = [
+                {
+                    **{k: v for k, v in metric.celebrity.__dict__.items()},
+                    "metrics": [CelebrityDailyMetricsType(**metric.__dict__)],
+                }
+                for metric in sorted(metrics, key=lambda m: m.total_count, reverse=True)
+                if metric.total_count > 0
+            ][:limit]
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, APIRouter, status
 from typing import List
 
@@ -119,7 +119,7 @@ def get_user_locked_prediction_results_route(
     current_user: User = Depends(get_current_user),
 ) -> list:
     """Get yesterday's prediction results that are locked and waiting to be scored."""
-    metric_date = date.today() - timedelta(days=1)
+    metric_date = datetime.utcnow().date() - timedelta(days=1)
     try:
         prediction_results = get_prediction_results_by_user_id(db, current_user.id, metric_date)
     except Exception:

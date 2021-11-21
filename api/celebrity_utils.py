@@ -9,12 +9,16 @@ from .constants import (
     CELEBRITY_TWEETS_CACHE_SECONDS,
 )
 from .crud.celebrity_crud import (
+    create_celebrity_daily_metrics,
     get_celebrity,
+    get_celebrity_daily_metrics_list,
     get_celebrity_daily_metrics,
     update_celebrity,
+    update_celebrity_daily_metrics,
 )
 from .db import Session
 from .models import Celebrity
+from .model_types import CelebrityDailyMetricsCreateType
 from .twitter_api import (
     get_user_by_username,
     get_user_tweets,
@@ -55,7 +59,7 @@ def get_tweet_data(
 
     start_date = (now - timedelta(days=5)).date()
     end_date = (now - timedelta(days=1)).date()
-    celebrity_daily_metrics = get_celebrity_daily_metrics(db, celebrity.id, start_date, end_date)
+    celebrity_daily_metrics = get_celebrity_daily_metrics_list(db, [celebrity.id], start_date, end_date)
     todays_metrics["metric_date"] = now.date().isoformat()
     metrics = [
         todays_metrics,
@@ -124,3 +128,17 @@ def update_celebrity_data(db: Session, celebrity_id: int) -> None:
         update_celebrity(None, celebrity, **updates)
     else:
         update_celebrity(db, celebrity, **updates)
+
+
+def save_celebrity_daily_metrics(
+    metrics: CelebrityDailyMetricsCreateType,
+) -> None:
+    logger.info(f"save_celebrity_daily_metrics. metrics:{str(metrics)}")
+    db = Session()
+
+    db_metrics = get_celebrity_daily_metrics(db, metrics.celebrity_id, metrics.metric_date)
+
+    if db_metrics:
+        update_celebrity_daily_metrics(db, db_metrics.id, metrics)
+    else:
+        create_celebrity_daily_metrics(db, metrics)

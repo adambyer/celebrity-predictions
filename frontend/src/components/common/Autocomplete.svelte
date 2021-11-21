@@ -28,12 +28,10 @@
     }
 
     async function search() {
-        console.log("*** search")
         options = await searchMethod(displayValue)
     }
 
     function selectOption(option) {
-        console.log("*** selectValue", option)
         options = []
         displayValue = option.label
         dispatch("change", option.value)

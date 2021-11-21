@@ -1,3 +1,4 @@
+from datetime import date, datetime, timedelta
 from flask import current_app, flash
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.actions import action
@@ -8,7 +9,8 @@ from flask_admin.contrib.sqla import ModelView
 from typing import Any
 
 from ..db import Session
-from ..tasks import import_celebrity_daily_tweet_metrics
+from ..constants import DATE_FORMAT
+from ..tasks import import_celebrity_daily_metrics
 from ..models import (
     User,
     Celebrity,
@@ -51,13 +53,26 @@ class CelebrityModelView(BaseModelView):
     )
 
     @action(
+        "import-todays-tweet-metrics",
+        "Import Today's Tweet Metrics",
+        "Are you sure you want to import today's tweet metrics for the selected celebrities?",
+    )
+    def import_todays_tweet_metrics_action(self, ids: list) -> None:
+        today = date.strftime(datetime.utcnow().date(), DATE_FORMAT)
+        for celebrity_id in ids:
+            import_celebrity_daily_metrics.delay(celebrity_id, today)
+
+        flash("Tweet Metrics imported")
+
+    @action(
         "import-yesterdays-tweet-metrics",
         "Import Yesterday's Tweet Metrics",
         "Are you sure you want to import yesterday's tweet metrics for the selected celebrities?",
     )
-    def import_tweet_metrics_action(self, ids: list) -> None:
+    def import_yesterdays_tweet_metrics_action(self, ids: list) -> None:
+        yesterday = date.strftime(datetime.utcnow().date() - timedelta(days=1), DATE_FORMAT)
         for celebrity_id in ids:
-            import_celebrity_daily_tweet_metrics.delay(celebrity_id)
+            import_celebrity_daily_metrics.delay(celebrity_id, yesterday)
 
         flash("Tweet Metrics imported")
 

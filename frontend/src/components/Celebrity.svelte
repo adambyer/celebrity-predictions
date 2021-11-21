@@ -9,6 +9,7 @@
     import Tooltip, {Wrapper} from "@smui/tooltip"
 
     import {celebrity} from "../store"
+    import {celebrityTitle} from "../celebrity_helpers"
     import {
         formatDate,
         formatDateAndTime,
@@ -32,10 +33,10 @@
         headerImageElement.style.width = `${headerTextWidth}px`
     }
 
-    $: console.log("*** celebrity", $celebrity)
-    $: console.log("*** isLoading", isLoading)
-    $: console.log("*** headerTextWidth", headerTextWidth)
-    $: console.log("*** headerImageElement.style.width", (headerImageElement ? headerImageElement.style.width : 0))
+    // $: console.log("*** celebrity", $celebrity)
+    // $: console.log("*** isLoading", isLoading)
+    // $: console.log("*** headerTextWidth", headerTextWidth)
+    // $: console.log("*** headerImageElement.style.width", (headerImageElement ? headerImageElement.style.width : 0))
 </script> 
 
 <section>
@@ -47,7 +48,7 @@
         <div class="header">
             <div class="header-left">
                 <h2 class="header-top" bind:this={headerTextElement}>
-                    {$celebrity.twitter_name || $celebrity.twitter_username}
+                    {celebrityTitle($celebrity)}
                 </h2>
 
                 <div>

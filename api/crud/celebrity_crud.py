@@ -1,4 +1,5 @@
 from datetime import date
+from sqlalchemy import update
 from sqlalchemy.orm import Session, selectinload, raiseload
 from sqlalchemy.sql.expression import or_
 from typing import Optional, List
@@ -101,9 +102,9 @@ def get_celebrities(
 
 def create_celebrity_daily_metrics(
     db: Session,
-    daily_metrics: CelebrityDailyMetricsCreateType,
+    metrics: CelebrityDailyMetricsCreateType,
 ) -> CelebrityDailyMetricsType:
-    db_daily_metrics = CelebrityDailyMetrics(**daily_metrics.dict())
+    db_daily_metrics = CelebrityDailyMetrics(**metrics.dict())
     db.add(db_daily_metrics)
     db.commit()
     db.refresh(db_daily_metrics)
@@ -112,19 +113,45 @@ def create_celebrity_daily_metrics(
 
 def get_celebrity_daily_metrics(
     db: Session,
-    celebrity_id: Optional[int] = None,
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
-    limit: Optional[int] = None,
+    celebrity_id: int,
+    metric_date: date,
+) -> Optional[CelebrityDailyMetrics]:
+    return (
+        db.query(CelebrityDailyMetrics)
+        .filter(
+            CelebrityDailyMetrics.celebrity_id == celebrity_id,
+            CelebrityDailyMetrics.metric_date == metric_date,
+        ).first()
+    )
+
+
+def update_celebrity_daily_metrics(
+    db: Session,
+    id_: int,
+    updates: CelebrityDailyMetricsCreateType,
+) -> None:
+    db.execute(
+        update(CelebrityDailyMetrics)
+        .where(CelebrityDailyMetrics.id == id_)
+        .values(**updates.dict())
+    )
+
+
+def get_celebrity_daily_metrics_list(
+    db: Session,
+    celebrity_ids: list = None,
+    start_date: date = None,
+    end_date: date = None,
+    limit: int = None,
 ) -> list:
     query = (
         db.query(CelebrityDailyMetrics)
         .join(Celebrity)
     )
 
-    if celebrity_id:
+    if celebrity_ids:
         query = query.filter(
-            CelebrityDailyMetrics.celebrity_id == celebrity_id,
+            CelebrityDailyMetrics.celebrity_id.in_(celebrity_ids),
         )
 
     if start_date:
@@ -141,7 +168,7 @@ def get_celebrity_daily_metrics(
         query
         .order_by(CelebrityDailyMetrics.created_at.desc())
 
-        # How to do this for all relationships other than those defined above?
+        # TODO: How to do this for all relationships other than those defined above?
         # .options(raiseload("*"))
     )
 
