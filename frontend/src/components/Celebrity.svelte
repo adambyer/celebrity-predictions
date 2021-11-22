@@ -6,7 +6,6 @@
         Cell,
         Label,
     } from "@smui/data-table"
-    import Tooltip, {Wrapper} from "@smui/tooltip"
 
     import {celebrity} from "../store"
     import {celebrityTitle} from "../celebrity_helpers"
@@ -15,6 +14,8 @@
         formatDateAndTime,
     } from "../date_helpers"
     import {sortByDate} from "../sort_helpers"
+    import {gotoPage} from "../nav"
+    import {PAGE_CREATE_PREDICTION} from "../constants"
     import Loading from "./Loading.svelte"
 
     $: isLoading = $celebrity === null
@@ -32,11 +33,6 @@
     $: if (headerTextElement && headerImageElement) {
         headerImageElement.style.width = `${headerTextWidth}px`
     }
-
-    // $: console.log("*** celebrity", $celebrity)
-    // $: console.log("*** isLoading", isLoading)
-    // $: console.log("*** headerTextWidth", headerTextWidth)
-    // $: console.log("*** headerImageElement.style.width", (headerImageElement ? headerImageElement.style.width : 0))
 </script> 
 
 <section>
@@ -59,10 +55,11 @@
             <div class="header-right">
                 <div class="header-top">
                     <div>
-                        <Wrapper>
-                            <i class="fas fa-plus-circle fa-2x add-icon" on:click={() => {}}></i>
-                            <Tooltip>Add a Prediction for {$celebrity.twitter_name}</Tooltip>
-                        </Wrapper>
+                        <i
+                            class="fas fa-plus-circle fa-2x add-icon"
+                            on:click={() => gotoPage(PAGE_CREATE_PREDICTION, $celebrity.twitter_username)}
+                            title={`Add a Prediction for ${celebrityTitle($celebrity)}`}
+                        ></i>
                     </div>
                 </div>
 

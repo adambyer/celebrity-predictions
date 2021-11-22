@@ -13,6 +13,7 @@ import {
 export function authRequired() {
     alertMessage.set("Login Required")
     currentPage.set(PAGE_LOGIN)
+    deleteAccessToken()
 }
 
 export function setAccessToken(accessToken) {
@@ -27,6 +28,4 @@ export function getAccessToken() {
 export function deleteAccessToken() {
     Cookies.remove(COOKIE_ACCESS_TOKEN)
     isLoggedIn.set(false)
-    currentPage.set(PAGE_LOGIN)
-    alertMessage.set("You have been logged out")
 }

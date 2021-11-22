@@ -7,16 +7,16 @@
         Cell,
         Label,
     } from "@smui/data-table"
+    import Tooltip, {Wrapper} from "@smui/tooltip"
 
     import {getRequest} from "../api"
     import {celebrities, celebrityTwitterUsername} from "../store"
     import {gotoPage} from "../nav"
     import {celebrityTitle} from "../celebrity_helpers"
-
-    async function showCelebrity(twitterUsername) {
-        $celebrityTwitterUsername = twitterUsername
-        gotoPage("celebrity")
-    }
+    import {
+        PAGE_CELEBRITY,
+        PAGE_CREATE_PREDICTION,
+    } from "../constants"
 
     async function handleSearchInput() {
         if (timer) {
@@ -73,19 +73,30 @@
                 <Cell><i class="fas fa-retweet" title="Retweets"></i></Cell>
                 <Cell><i class="fas fa-reply" title="Replies"></i></Cell>
                 <Cell><i class="fas fa-quote-right" title="Quotes"></i></Cell>
+                <Cell></Cell>
             </Row>
         </Head>
         <Body>
             {#each display_celebrities as celebrity}
                 <Row>
                     <Cell>
-                        <a href="/" on:click|preventDefault={showCelebrity(celebrity.twitter_username)}>{celebrityTitle(celebrity)}</a>
+                        <a
+                            href="/"
+                            on:click|preventDefault={() => gotoPage(PAGE_CELEBRITY, celebrity.twitter_username)}
+                        >{celebrityTitle(celebrity)}</a>
                     </Cell>
                     <Cell>{celebrity.metrics[0].tweet_count || 0}</Cell>
                     <Cell>{celebrity.metrics[0].like_count || 0}</Cell>
                     <Cell>{celebrity.metrics[0].retweet_count || 0}</Cell>
                     <Cell>{celebrity.metrics[0].reply_count || 0}</Cell>
                     <Cell>{celebrity.metrics[0].quote_count || 0}</Cell>
+                    <Cell>
+                        <i
+                            class="fas fa-plus-circle fa-2x add-icon"
+                            on:click={() => gotoPage(PAGE_CREATE_PREDICTION, celebrity.twitter_username)}
+                            title={`Add a Prediction for ${celebrityTitle(celebrity)}`}
+                        ></i>
+                    </Cell>
                 </Row>
             {/each}
         </Body>

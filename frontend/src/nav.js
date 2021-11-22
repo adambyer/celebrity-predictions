@@ -12,6 +12,7 @@ import {
 } from "./store"
 import {getRequest} from "./api"
 import {
+    PAGE_LOGIN,
     PAGE_CELEBRITY,
     PAGE_CELEBRITY_LIST,
     PAGE_USER_PREDICTIONS,
@@ -21,13 +22,21 @@ import {
     authRequired,
 } from "./auth_helpers"
 
-export async function gotoPage(page) {
+export async function gotoPage(
+    page,
+    twitterUsername = "",
+) {
+    if (!get(requestedPage)) {
+        celebrityTwitterUsername.set(twitterUsername)
+    }
+
     if (PAGES_REQUIRING_AUTH.includes(page) && !get(isLoggedIn)) {
         requestedPage.set(page)
         authRequired()
         return
     }
-    
+
+    requestedPage.set("")
     currentPage.set(page)
 
     if (page === PAGE_CELEBRITY_LIST) {

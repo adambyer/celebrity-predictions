@@ -1,16 +1,28 @@
 <script>
-    import {createEventDispatcher} from "svelte"
+
+    import {
+        createEventDispatcher,
+        onMount,
+    } from "svelte"
     import Textfield from "@smui/textfield"
 
     export let searchMethod = () => {}
+    export let searchValue = ""
 
     export function reset() {
         options = []
-        displayValue = null
+        searchValue = ""
     }
+
+    onMount(async () => {
+        if (searchValue) {
+            await search()
+            selectOption(options[0])
+        }
+    })
     
     function searchFocusHandler() {
-        displayValue = null
+        searchValue = ""
         options = []
     }
 
@@ -19,7 +31,7 @@
             clearTimeout(timer)
         }
 
-        if (!displayValue) {
+        if (!searchValue) {
             options = []
             return
         }
@@ -28,24 +40,23 @@
     }
 
     async function search() {
-        options = await searchMethod(displayValue)
+        options = await searchMethod(searchValue)
     }
 
     function selectOption(option) {
         options = []
-        displayValue = option.label
+        searchValue = option.label
         dispatch("change", option.value)
     }
 
     const dispatch = createEventDispatcher()
     let options = []
     let timer = null
-    let displayValue = null
 </script>
 
 <div>
     <Textfield
-        bind:value={displayValue}
+        bind:value={searchValue}
         label="Search..."
         on:focus={searchFocusHandler}
         on:input={() => handleSearchInput()}

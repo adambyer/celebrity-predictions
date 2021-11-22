@@ -19,6 +19,7 @@ export async function getRequest(url, params = {}) {
     return await API.get(url, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
+            throw 401
         }
     })
 }
@@ -31,6 +32,7 @@ export async function patchRequest(url, data) {
     return await API.patch(url, data, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
+            throw 401
         }
     })
 }
@@ -43,6 +45,7 @@ export async function postRequest(url, data) {
     return await API.post(url, data, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
+            throw 401
         }
     })
 }
@@ -55,6 +58,7 @@ export async function deleteRequest(url, data) {
     return await API.delete(url, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
+            throw 401
         }
     })
 }

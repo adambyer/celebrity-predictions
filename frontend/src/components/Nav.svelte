@@ -19,6 +19,7 @@
     function logOut() {
         deleteAccessToken()
         gotoPage(PAGE_LOGIN)
+        alertMessage.set("You have been logged out")
     }
 </script>
 

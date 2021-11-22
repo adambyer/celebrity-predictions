@@ -9,8 +9,13 @@
     import Autocomplete from "./common/Autocomplete.svelte"
     import {celebritySearch} from "../autocomplete"
 
-    import {alertMessage} from "../store"
+    import {
+        alertMessage,
+        celebrityTwitterUsername,
+    } from "../store"
     import {postRequest} from "../api"
+    import {PAGE_USER_PREDICTIONS} from "../constants"
+    import {gotoPage} from "../nav"
 
     async function handleIsEnabledClick(predictionId, isChecked) {
         const data = {
@@ -39,11 +44,17 @@
             is_enabled: isEnabled,
             is_auto_disabled: isAutoDisabled,
         }
-        const response = await postRequest("user/prediction", prediction)
+
+        try {
+            const response = await postRequest("user/prediction", prediction) 
+        } catch(error) {
+            return
+        }
 
         $alertMessage = "Prediction Saved!"
         reset()
         celebrityAutocomplete.reset()
+        gotoPage(PAGE_USER_PREDICTIONS)
     }
 
     function reset() {
@@ -89,6 +100,7 @@
             <Autocomplete
                 bind:this={celebrityAutocomplete}
                 searchMethod={celebritySearch}
+                searchValue={$celebrityTwitterUsername}
                 on:change={(event) => celebrityId = event.detail}
             />
         </div>
