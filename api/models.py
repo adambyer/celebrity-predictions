@@ -31,8 +31,8 @@ class User(BaseMixin, Base):
     is_active = Column(Boolean, default=True, nullable=False)
     is_staff = Column(Boolean, default=False, nullable=False)
 
-    predictions = relationship("Prediction", backref="user")
-    prediction_results = relationship("PredictionResult", backref="user")
+    predictions = relationship("Prediction", backref="user", cascade="all, delete-orphan")
+    prediction_results = relationship("PredictionResult", backref="user", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"{self.username} ({self.id})"
@@ -54,9 +54,9 @@ class Celebrity(BaseMixin, Base):
     # https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/user-profile-images-and-banners
     twitter_profile_image_url = Column(String(1000))
 
-    predictions = relationship("Prediction", backref="celebrity")
-    prediction_results = relationship("PredictionResult", backref="celebrity")
-    daily_metrics = relationship("CelebrityDailyMetrics", backref="celebrity")
+    predictions = relationship("Prediction", backref="celebrity", cascade="all, delete-orphan")
+    prediction_results = relationship("PredictionResult", backref="celebrity", cascade="all, delete-orphan")
+    daily_metrics = relationship("CelebrityDailyMetrics", backref="celebrity", cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return f"{self.twitter_username} ({self.id})"
@@ -68,7 +68,7 @@ class CelebrityDailyMetrics(BaseMixin, Base):
         UniqueConstraint('celebrity_id', 'metric_date'),
     )
 
-    celebrity_id = Column(Integer, ForeignKey("celebrity.id"), nullable=False)
+    celebrity_id = Column(Integer, ForeignKey("celebrity.id", ondelete="CASCADE"), nullable=False)
     metric_date = Column(Date, nullable=False)
     like_count = Column(Integer, nullable=False)
     quote_count = Column(Integer, nullable=False)
@@ -93,15 +93,11 @@ class Prediction(BaseMixin, Base):
         UniqueConstraint('user_id', 'celebrity_id', 'metric'),
     )
 
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    celebrity_id = Column(Integer, ForeignKey("celebrity.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
+    celebrity_id = Column(Integer, ForeignKey("celebrity.id", ondelete="CASCADE"), nullable=False)
 
     is_enabled = Column(Boolean, default=True, nullable=False)
     is_auto_disabled = Column(Boolean, default=False, nullable=False)
-
-    # TODO: delete this??
-    is_deleted = Column(Boolean, default=False, nullable=False)
-
     amount = Column(Integer, nullable=False)
 
     # like, retweet, reply, quote
@@ -119,8 +115,8 @@ class PredictionResult(BaseMixin, Base):
         UniqueConstraint('user_id', 'celebrity_id', 'metric', 'metric_date'),
     )
 
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    celebrity_id = Column(Integer, ForeignKey("celebrity.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
+    celebrity_id = Column(Integer, ForeignKey("celebrity.id", ondelete="CASCADE"), nullable=False)
 
     metric_date = Column(Date, nullable=False)
     amount = Column(Integer, nullable=False)
