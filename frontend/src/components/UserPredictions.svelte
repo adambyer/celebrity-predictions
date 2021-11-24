@@ -26,7 +26,8 @@
         METRIC_CLASSES,
         METRIC_LABELS_PLURAL,
     } from "../constants"
-    import {celebrityTitle} from "../celebrity_helpers"
+    import CelebrityLink from "./common/CelebrityLink.svelte"
+    import MetricLabel from "./common/MetricLabel.svelte"
 
     async function handleIsEnabledClick(predictionId, isChecked) {
         const data = {
@@ -130,9 +131,11 @@
         <Body>
             {#each userLockedPredictionResultsSorted as p}
                 <Row>
-                    <Cell>{celebrityTitle(p.celebrity)}</Cell>
                     <Cell>
-                        <i class={METRIC_CLASSES[p.metric]} title={METRIC_LABELS_PLURAL[p.metric]}></i>
+                        <CelebrityLink celebrity={p.celebrity}/>
+                    </Cell>
+                    <Cell>
+                        <MetricLabel metric={p.metric} iconOnly={true}/>
                     </Cell>
                     <Cell>{p.amount}</Cell>
                 </Row>
@@ -179,9 +182,11 @@
         <Body>
             {#each userPredictionsSorted as p}
                 <Row>
-                    <Cell>{p.celebrity.twitter_name} (@{p.celebrity.twitter_username})</Cell>
                     <Cell>
-                        <i class={METRIC_CLASSES[p.metric]} title={METRIC_LABELS_PLURAL[p.metric]}></i>
+                        <CelebrityLink celebrity={p.celebrity}/>
+                    </Cell>
+                    <Cell>
+                        <MetricLabel metric={p.metric} iconOnly={true}/>
                     </Cell>
                     <Cell>{p.amount}</Cell>
                     <Cell>

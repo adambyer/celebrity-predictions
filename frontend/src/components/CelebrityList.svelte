@@ -7,7 +7,6 @@
         Cell,
         Label,
     } from "@smui/data-table"
-    import Tooltip, {Wrapper} from "@smui/tooltip"
 
     import {getRequest} from "../api"
     import {celebrities, celebrityTwitterUsername} from "../store"
@@ -17,6 +16,7 @@
         PAGE_CELEBRITY,
         PAGE_CREATE_PREDICTION,
     } from "../constants"
+    import CelebrityLink from "./common/CelebrityLink.svelte"
 
     async function handleSearchInput() {
         if (timer) {
@@ -80,10 +80,7 @@
             {#each display_celebrities as celebrity}
                 <Row>
                     <Cell>
-                        <a
-                            href="/"
-                            on:click|preventDefault={() => gotoPage(PAGE_CELEBRITY, celebrity.twitter_username)}
-                        >{celebrityTitle(celebrity)}</a>
+                        <CelebrityLink celebrity={celebrity}/>
                     </Cell>
                     <Cell>{celebrity.metrics[0].tweet_count || 0}</Cell>
                     <Cell>{celebrity.metrics[0].like_count || 0}</Cell>
@@ -110,9 +107,5 @@
         .header-text {
             margin-right: 15px;
         }
-    }
-
-    a {
-        color: blue;
     }
 </style>
