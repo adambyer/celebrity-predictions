@@ -4,6 +4,9 @@ import {
     authRequired,
     getAccessToken,
 } from "./auth_helpers"
+import {
+    isLoading,
+} from "./store"
 
 const API = axios.create({
     baseURL: 'http://127.0.0.1:8000',
@@ -16,11 +19,14 @@ export async function getRequest(url, params = {}) {
         headers: {Authorization: `Bearer ${accessToken}`},
         params,
     }
+    isLoading.set(true)
     return await API.get(url, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
             throw 401
         }
+    }).finally(() => {
+        isLoading.set(false)
     })
 }
 
@@ -29,11 +35,14 @@ export async function patchRequest(url, data) {
     const config = {
         headers: {Authorization: `Bearer ${accessToken}`}
     }
+    isLoading.set(true)
     return await API.patch(url, data, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
             throw 401
         }
+    }).finally(() => {
+        isLoading.set(false)
     })
 }
 
@@ -42,11 +51,14 @@ export async function postRequest(url, data) {
     const config = {
         headers: {Authorization: `Bearer ${accessToken}`}
     }
+    isLoading.set(true)
     return await API.post(url, data, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
             throw 401
         }
+    }).finally(() => {
+        isLoading.set(false)
     })
 }
 
@@ -55,11 +67,14 @@ export async function deleteRequest(url, data) {
     const config = {
         headers: {Authorization: `Bearer ${accessToken}`}
     }
+    isLoading.set(true)
     return await API.delete(url, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
             throw 401
         }
+    }).finally(() => {
+        isLoading.set(false)
     })
 }
 

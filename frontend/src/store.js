@@ -12,12 +12,14 @@ function hasAccessToken() {
 }
 
 
+export const isLoggedIn = writable(hasAccessToken())
+export const isLoading = writable(false)
+export const currentUser = writable({})
 export const currentPage = writable("home")
 export const requestedPage = writable("")
+export const alertMessage = writable("")
 export const celebrities = writable([])
 export const celebrityTwitterUsername = writable("")
 export const celebrity = writable(null)
 export const userPredictions = writable([])
 export const userLockedPredictionResults = writable([])
-export const alertMessage = writable("")
-export const isLoggedIn = writable(hasAccessToken())

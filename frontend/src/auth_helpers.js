@@ -8,6 +8,7 @@ import {
     alertMessage,
     currentPage,
     isLoggedIn,
+    currentUser,
 } from "./store"
 
 export function authRequired() {
@@ -28,4 +29,5 @@ export function getAccessToken() {
 export function deleteAccessToken() {
     Cookies.remove(COOKIE_ACCESS_TOKEN)
     isLoggedIn.set(false)
+    currentUser.set({})
 }

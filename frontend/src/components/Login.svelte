@@ -1,5 +1,8 @@
 <script>
     import {onMount} from "svelte"
+    import Textfield from "@smui/textfield"
+    import Button, {Label} from "@smui/button"
+
     import api from "../api"
     import {
         PAGE_HOME,
@@ -41,12 +44,41 @@
             $alertMessage = "Invalid username or password. Please try again."
         })
     }
+
+    $: isReady = !!(
+        username
+        && password
+    )
 </script>
 
-<section>
+<section class="content">
     <form on:submit|preventDefault={login}>
-        Username: <input bind:value={username} bind:this={usernameInput}/><br/>
-        Password: <input bind:value={password} type="password"/><br/>
-        <button>Login</button>
+        <div class="row">
+            <Textfield bind:value={username} bind:this={usernameInput} label="Username" variant="outlined" required={true}/>
+        </div>
+
+        <div class="row">
+            <Textfield bind:value={password} label="Password" variant="outlined" required={true} type="password"/>
+        </div>
+        
+        <div class="row">
+            <Button
+                variant="raised"
+                disabled={!isReady}
+            >
+                <Label>Login</Label>
+            </Button>
+        </div>
     </form>
 </section>
+
+<style lang="scss">
+    .content {
+        padding: 15px;
+        width: fit-content;
+
+        .row {
+            margin-bottom: 10px;
+        }
+    }
+</style>

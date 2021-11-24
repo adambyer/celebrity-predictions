@@ -1,4 +1,5 @@
 from sqlalchemy import or_
+from sqlalchemy.sql.expression import update
 from sqlalchemy.orm import Session
 from typing import Optional, List
 
@@ -11,6 +12,7 @@ from ..models import (
 from ..model_types import (
     PredictionType,
     UserCreateType,
+    UserUpdateType,
 )
 
 
@@ -53,6 +55,24 @@ def create_user(
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def update_user(
+    db: Session,
+    user_id: int,
+    user: UserUpdateType,
+) -> None:
+    updates = {k: v for k, v in user.dict().items() if v}
+
+    if user.password:
+        updates["password"] = get_password_hash(user.password)
+
+    db.execute(
+        update(User)
+        .where(User.id == user_id)
+        .values(**updates)
+    )
+    db.commit()
 
 
 def get_user_predictions(

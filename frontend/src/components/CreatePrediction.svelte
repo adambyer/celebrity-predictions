@@ -86,7 +86,7 @@
     )
 </script>
 
-<section class="standard-border body">
+<section class="standard-border content">
     <div class="header">
         <h2>New Prediction</h2>
     </div>
@@ -158,7 +158,7 @@
         width: 300px;
     }
 
-    .body {
+    .content {
         padding: 15px;
         width: fit-content;
 

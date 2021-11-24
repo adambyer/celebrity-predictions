@@ -2,6 +2,7 @@ import {get} from "svelte/store"
 
 import {
     isLoggedIn,
+    currentUser,
     currentPage,
     celebrities,
     celebrityTwitterUsername,
@@ -13,6 +14,7 @@ import {
 import {getRequest} from "./api"
 import {
     PAGE_LOGIN,
+    PAGE_ACCOUNT_SETTINGS,
     PAGE_CELEBRITY,
     PAGE_CELEBRITY_LIST,
     PAGE_USER_PREDICTIONS,
@@ -39,7 +41,13 @@ export async function gotoPage(
     requestedPage.set("")
     currentPage.set(page)
 
-    if (page === PAGE_CELEBRITY_LIST) {
+    if (page === PAGE_ACCOUNT_SETTINGS) {
+        const response = await getRequest("/user/account")
+
+        if (response) {
+            currentUser.set(response.data)
+        }
+    } else if (page === PAGE_CELEBRITY_LIST) {
         const response = await getRequest("/celebrity")
 
         if (response) {

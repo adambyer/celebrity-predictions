@@ -1,21 +1,28 @@
 <script>
-	import {currentPage} from "./store"
+	import {
+		isLoading,
+		currentPage,
+	} from "./store"
+
 	import {
 		PAGE_HOME,
+		PAGE_LOGIN,
+		PAGE_ACCOUNT_SETTINGS,
 		PAGE_CELEBRITY,
 		PAGE_CELEBRITY_LIST,
 		PAGE_USER_PREDICTIONS,
 		PAGE_CREATE_PREDICTION,
-		PAGE_LOGIN,
 	} from "./constants"
 
+	import Loading from "./components/common/Loading.svelte"
+	import Alert from "./components/common/Alert.svelte"
 	import Home from "./components/Home.svelte"
 	import Nav from "./components/Nav.svelte"
 	import Login from "./components/Login.svelte"
+	import AccountSettings from "./components/AccountSettings.svelte"
 	import CelebrityList from "./components/CelebrityList.svelte"
 	import Celebrity from "./components/Celebrity.svelte"
 	import UserPredictions from "./components/UserPredictions.svelte"
-	import Alert from "./components/Alert.svelte"
 	import CreatePrediction from "./components/CreatePrediction.svelte"
 </script>
 
@@ -24,10 +31,16 @@
 <div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
 	<Alert/>
 
+	{#if $isLoading}
+        <Loading/>
+    {/if}
+
 	{#if $currentPage === PAGE_HOME}
 		<Home/>
 	{:else if $currentPage === PAGE_LOGIN}
 		<Login/>
+	{:else if $currentPage === PAGE_ACCOUNT_SETTINGS}
+		<AccountSettings/>
 	{:else if $currentPage === PAGE_CELEBRITY_LIST}
 		<CelebrityList/>
 	{:else if $currentPage === PAGE_CELEBRITY}

@@ -12,7 +12,10 @@ from ..crud.prediction_crud import (
 from ..crud.prediction_results import (
     get_prediction_results_by_user_id,
 )
-from ..crud.user_crud import get_user_by_username
+from ..crud.user_crud import (
+    get_user_by_username,
+    update_user,
+)
 from ..db import Session
 from ..models import User
 from ..model_types import (
@@ -22,7 +25,8 @@ from ..model_types import (
     PredictionType,
     PredictionUpdateType,
     PredictionResultType,
-    UserType,
+    UserBaseType,
+    UserUpdateType,
 )
 
 from .dependencies import get_db, get_current_user
@@ -35,11 +39,20 @@ router = APIRouter(
 )
 
 
-@router.get("/me", response_model=CurrentUserType)
+@router.get("/account", response_model=CurrentUserType)
 async def get_current_user_route(
     current_user: User = Depends(get_current_user),
 ) -> dict:
     return current_user
+
+
+@router.post("/account")
+async def post_current_user_route(
+    user: UserUpdateType,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> None:
+    update_user(db, current_user.id, user)
 
 
 @router.get("/prediction", response_model=List[PredictionType])
@@ -129,7 +142,7 @@ def get_user_locked_prediction_results_route(
 
 
 # This must be last so that it doesn't handle the `prediction` endpoints.
-@router.get("/{username}", response_model=UserType)
+@router.get("/{username}", response_model=UserBaseType)
 def get_user_route(
     username: str,
     db: Session = Depends(get_db),

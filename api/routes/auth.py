@@ -5,7 +5,7 @@ from typing import Optional
 from ..crud.user_crud import create_user, get_user_by_username
 from ..db import Session
 from ..models import User
-from ..model_types import TokenType, UserCreateType, UserType
+from ..model_types import TokenType, UserCreateType, UserBaseType
 from ..auth_utils import create_access_token, verify_password
 
 from .dependencies import get_db
@@ -30,7 +30,7 @@ def _authenticate_user(db: Session, username: str, password: str) -> Optional[Us
     return user
 
 
-@router.post("/register", response_model=UserType)
+@router.post("/register", response_model=UserBaseType)
 async def register(
     user: UserCreateType,
     db: Session = Depends(get_db),

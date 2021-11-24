@@ -4,10 +4,12 @@
         Body,
         Row,
         Cell,
-        Label,
     } from "@smui/data-table"
 
-    import {celebrity} from "../store"
+    import {
+        isLoading,
+        celebrity,
+    } from "../store"
     import {celebrityTitle} from "../celebrity_helpers"
     import {
         formatDate,
@@ -19,10 +21,8 @@
         PAGE_CREATE_PREDICTION,
         METRIC,
     } from "../constants"
-    import Loading from "./common/Loading.svelte"
     import MetricLabel from "./common/MetricLabel.svelte"
 
-    $: isLoading = $celebrity === null
     $: tweets = $celebrity ? $celebrity.tweets.sort((a, b) => sortByDate(a, b, "created_at")) : []
     $: metrics = $celebrity ? $celebrity.metrics.sort((a, b) => sortByDate(a, b, "metric_date")) : []
 
@@ -40,10 +40,6 @@
 </script> 
 
 <section>
-    {#if isLoading}
-        <Loading/>
-    {/if}
-
     {#if $celebrity}
         <div class="header">
             <div class="header-left">

@@ -15,6 +15,7 @@ class TokenType(BaseModel):
 
 class UserBaseType(OrmBaseType):
     username: str
+    created_at: Optional[datetime] = None
 
 
 class UserCreateType(UserBaseType):
@@ -22,11 +23,12 @@ class UserCreateType(UserBaseType):
     password: str
 
 
-class UserType(UserBaseType):
-    created_at: datetime
+class UserUpdateType(UserBaseType):
+    email_address: str
+    password: Optional[str] = None
 
 
-class CurrentUserType(UserType):
+class CurrentUserType(UserBaseType):
     email_address: str
 
 

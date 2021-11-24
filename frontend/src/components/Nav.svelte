@@ -4,13 +4,15 @@
     import {gotoPage} from "../nav"
     import {
         PAGE_HOME,
-        PAGE_CELEBRITY_LIST,
         PAGE_LOGIN,
+        PAGE_ACCOUNT_SETTINGS,
+        PAGE_CELEBRITY_LIST,
         PAGE_USER_PREDICTIONS,
     } from "../constants"
     import {
         currentPage,
         isLoggedIn,
+        alertMessage,
     } from "../store"
     import {
         deleteAccessToken,
@@ -66,11 +68,11 @@
 
                 <div class="w3-dropdown-content w3-card-4 w3-bar-block account-options">
                     {#if $isLoggedIn}
-                        <a href="/" class="w3-bar-item w3-button" on:click|preventDefault={() => logOut()}>Logout</a>
+                        <a href="/" class="w3-bar-item w3-button" on:click|preventDefault={logOut}>Logout</a>
+                        <a href="/" class="w3-bar-item w3-button" on:click|preventDefault={() => gotoPage(PAGE_ACCOUNT_SETTINGS)}>Account Settings</a>
                     {:else}
                         <a href="/" class="w3-bar-item w3-button" on:click|preventDefault={() => gotoPage(PAGE_LOGIN)}>Login</a>
                     {/if}
-                    <a href="/" class="w3-bar-item w3-button">Account Settings</a>
                 </div>
             </div>
         </div>
@@ -82,7 +84,7 @@
 
     .account-options {
         right: 0;
-        width: 300px;
+        width: fit-content;
     }
 
     .current-page {

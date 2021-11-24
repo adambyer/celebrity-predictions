@@ -4,7 +4,7 @@
 
 <script>
 	import Snackbar, {Label} from "@smui/snackbar"
-	import {alertMessage} from "../store"
+	import {alertMessage} from "../../store"
 
 	let alertSnackbar = null
 
