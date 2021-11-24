@@ -5,6 +5,7 @@
     } from "svelte"
     import Textfield from "@smui/textfield"
 
+    export let label = "Search"
     export let searchMethod = () => {}
     export let searchValue = ""
 
@@ -56,9 +57,10 @@
 <div>
     <Textfield
         bind:value={searchValue}
-        label="Search..."
+        label={label}
         on:focus={searchFocusHandler}
         on:input={() => handleSearchInput()}
+        variant="outlined"
     />
 </div>
 
@@ -78,7 +80,7 @@
         z-index: 10;
         border: 1px solid gray;
         padding: 5px;
-        background-color: white;
+        background-color: rgb(25, 39, 52);
         min-width: 300px;
 
         &.show {
@@ -87,12 +89,10 @@
 
         .option {
             cursor: pointer;
-            background-color: lightgray;
-            border-bottom: 1px solid darkgray;
             padding: 5px;
 
             &:hover {
-                background-color: lightblue;
+                background-color: #263746 !important;
             }
         }
     }

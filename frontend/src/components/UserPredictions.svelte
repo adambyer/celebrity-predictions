@@ -235,4 +235,12 @@
             background-color: rgba(0, 0, 0, 0.04) !important;
         }
     }
+
+    :global(.mdc-dialog) {
+        background-color: rgba(0, 0, 0, 0.5);
+
+        :global(.mdc-dialog__title) {
+            color: black !important;
+        }
+    }
 </style>

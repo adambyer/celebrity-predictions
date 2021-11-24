@@ -45,7 +45,7 @@
     }
 </script>
 
-<section>
+<section class="content">
     <div class="header">
         <h2 class="header-text">
             {#if searchValue}
@@ -55,7 +55,7 @@
             {/if}
         </h2>
 
-        <div>
+        <div class="search-container">
             <Textfield
                 bind:value={searchValue}
                 label="Search"
@@ -101,11 +101,30 @@
 </section>
 
 <style lang="scss">
-    .header {
-        display: flex;
+    .content {
+        width: fit-content;
 
-        .header-text {
-            margin-right: 15px;
+        .header {
+            display: flex;
+            justify-content: space-between;
+
+            .header-text {
+                margin-right: 15px;
+            }
+
+            .search-container {
+                width: 160px;
+                padding-right: 5px;
+
+                :global(.mdc-text-field) {
+                    width: 100%;
+
+                    :global(.mdc-floating-label) {
+                        right: 0;
+                        left: initial;
+                    }
+                }
+            }
         }
     }
 </style>

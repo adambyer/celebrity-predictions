@@ -1,7 +1,16 @@
 /* TODO: make this scss */
-html, body, h1, h2, h3, h4, h5 {font-family: "Open Sans", sans-serif}
+/* 1DA1F2 is Twitter color */
+* {
+    border-color: #607d8b !important;
+    font-family: "Open Sans", sans-serif;
+}
+
+html, body, h1, h2, h3, h4, h5, th, td, i, label, span, input, .mdc-data-table__cell {
+    color: #f5f7f8 !important;
+}
 
 a {
+    color: #1a8cd3 !important;
     text-decoration: none;
 }
 
@@ -22,15 +31,67 @@ a {
     background-color: rgba(0, 0, 0, 0.8) !important;
 }
 
+.mdc-data-table {
+    background-color: rgb(21, 32, 43) !important;
+}
+
 .mdc-data-table__header-cell {
     font-weight: bold !important;
+    background-color: #1DA1F2 !important;
+}
+
+.mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
+    background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
 .add-icon {
     cursor: pointer;
-    color: blue;
+    color: #1DA1F2 !important;
 }
 
 .add-icon:hover {
-    color: gray;
+    color: #1883c5 !important;
 }
+
+.standard-border {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+}
+
+.mdc-button:disabled {
+    background-color: rgb(25, 39, 52) !important;
+}
+
+.mdc-button--raised:not(:disabled) {
+    background-color: #1DA1F2 !important;
+}
+
+.mdc-menu-surface {
+    background-color: rgb(25, 39, 52) !important;
+}
+
+/* W3 theme customizations */
+/* Copied from https://www.w3schools.com/lib/w3-theme-blue-grey.css and modified as needed */
+.w3-theme-l5 {background-color: rgb(21, 32, 43) !important}
+.w3-theme-l4 {background-color:#dfe5e8 !important}
+.w3-theme-l3 {background-color:#becbd2 !important}
+.w3-theme-l2 {background-color:#9eb1bb !important}
+.w3-theme-l1 {background-color:#7d97a5 !important}
+.w3-theme-d1 {background-color:#57707d !important}
+.w3-theme-d2 {background-color:#1DA1F2 !important}
+.w3-theme-d3 {background-color:#435761 !important}
+.w3-theme-d4 {background-color:#3a4b53 !important}
+.w3-theme-d5 {background-color:#303e45 !important}
+
+.w3-theme-light {color:#000 !important; background-color:#f5f7f8 !important}
+.w3-theme-dark {color:#fff !important; background-color:#303e45 !important}
+.w3-theme-action {color:#fff !important; background-color:#303e45 !important}
+
+.w3-theme {color:#fff !important; background-color:#607d8b !important}
+.w3-text-theme {color:#607d8b !important}
+.w3-border-theme {border-color:#607d8b !important}
+
+.w3-hover-theme:hover {color:#fff !important; background-color:#607d8b !important}
+.w3-hover-text-theme:hover {color:#607d8b !important}
+.w3-hover-border-theme:hover {border-color:#607d8b !important}

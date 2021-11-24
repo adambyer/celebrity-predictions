@@ -86,23 +86,28 @@
     )
 </script>
 
-<section>
+<section class="standard-border body">
     <div class="header">
         <h2>New Prediction</h2>
     </div>
     
     <form on:submit|preventDefault={save}>
-        <div>
+        <div class="row">
             <Autocomplete
                 bind:this={celebrityAutocomplete}
+                label="Who"
                 searchMethod={celebritySearch}
                 searchValue={$celebrityTwitterUsername}
                 on:change={(event) => celebrityId = event.detail}
             />
         </div>
 
-        <div>
-            <Select bind:value={metric} label="What action do you want to predict?">
+        <div class="row">
+            <Select
+                bind:value={metric}
+                label="What"
+                variant="outlined"
+            >
                 {#each METRICS as m}
                     <Option value={m}>
                         <MetricLabel metric={m}/>
@@ -111,31 +116,33 @@
             </Select>
         </div>
 
-        <div>
-            <Textfield bind:value={amount} label="How many do you think will happen?"/>
+        <div class="row">
+            <Textfield bind:value={amount} label="How many" variant="outlined"/>
         </div>
 
-        <div>
-            <FormField>
-                <span>Enabled</span>
-                <Checkbox bind:checked={isEnabled} touch/>
-            </FormField>
+        <div class="row">
+            <div>
+                <FormField>
+                    <span>Enabled</span>
+                    <Checkbox bind:checked={isEnabled} touch/>
+                </FormField>
+            </div>
+
+            <div>
+                <FormField>
+                    <span>Automatic Disable</span>
+
+                    <Wrapper>
+                        <i class="far fa-question-circle"></i>
+                        <Tooltip>When checked, this will cause the prediction to be automatically disabled after the next scoring occurs.</Tooltip>
+                    </Wrapper>
+
+                    <Checkbox bind:checked={isAutoDisabled} touch/>
+                </FormField>
+            </div>
         </div>
 
-        <div>
-            <FormField>
-                <span>Automatic Disable</span>
-
-                <Wrapper>
-                    <i class="far fa-question-circle"></i>
-                    <Tooltip>When checked, this will cause the prediction to be automatically disabled after the next scoring occurs.</Tooltip>
-                </Wrapper>
-
-                <Checkbox bind:checked={isAutoDisabled} touch/>
-            </FormField>
-        </div>
-
-        <div>
+        <div class="row">
             <Button
                 variant="raised"
                 disabled={!isReady}
@@ -149,5 +156,14 @@
 <style lang="scss">
     :global(.mdc-select, .mdc-text-field) {
         width: 300px;
+    }
+
+    .body {
+        padding: 15px;
+        width: fit-content;
+
+        .row {
+            margin-bottom: 10px;
+        }
     }
 </style>
