@@ -123,6 +123,10 @@
                         right: 0;
                         left: initial;
                     }
+
+                    :global(.mdc-line-ripple::before), :global(.mdc-line-ripple::after) {
+                        border-bottom-color: red;
+                    }
                 }
             }
         }
