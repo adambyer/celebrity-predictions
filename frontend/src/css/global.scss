@@ -1,0 +1,80 @@
+@import "./constants.scss";
+
+* {
+    border-color: #607d8b !important;
+    font-family: "Open Sans", sans-serif;
+}
+
+html, body, h1, h2, h3, h4, h5, th, td, i, label, span, input, .mdc-data-table__cell {
+    color: $primary-white !important;
+}
+
+a {
+    color: $secondary-blue !important;
+    text-decoration: none;
+}
+
+.w3-theme-l5 {
+    background-color: rgb(7, 10, 12) !important;
+}
+
+.w3-theme-d2 {
+    background-color:$primary-blue !important;
+}
+
+.fa-question-circle {
+    cursor: help;
+    padding: 0 0 3px 3px;
+}
+
+.fa-trash-alt {
+    cursor: pointer;
+}
+
+.fa-trash-alt:hover {
+    color: blue;
+}
+
+.mdc-tooltip__surface {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.mdc-data-table {
+    background-color: rgb(21, 32, 43) !important;
+}
+
+.mdc-data-table__header-cell {
+    font-weight: bold !important;
+    background-color: $primary-blue !important;
+}
+
+.mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.add-icon {
+    cursor: pointer;
+    color: $primary-blue !important;
+}
+
+.add-icon:hover {
+    color: #1883c5 !important;
+}
+
+.standard-border {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+}
+
+.mdc-button:disabled {
+    background-color: rgb(25, 39, 52) !important;
+}
+
+.mdc-button--raised:not(:disabled) {
+    background-color: $primary-blue !important;
+}
+
+.mdc-menu-surface {
+    background-color: rgb(25, 39, 52) !important;
+}

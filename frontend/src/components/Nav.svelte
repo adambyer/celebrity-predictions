@@ -78,21 +78,21 @@
 </nav>
 
 <style lang="scss">
+    @import "../css/constants.scss";
+
     .account-options {
         right: 0;
         width: 300px;
     }
 
     .current-page {
-        background-color: #1a8cd3;
+        background-color: $secondary-blue;
     }
 
     .w3-button {
-        color: #f5f7f8 !important;
+        color: $primary-white !important;
 
         &:hover {
-            // background-color: unset !important;
-
             i {
                 color: black !important;
             }
@@ -100,11 +100,11 @@
     }
 
     .w3-dropdown-content {
-        background-color: #1DA1F2;
+        background-color: $primary-blue;
 
         .w3-bar-item {
             &:hover {
-                background-color: #1a8cd3;
+                background-color: $secondary-blue;
             }
         }
     }
