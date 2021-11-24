@@ -86,6 +86,6 @@ You can also start a shell to run specific methods...
 
 `$ python3 -i shell.py`
 
-`>>> from api.scripts import import_celebrity_metrics`
+`>>> from api.scripts import *`
 
-`>>> import_celebrity_metrics(None, 1)`
+`>>> import_metrics(None, 1)`

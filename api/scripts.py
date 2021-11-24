@@ -12,6 +12,7 @@ from api.model_types import CelebrityCreateType
 from api.tasks import (
     import_celebrity_daily_metrics,
     import_all_celebrity_daily_metrics,
+    start_daily_scoring,
 )
 
 logger = logging.getLogger(__name__)
@@ -46,10 +47,15 @@ def import_seed_celebrities() -> None:
     print("*** import_seed_celebrities complete")
 
 
-def import_celebrity_metrics(celebrity_id: Optional[int], days_ago: int) -> None:
+def import_metrics(celebrity_id: Optional[int], days_ago: int) -> None:
     metric_date = datetime.strftime(datetime.utcnow() - timedelta(days=days_ago), DATE_FORMAT)
 
     if celebrity_id:
         import_celebrity_daily_metrics(celebrity_id, metric_date)
     else:
         import_all_celebrity_daily_metrics(metric_date)
+
+
+def start_scoring(days_ago: int = 1) -> None:
+    metric_date = datetime.strftime(datetime.utcnow() - timedelta(days=days_ago), DATE_FORMAT)
+    start_daily_scoring(metric_date)

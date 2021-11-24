@@ -21,7 +21,11 @@
         deleteRequest,
     } from "../api"
     import {gotoPage} from "../nav"
-    import {PAGE_CREATE_PREDICTION} from "../constants"
+    import {
+        PAGE_CREATE_PREDICTION,
+        METRIC_CLASSES,
+        METRIC_LABELS_PLURAL,
+    } from "../constants"
     import {celebrityTitle} from "../celebrity_helpers"
 
     async function handleIsEnabledClick(predictionId, isChecked) {
@@ -71,12 +75,14 @@
         return 0
     }
 
-    $: $userPredictions = $userPredictions.sort(sorter)
-    $: $userLockedPredictionResults = $userLockedPredictionResults.sort(sorter)
-
+    let userPredictionsSorted = []
+    let userLockedPredictionResultsSorted = []
     let isDeleteDialogShown = false
     let deletePredictionId = null
     let isToolTipOpen = false
+
+    $: userPredictionsSorted = [...$userPredictions].sort(sorter)
+    $: userLockedPredictionResultsSorted = [...$userLockedPredictionResults].sort(sorter)
 </script>
 
 <section>
@@ -114,7 +120,7 @@
                     <Label>Who</Label>
                 </Cell>
                 <Cell>
-                    <Label>Action</Label>
+                    <Label>What</Label>
                 </Cell>
                 <Cell>
                     <Label>How Many</Label>
@@ -122,11 +128,13 @@
             </Row>
         </Head>
         <Body>
-            {#each $userLockedPredictionResults as predictionResult}
+            {#each userLockedPredictionResultsSorted as p}
                 <Row>
-                    <Cell>{celebrityTitle(predictionResult.celebrity)}</Cell>
-                    <Cell>{predictionResult.metric}</Cell>
-                    <Cell>{predictionResult.amount}</Cell>
+                    <Cell>{celebrityTitle(p.celebrity)}</Cell>
+                    <Cell>
+                        <i class={METRIC_CLASSES[p.metric]} title={METRIC_LABELS_PLURAL[p.metric]}></i>
+                    </Cell>
+                    <Cell>{p.amount}</Cell>
                 </Row>
             {/each}
         </Body>
@@ -150,16 +158,16 @@
                     <Label>Who</Label>
                 </Cell>
                 <Cell>
-                    <Label>Action</Label>
+                    <Label>What</Label>
                 </Cell>
                 <Cell>
                     <Label>Mow Many</Label>
                 </Cell>
                 <Cell>
-                    <Label>Is Enabled</Label>
+                    <Label>Enabled</Label>
                 </Cell>
                 <Cell>
-                    <Label>Is Auto Disabled</Label>
+                    <Label>Auto Disabled</Label>
                     <Wrapper>
                         <i class="far fa-question-circle"></i>
                         <Tooltip>When checked, this will cause the prediction to be automatically disabled after the next scoring occurs.</Tooltip>
@@ -169,26 +177,28 @@
             </Row>
         </Head>
         <Body>
-            {#each $userPredictions as prediction}
+            {#each userPredictionsSorted as p}
                 <Row>
-                    <Cell>{prediction.celebrity.twitter_name} (@{prediction.celebrity.twitter_username})</Cell>
-                    <Cell>{prediction.metric}</Cell>
-                    <Cell>{prediction.amount}</Cell>
+                    <Cell>{p.celebrity.twitter_name} (@{p.celebrity.twitter_username})</Cell>
+                    <Cell>
+                        <i class={METRIC_CLASSES[p.metric]} title={METRIC_LABELS_PLURAL[p.metric]}></i>
+                    </Cell>
+                    <Cell>{p.amount}</Cell>
                     <Cell>
                         <Checkbox
-                            bind:checked={prediction.is_enabled}
-                            on:change={(event) => handleIsEnabledClick(prediction.id, event.target.checked)}
+                            bind:checked={p.is_enabled}
+                            on:change={(event) => handleIsEnabledClick(p.id, event.target.checked)}
                         />
                     </Cell>
                     <Cell>
                         <Checkbox
-                            bind:checked={prediction.is_auto_disabled}
-                            on:change={(event) => handleIsAutoDisabledClick(prediction.id, event.target.checked)}
+                            bind:checked={p.is_auto_disabled}
+                            on:change={(event) => handleIsAutoDisabledClick(p.id, event.target.checked)}
                         />
                     </Cell>
                     <Cell>
                         <Wrapper>
-                            <i class="far fa-trash-alt" on:click={() => showDeleteDialog(prediction.id)}></i>
+                            <i class="far fa-trash-alt" on:click={() => showDeleteDialog(p.id)}></i>
                             <Tooltip>Delete</Tooltip>
                         </Wrapper>
                     </Cell>

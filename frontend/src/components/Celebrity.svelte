@@ -15,8 +15,12 @@
     } from "../date_helpers"
     import {sortByDate} from "../sort_helpers"
     import {gotoPage} from "../nav"
-    import {PAGE_CREATE_PREDICTION} from "../constants"
+    import {
+        PAGE_CREATE_PREDICTION,
+        METRIC,
+    } from "../constants"
     import Loading from "./Loading.svelte"
+    import MetricLabel from "./common/MetricLabel.svelte"
 
     $: isLoading = $celebrity === null
     $: tweets = $celebrity ? $celebrity.tweets.sort((a, b) => sortByDate(a, b, "created_at")) : []
@@ -52,7 +56,7 @@
                 </div>
             </div>
 
-            <div class="header-right">
+            <div>
                 <div class="header-top">
                     <div>
                         <i
@@ -63,16 +67,26 @@
                     </div>
                 </div>
 
-                <div class="metrics">
+                <div>
                     <DataTable>
                         <Head>
                             <Row>
                                 <Cell></Cell>
-                                <Cell><i class="fab fa-twitter" title="Tweets"></i></Cell>
-                                <Cell><i class="far fa-heart" title="Likes"></i></Cell>
-                                <Cell><i class="fas fa-retweet" title="Retweets"></i></Cell>
-                                <Cell><i class="fas fa-reply" title="Replies"></i></Cell>
-                                <Cell><i class="fas fa-quote-right" title="Quotes"></i></Cell>
+                                <Cell>
+                                    <MetricLabel metric={METRIC.TWEET} iconOnly={true}/>
+                                </Cell>
+                                <Cell>
+                                    <MetricLabel metric={METRIC.LIKE} iconOnly={true}/>
+                                </Cell>
+                                <Cell>
+                                    <MetricLabel metric={METRIC.RETWEET} iconOnly={true}/>
+                                </Cell>
+                                <Cell>
+                                    <MetricLabel metric={METRIC.REPLY} iconOnly={true}/>
+                                </Cell>
+                                <Cell>
+                                    <MetricLabel metric={METRIC.QUOTE} iconOnly={true}/>
+                                </Cell>
                             </Row>
                         </Head>
                         <Body>
@@ -115,10 +129,22 @@
 
                         <Cell class="tweet-info">
                             <div class="tweet-date">{formatDateAndTime(tweet.created_at)}</div>
-                            <div><i class="far fa-heart metric-icon" title="Likes"></i>{tweet.like_count}</div>
-                            <div><i class="fas fa-retweet metric-icon" title="Retweets"></i>{tweet.retweet_count}</div>
-                            <div><i class="fas fa-reply metric-icon" title="Replies"></i>{tweet.reply_count}</div>
-                            <div><i class="fas fa-quote-right metric-icon" title="Quotes"></i>{tweet.quote_count}</div>
+                            <div>
+                                <MetricLabel metric={METRIC.LIKE} iconOnly={true} className="metric-icon"/>
+                                {tweet.like_count}
+                            </div>
+                            <div>
+                                <MetricLabel metric={METRIC.RETWEET} iconOnly={true} className="metric-icon"/>
+                                {tweet.retweet_count}
+                            </div>
+                            <div>
+                                <MetricLabel metric={METRIC.REPLY} iconOnly={true} className="metric-icon"/>
+                                {tweet.reply_count}
+                            </div>
+                            <div>
+                                <MetricLabel metric={METRIC.QUOTE} iconOnly={true} className="metric-icon"/>
+                                {tweet.quote_count}
+                            </div>
                         </Cell>
                     </Row>
                 {/each}
@@ -145,6 +171,7 @@
         }
     }
 
+    // TODO: is there a better way than using `global` for all of this?
     :global(.mdc-data-table) {
         margin-bottom: 20px;
     }

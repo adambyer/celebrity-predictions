@@ -14,6 +14,12 @@ beat_schedule = {
         # Every day at midnight.
         "schedule": crontab(hour=0, minute=0),
     },
+    "import-all-celebrity-daily-metrics": {
+        "task": 'api.tasks.import_all_celebrity_daily_metrics',
+
+        # Every 1/2 hour.
+        "schedule": crontab(minute="*/30"),
+    },
 }
 
 task_always_eager = True

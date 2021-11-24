@@ -84,8 +84,8 @@ def start_daily_scoring(
 
 @shared_task
 def import_all_celebrity_daily_metrics(
-    # Has to be a string because tasks use JSON.
-    metric_date_string: str,
+    # Default to today. Has to be a string because tasks use JSON.
+    metric_date_string: str = date.strftime(datetime.utcnow().date(), DATE_FORMAT),
 
     # Update prediction results on last run of the day.
     is_final: bool = False,
@@ -118,6 +118,7 @@ def import_celebrity_daily_metrics(
     celebrity = get_celebrity(db, celebrity_id)
 
     if not celebrity:
+        logger.warning(f"No celebrity with id {celebrity_id}")
         return
 
     tweets = get_user_tweets(celebrity.twitter_id, start_time=start, end_time=end)
@@ -151,6 +152,10 @@ def update_prediction_results(
     db = Session()
     prediction_results = get_prediction_results_for_scoring(db, celebrity_id, metric_date)
     celebrity_daily_metrics = get_celebrity_daily_metrics(db, celebrity_id, metric_date)
+
+    if not celebrity_daily_metrics:
+        logger.warning(f"no daily metrics for celebrity_id:{celebrity_id} metric_date:{metric_date}")
+        return
 
     for pr in prediction_results:
         actual_amount = get_metric_total(celebrity_daily_metrics, pr.metric)

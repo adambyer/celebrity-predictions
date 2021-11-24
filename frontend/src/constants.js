@@ -11,3 +11,43 @@ export const PAGES_REQUIRING_AUTH = [
 ]
 
 export const COOKIE_ACCESS_TOKEN = "access-token"
+
+export const METRIC = {
+    LIKE: "like",
+    QUOTE: "quote",
+    REPLY: "reply",
+    RETWEET: "retweet",
+    TWEET: "tweet",
+}
+
+export const METRICS = [
+    METRIC.LIKE,
+    METRIC.QUOTE,
+    METRIC.REPLY,
+    METRIC.RETWEET,
+    METRIC.TWEET,
+]
+
+export const METRIC_CLASSES = {
+    [METRIC.LIKE]: "far fa-heart",
+    [METRIC.QUOTE]: "fas fa-quote-right",
+    [METRIC.REPLY]: "fas fa-reply",
+    [METRIC.RETWEET]: "fas fa-retweet",
+    [METRIC.TWEET]: "fab fa-twitter",
+}
+
+export const METRIC_LABELS = {
+    [METRIC.LIKE]: "Like",
+    [METRIC.QUOTE]: "Quote",
+    [METRIC.REPLY]: "Reply",
+    [METRIC.RETWEET]: "Retweet",
+    [METRIC.TWEET]: "Tweet",
+}
+
+export const METRIC_LABELS_PLURAL = {
+    [METRIC.LIKE]: "Likes",
+    [METRIC.QUOTE]: "Quotes",
+    [METRIC.REPLY]: "Replies",
+    [METRIC.RETWEET]: "Retweets",
+    [METRIC.TWEET]: "Tweets",
+}

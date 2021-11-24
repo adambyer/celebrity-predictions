@@ -7,6 +7,7 @@
     import Button, {Label} from "@smui/button"
 
     import Autocomplete from "./common/Autocomplete.svelte"
+    import MetricLabel from "./common/MetricLabel.svelte"
     import {celebritySearch} from "../autocomplete"
 
     import {
@@ -14,7 +15,10 @@
         celebrityTwitterUsername,
     } from "../store"
     import {postRequest} from "../api"
-    import {PAGE_USER_PREDICTIONS} from "../constants"
+    import {
+        PAGE_USER_PREDICTIONS,
+        METRICS,
+    } from "../constants"
     import {gotoPage} from "../nav"
 
     async function handleIsEnabledClick(predictionId, isChecked) {
@@ -80,14 +84,6 @@
         && amount
         && metric
     )
-
-    const metrics = [
-        {value: "like", label: "Likes"},
-        {value: "tweet", label: "Tweets"},
-        {value: "retweet", label: "Retweets"},
-        {value: "reply", label: "Replies"},
-        {value: "quote", label: "Quotes"},
-    ]
 </script>
 
 <section>
@@ -107,8 +103,10 @@
 
         <div>
             <Select bind:value={metric} label="What action do you want to predict?">
-                {#each metrics as m}
-                  <Option value={m.value}>{m.label}</Option>
+                {#each METRICS as m}
+                    <Option value={m}>
+                        <MetricLabel metric={m}/>
+                    </Option>
                 {/each}
             </Select>
         </div>
