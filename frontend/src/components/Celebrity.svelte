@@ -19,7 +19,7 @@
         PAGE_CREATE_PREDICTION,
         METRIC,
     } from "../constants"
-    import Loading from "./Loading.svelte"
+    import Loading from "./common/Loading.svelte"
     import MetricLabel from "./common/MetricLabel.svelte"
 
     $: isLoading = $celebrity === null
