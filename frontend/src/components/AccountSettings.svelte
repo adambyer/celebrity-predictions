@@ -11,6 +11,7 @@
         gotoPage,
     } from "../nav"
     import {
+        isLoggedIn,
         currentUser,
         alertMessage,
     } from "../store"
@@ -36,15 +37,31 @@
             user.password = password
         }
 
+        const url = $isLoggedIn ? "/user/account" : "/register"
+        const errorMessage = (
+            $isLoggedIn
+            ? "Unable to save account settings. Please try again."
+            : "Unable to create account. Please try again."
+        )
+        const successMessage = (
+            $isLoggedIn
+            ? "Account Settings Saved!"
+            : "Account Created!"
+        )
+
         try {
-            const response = await postRequest("user/account", user) 
+            const response = await postRequest(url, user) 
         } catch(error) {
-            $alertMessage = "Unable to save account settings. Please try again."
+            $alertMessage = errorMessage
             return
         }
 
-        $alertMessage = "Account Settings Saved!"
-        deleteAccessToken()
+        $alertMessage = successMessage
+
+        if ($isLoggedIn) {
+            deleteAccessToken()
+        }
+
         gotoPage(PAGE_LOGIN)
     }
 
@@ -52,6 +69,9 @@
     let emailAddress = ""
     let password = ""
     let passwordConfirm = ""
+
+    const saveButtonText = $isLoggedIn ? "Save" : "Create"
+    const headerText = $isLoggedIn ? "Account Setttings" : "Create Account"
 
     $: if ($currentUser.username && !username) {
         username = $currentUser.username
@@ -62,17 +82,21 @@
         username
         && emailAddress
         && (
-            (password && passwordConfirm)
-            || (!password && !passwordConfirm)
+            $isLoggedIn
+            ? (
+                (password && passwordConfirm)
+                || (!password && !passwordConfirm)
+            ) : (
+                password
+                && passwordConfirm
+            )
         )
     )
-
-    $: console.log("*** currentUser", $currentUser)
 </script>
 
 <section class="standard-border content">
     <div class="header">
-        <h2>Account Setttings</h2>
+        <h2>{headerText}</h2>
     </div>
     
     <form on:submit|preventDefault={save}>
@@ -90,11 +114,11 @@
         </div>
 
         <div class="row">
-            <Textfield bind:value={password} label="Password" variant="outlined" type="password"/>
+            <Textfield bind:value={password} label="Password" variant="outlined" type="password" required={!$isLoggedIn}/>
         </div>
 
         <div class="row">
-            <Textfield bind:value={passwordConfirm} label="Confirm Password" variant="outlined" type="password"/>
+            <Textfield bind:value={passwordConfirm} label="Confirm Password" variant="outlined" type="password" required={!$isLoggedIn}/>
         </div>
 
         <div class="row">
@@ -102,7 +126,7 @@
                 variant="raised"
                 disabled={!isReady}
             >
-                <Label>Save</Label>
+                <Label>{saveButtonText}</Label>
             </Button>
         </div>
     </form>

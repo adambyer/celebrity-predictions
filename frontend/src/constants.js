@@ -1,4 +1,5 @@
 export const PAGE_HOME = "home"
+export const PAGE_ACCOUNT_REGISTRATION = "account-registration"
 export const PAGE_LOGIN = "login"
 export const PAGE_ACCOUNT_SETTINGS = "account-settings"
 export const PAGE_CELEBRITY_LIST = "celebrity-list"

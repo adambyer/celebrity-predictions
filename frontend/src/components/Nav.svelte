@@ -4,6 +4,7 @@
     import {gotoPage} from "../nav"
     import {
         PAGE_HOME,
+        PAGE_ACCOUNT_REGISTRATION,
         PAGE_LOGIN,
         PAGE_ACCOUNT_SETTINGS,
         PAGE_CELEBRITY_LIST,
@@ -72,6 +73,7 @@
                         <a href="/" class="w3-bar-item w3-button" on:click|preventDefault={() => gotoPage(PAGE_ACCOUNT_SETTINGS)}>Account Settings</a>
                     {:else}
                         <a href="/" class="w3-bar-item w3-button" on:click|preventDefault={() => gotoPage(PAGE_LOGIN)}>Login</a>
+                        <a href="/" class="w3-bar-item w3-button" on:click|preventDefault={() => gotoPage(PAGE_ACCOUNT_REGISTRATION)}>Create Account</a>
                     {/if}
                 </div>
             </div>

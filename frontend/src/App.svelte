@@ -6,6 +6,7 @@
 
 	import {
 		PAGE_HOME,
+		PAGE_ACCOUNT_REGISTRATION,
 		PAGE_LOGIN,
 		PAGE_ACCOUNT_SETTINGS,
 		PAGE_CELEBRITY,
@@ -39,7 +40,7 @@
 		<Home/>
 	{:else if $currentPage === PAGE_LOGIN}
 		<Login/>
-	{:else if $currentPage === PAGE_ACCOUNT_SETTINGS}
+	{:else if [PAGE_ACCOUNT_REGISTRATION, PAGE_ACCOUNT_SETTINGS].includes($currentPage)}
 		<AccountSettings/>
 	{:else if $currentPage === PAGE_CELEBRITY_LIST}
 		<CelebrityList/>

@@ -13,7 +13,6 @@ import {
 } from "./store"
 import {getRequest} from "./api"
 import {
-    PAGE_LOGIN,
     PAGE_ACCOUNT_SETTINGS,
     PAGE_CELEBRITY,
     PAGE_CELEBRITY_LIST,
