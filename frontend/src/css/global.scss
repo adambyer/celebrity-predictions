@@ -36,7 +36,13 @@ a {
 }
 
 .mdc-tooltip__surface {
-    background-color: rgba(0, 0, 0, 0.8) !important;
+    font-size: 20px;
+    color: black;
+    background-color: $primary-white !important;
+    padding: 10px;
+    line-height: 1.2em;
+    max-width: 320px;
+    max-height: unset;
 }
 
 .mdc-data-table {

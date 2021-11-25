@@ -134,11 +134,14 @@
     </Dialog>
 
     <div class="header">
-        <h2>Locked Predictions</h2>
+        <h2>Today's Predictions</h2>
         
         <Wrapper>
-            <i class="far fa-question-circle"></i>
-            <Tooltip>These predictions are locked in and will be scored after all today's ativity has been collected.</Tooltip>
+            <i class="far fa-question-circle fa-lg"></i>
+            <Tooltip>
+                At the beginning of each day all enabled predictions are copied here and are locked while they await scoring
+                which happens at the end of each day after all activity has been collected.
+            </Tooltip>
         </Wrapper>
     </div>
     

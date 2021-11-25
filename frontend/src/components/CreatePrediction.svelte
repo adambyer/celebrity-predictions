@@ -143,6 +143,14 @@
         </div>
 
         <div class="row">
+            <p class="help">
+                Keep in mind that new predictions will not be scored until end of the following day.
+                At the beginning of each day a locked copy is made for all enabled predictions.
+                That copy will be used for scoring after all activity for that day is collected.
+            </p>
+        </div>
+
+        <div class="row">
             <Button
                 variant="raised"
                 disabled={!isReady}
@@ -155,7 +163,7 @@
 
 <style lang="scss">
     :global(.mdc-select, .mdc-text-field) {
-        width: 300px;
+        width: 400px !important;
     }
 
     .content {
@@ -164,6 +172,10 @@
 
         .row {
             margin-bottom: 10px;
+
+            .help {
+                width: 400px;
+            }
         }
     }
 </style>
