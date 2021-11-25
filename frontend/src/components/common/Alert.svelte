@@ -1,7 +1,3 @@
-<Snackbar bind:this={alertSnackbar} timeoutMs={4000}>
-    <Label>{$alertMessage}</Label>
-</Snackbar>
-
 <script>
 	import Snackbar, {Label} from "@smui/snackbar"
 	import {alertMessage} from "../../store"
@@ -10,8 +6,15 @@
 
 	$: if ($alertMessage) {
 		alertSnackbar.open()
+		setTimeout(() => {
+			$alertMessage = ""
+		}, 4000)
 	}
 </script>
+
+<Snackbar bind:this={alertSnackbar} timeoutMs={4000}>
+    <Label>{$alertMessage}</Label>
+</Snackbar>
 
 <style>
     :global(.mdc-snackbar) {

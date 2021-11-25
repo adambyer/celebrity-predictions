@@ -3,6 +3,7 @@
     import Checkbox from "@smui/checkbox"
     import Dialog, {Title, Content, Actions} from "@smui/dialog"
     import Button, {Label as ButtonLabel} from "@smui/button"
+    import Textfield from "@smui/textfield"
     import DataTable, {
         Head,
         Body,
@@ -28,6 +29,40 @@
     } from "../constants"
     import CelebrityLink from "./common/CelebrityLink.svelte"
     import MetricLabel from "./common/MetricLabel.svelte"
+
+    function editMode(prediction) {
+        editedPrediction = {...prediction}
+        setTimeout(() => {
+            amountInput.focus()
+        }, 100)
+    }
+
+    async function exitEditMode() {
+        if (!editedPrediction) {
+            editedPrediction = null
+            return
+        }
+
+        const originalPrediction = $userPredictions.find((p) => p.id === editedPrediction.id)
+
+        if (originalPrediction.amount === editedPrediction.amount) {
+            editedPrediction = null
+            return
+        }
+
+        const data = {
+            amount: editedPrediction.amount,
+        }
+        await patchRequest(`/user/prediction/${editedPrediction.id}`, data)
+        $alertMessage = "Changes Saved"
+        editedPrediction = null
+    }
+
+    async function handleAmountKeyUp(event) {
+        if (event.keyCode === 13) {
+            await exitEditMode()
+        }
+    }
 
     async function handleIsEnabledClick(predictionId, isChecked) {
         const data = {
@@ -59,14 +94,6 @@
         }
     }
 
-    function showTooltip() {
-        isToolTipOpen = true
-    }
-
-    function hideTooltip() {
-        isToolTipOpen = false
-    }
-
     function sorter(a, b) {
         if (a.celebrity.twitter_name > b.celebrity.twitter_name) {
             return 1
@@ -80,7 +107,8 @@
     let userLockedPredictionResultsSorted = []
     let isDeleteDialogShown = false
     let deletePredictionId = null
-    let isToolTipOpen = false
+    let editedPrediction = null
+    let amountInput = null
 
     $: userPredictionsSorted = [...$userPredictions].sort(sorter)
     $: userLockedPredictionResultsSorted = [...$userLockedPredictionResults].sort(sorter)
@@ -160,15 +188,19 @@
                 <Cell>
                     <Label>Who</Label>
                 </Cell>
+
                 <Cell>
                     <Label>What</Label>
                 </Cell>
+
                 <Cell>
                     <Label>Mow Many</Label>
                 </Cell>
+
                 <Cell>
                     <Label>Enabled</Label>
                 </Cell>
+
                 <Cell>
                     <Label>Auto Disabled</Label>
                     <Wrapper>
@@ -176,6 +208,7 @@
                         <Tooltip>When checked, this will cause the prediction to be automatically disabled after the next scoring occurs.</Tooltip>
                     </Wrapper>
                 </Cell>
+
                 <Cell></Cell>
             </Row>
         </Head>
@@ -185,22 +218,39 @@
                     <Cell>
                         <CelebrityLink celebrity={p.celebrity}/>
                     </Cell>
+
                     <Cell>
                         <MetricLabel metric={p.metric} iconOnly={true}/>
                     </Cell>
-                    <Cell>{p.amount}</Cell>
+
+                    <Cell>
+                        {#if editedPrediction && editedPrediction.id === p.id}
+                            <Textfield
+                                bind:value={editedPrediction.amount}
+                                bind:this={amountInput}
+                                class="amount-input"
+                                on:blur={() => exitEditMode()}
+                                on:keyup={(event) => handleAmountKeyUp(event)}
+                            />
+                        {:else}
+                            <span on:click={() => editMode(p)}>{p.amount}</span>
+                        {/if}
+                    </Cell>
+
                     <Cell>
                         <Checkbox
                             bind:checked={p.is_enabled}
                             on:change={(event) => handleIsEnabledClick(p.id, event.target.checked)}
                         />
                     </Cell>
+
                     <Cell>
                         <Checkbox
                             bind:checked={p.is_auto_disabled}
                             on:change={(event) => handleIsAutoDisabledClick(p.id, event.target.checked)}
                         />
                     </Cell>
+
                     <Cell>
                         <Wrapper>
                             <i class="far fa-trash-alt" on:click={() => showDeleteDialog(p.id)}></i>
@@ -214,6 +264,8 @@
 </section>
 
 <style lang="scss">
+    @import "../css/constants";
+
     .header {
         display: flex;
         justify-content: start;
@@ -241,6 +293,33 @@
 
         :global(.mdc-dialog__title) {
             color: black !important;
+        }
+
+        :global(.mdc-button__label) {
+            color: black !important;
+        }
+    }
+
+    :global(.mdc-data-table__cell) {
+        max-height: 40px;
+        
+        :global(.amount-input) {
+            display: flex;
+            align-items: center;
+            width: fit-content !important;
+            max-height: 40px;
+
+            :global(.mdc-text-field__input) {
+                background-color: $primary-white;
+                height: fit-content !important;
+                max-width: 60px;
+                padding: 5px;
+                color: black !important;
+            }
+
+            :global(.mdc-line-ripple::before), :global(.mdc-line-ripple::after) {
+                border-bottom-color: red;
+            }
         }
     }
 </style>

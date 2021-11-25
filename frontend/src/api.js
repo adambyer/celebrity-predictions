@@ -35,14 +35,11 @@ export async function patchRequest(url, data) {
     const config = {
         headers: {Authorization: `Bearer ${accessToken}`}
     }
-    isLoading.set(true)
     return await API.patch(url, data, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
             throw 401
         }
-    }).finally(() => {
-        isLoading.set(false)
     })
 }
 
@@ -51,14 +48,11 @@ export async function postRequest(url, data) {
     const config = {
         headers: {Authorization: `Bearer ${accessToken}`}
     }
-    isLoading.set(true)
     return await API.post(url, data, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
             throw 401
         }
-    }).finally(() => {
-        isLoading.set(false)
     })
 }
 
@@ -67,14 +61,11 @@ export async function deleteRequest(url, data) {
     const config = {
         headers: {Authorization: `Bearer ${accessToken}`}
     }
-    isLoading.set(true)
     return await API.delete(url, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
             throw 401
         }
-    }).finally(() => {
-        isLoading.set(false)
     })
 }
 
