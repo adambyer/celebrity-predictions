@@ -52,3 +52,11 @@
 		<CreatePrediction/>
 	{/if}
 </div>
+
+<style lang="scss">
+	.w3-container {
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+	}
+</style>
