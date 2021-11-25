@@ -13,6 +13,14 @@ export const PAGES_REQUIRING_AUTH = [
     PAGE_CREATE_PREDICTION,
 ]
 
+export const PAGES_USING_AUTO_REFRESH = [
+    PAGE_CELEBRITY,
+    PAGE_CELEBRITY_LIST,
+    PAGE_USER_PREDICTIONS,
+]
+
+export const REFRESH_PAGE_MINUTES = 10
+
 export const COOKIE_ACCESS_TOKEN = "access-token"
 
 export const METRIC = {

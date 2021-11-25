@@ -7,7 +7,6 @@
     } from "@smui/data-table"
 
     import {
-        isLoading,
         celebrity,
     } from "../store"
     import {celebrityTitle} from "../celebrity_helpers"

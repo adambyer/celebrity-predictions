@@ -79,7 +79,7 @@ class CelebrityModelView(BaseModelView):
 
 class CelebrityDailyMetricsModelView(BaseModelView):
     column_default_sort = ("metric_date", True)
-    column_filters = ("celebrity",)
+    column_filters = ("celebrity", "metric_date")
 
 
 class PredictionModelView(BaseModelView):

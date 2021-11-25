@@ -73,7 +73,7 @@
     const saveButtonText = $isLoggedIn ? "Save" : "Create"
     const headerText = $isLoggedIn ? "Account Setttings" : "Create Account"
 
-    $: if ($currentUser.username && !username) {
+    $: if ($currentUser && !username) {
         username = $currentUser.username
         emailAddress = $currentUser.email_address
     }

@@ -17,8 +17,8 @@ beat_schedule = {
     "import-all-celebrity-daily-metrics": {
         "task": 'api.tasks.import_all_celebrity_daily_metrics',
 
-        # Every 1/2 hour.
-        "schedule": crontab(minute="*/30"),
+        # TODO: Every 10 minutes?
+        "schedule": crontab(minute="*/10"),
     },
 }
 

@@ -4,9 +4,6 @@ import {
     authRequired,
     getAccessToken,
 } from "./auth_helpers"
-import {
-    isLoading,
-} from "./store"
 
 const API = axios.create({
     baseURL: 'http://127.0.0.1:8000',
@@ -19,14 +16,11 @@ export async function getRequest(url, params = {}) {
         headers: {Authorization: `Bearer ${accessToken}`},
         params,
     }
-    isLoading.set(true)
     return await API.get(url, config).catch((error) => {
         if (error.response.status === 401) {
             authRequired()
             throw 401
         }
-    }).finally(() => {
-        isLoading.set(false)
     })
 }
 

@@ -117,7 +117,7 @@
                 padding-right: 5px;
 
                 :global(.mdc-text-field) {
-                    width: 100%;
+                    width: 100% !important;
 
                     :global(.mdc-floating-label) {
                         right: 0;

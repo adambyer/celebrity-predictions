@@ -1,6 +1,7 @@
 import {get} from "svelte/store"
 
 import {
+    isLoading,
     isLoggedIn,
     currentUser,
     currentPage,
@@ -18,15 +19,36 @@ import {
     PAGE_CELEBRITY_LIST,
     PAGE_USER_PREDICTIONS,
     PAGES_REQUIRING_AUTH,
+    PAGES_USING_AUTO_REFRESH,
+    REFRESH_PAGE_MINUTES,
 } from "./constants"
 import {
     authRequired,
 } from "./auth_helpers"
 
+let refreshTimer = null
+const refreshPageMilliseconds = REFRESH_PAGE_MINUTES * 1000 * 60
+
+async function startTimer(page, twitterUsername) {
+    refreshTimer = setTimeout(async () => {
+        await gotoPage(page, twitterUsername, true)
+    }, refreshPageMilliseconds)
+}
+
+function clearTimer() {
+    if (refreshTimer) {
+        clearTimeout(refreshTimer)
+        refreshTimer = null
+    }
+}
+
 export async function gotoPage(
     page,
     twitterUsername = "",
+    isRefresh = false,
 ) {
+    clearTimer()
+
     if (!get(requestedPage)) {
         celebrityTwitterUsername.set(twitterUsername)
     }
@@ -40,38 +62,48 @@ export async function gotoPage(
     requestedPage.set("")
     currentPage.set(page)
 
-    if (page === PAGE_ACCOUNT_SETTINGS) {
-        const response = await getRequest("/user/account")
+    if (PAGES_USING_AUTO_REFRESH.includes(page)) {
+        await startTimer(page, twitterUsername)
 
-        if (response) {
-            currentUser.set(response.data)
-        }
-    } else if (page === PAGE_CELEBRITY_LIST) {
-        const response = await getRequest("/celebrity")
-
-        if (response) {
-            celebrities.set(response.data)
-        }
-    } else if (page === PAGE_CELEBRITY) {
-        celebrity.set(null)
-        const response = await getRequest(`/celebrity/${get(celebrityTwitterUsername)}`)
-
-        if (response) {
-            celebrity.set(response.data)
-        }
-    } else if (page === PAGE_USER_PREDICTIONS) {
-        userPredictions.set([])
-        let response = await getRequest("/user/prediction")
-        
-        if (response) {
-            userPredictions.set(response.data)
-        }
-
-        userLockedPredictionResults.set([])
-        response = await getRequest("/user/prediction-results/locked")
-        
-        if (response) {
-            userLockedPredictionResults.set(response.data)
+        if (!isRefresh) {
+            isLoading.set(true)
+            celebrity.set(null)
+            userPredictions.set([])
+            userLockedPredictionResults.set([])
         }
     }
+
+    if (page === PAGE_ACCOUNT_SETTINGS) {
+        const accountResponse = await getRequest("/user/account")
+
+        if (accountResponse) {
+            currentUser.set(accountResponse.data)
+        }
+    } else if (page === PAGE_CELEBRITY_LIST) {
+        const celebrityListResponse = await getRequest("/celebrity")
+
+        if (celebrityListResponse) {
+            celebrities.set(celebrityListResponse.data)
+        }
+    } else if (page === PAGE_CELEBRITY) {
+        const celebrityResponse = await getRequest(`/celebrity/${get(celebrityTwitterUsername)}`)
+
+        if (celebrityResponse) {
+            celebrity.set(celebrityResponse.data)
+        }
+    } else if (page === PAGE_USER_PREDICTIONS) {
+        const predictionsResponse = await getRequest("/user/prediction")
+        
+        if (predictionsResponse) {
+            userPredictions.set(predictionsResponse.data)
+        }
+
+        const resultsResponse = await getRequest("/user/prediction-results/locked")
+        
+        if (resultsResponse) {
+            userLockedPredictionResults.set(resultsResponse.data)
+        }
+    }
+
+    isLoading.set(false)
 }

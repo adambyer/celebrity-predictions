@@ -29,5 +29,5 @@ export function getAccessToken() {
 export function deleteAccessToken() {
     Cookies.remove(COOKIE_ACCESS_TOKEN)
     isLoggedIn.set(false)
-    currentUser.set({})
+    currentUser.set(null)
 }
