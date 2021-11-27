@@ -77,7 +77,13 @@ def start_daily_scoring(
     logger.info(f"start_daily_scoring. metric_date:{metric_date_string}")
 
     # First create the placeholder PredictionResult rows so they will be ready for the next day's scoring.
-    create_prediction_results.delay(metric_date_string)
+    # This date will be the day after the day being scored. The day being scored will typically be
+    # yesterday, therefor this date will typically be today.
+    pr_metric_date = datetime.strftime(
+        datetime.strptime(metric_date_string, DATE_FORMAT) + timedelta(days=1),
+        DATE_FORMAT,
+    )
+    create_prediction_results.delay(pr_metric_date)
 
     import_all_celebrity_daily_metrics.delay(metric_date_string, is_final=True)
 
@@ -129,9 +135,8 @@ def import_celebrity_daily_metrics(
     save_celebrity_daily_metrics(CelebrityDailyMetricsCreateType(**metrics))
 
     if is_final:
-        # Now update the results from the previous day that are waiting to be scored.
-        results_date_string = date.strftime(metric_date - timedelta(days=1), DATE_FORMAT)
-        update_prediction_results.delay(celebrity.id, results_date_string)
+        # We now have all metrics for the given day and can assign points.
+        update_prediction_results.delay(celebrity.id, metric_date_string)
 
     # Can't close the connection if all this is running in the same process.
     if not task_always_eager:

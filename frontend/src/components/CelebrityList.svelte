@@ -64,45 +64,53 @@
         </div>
     </div>
 
-    <DataTable>
-        <Head>
-            <Row>
-                <Cell></Cell>
-                <Cell><i class="fab fa-twitter" title="Tweets"></i></Cell>
-                <Cell><i class="far fa-heart" title="Likes"></i></Cell>
-                <Cell><i class="fas fa-retweet" title="Retweets"></i></Cell>
-                <Cell><i class="fas fa-reply" title="Replies"></i></Cell>
-                <Cell><i class="fas fa-quote-right" title="Quotes"></i></Cell>
-                <Cell></Cell>
-            </Row>
-        </Head>
-        <Body>
-            {#each display_celebrities as celebrity}
+    {#if display_celebrities.length === 0}
+        {#if searchValue}
+            <p>There are no celebrities matching your search.</p>
+        {:else}
+            <p>There are no active celebrites yet today. Try a search.</p>
+        {/if}
+    {:else}
+        <DataTable>
+            <Head>
                 <Row>
-                    <Cell>
-                        <CelebrityLink celebrity={celebrity}/>
-                    </Cell>
-                    <Cell>{celebrity.metrics[0].tweet_count || 0}</Cell>
-                    <Cell>{celebrity.metrics[0].like_count || 0}</Cell>
-                    <Cell>{celebrity.metrics[0].retweet_count || 0}</Cell>
-                    <Cell>{celebrity.metrics[0].reply_count || 0}</Cell>
-                    <Cell>{celebrity.metrics[0].quote_count || 0}</Cell>
-                    <Cell>
-                        <i
-                            class="fas fa-plus-circle fa-2x add-icon"
-                            on:click={() => gotoPage(PAGE_CREATE_PREDICTION, celebrity.twitter_username)}
-                            title={`Add a Prediction for ${celebrityTitle(celebrity)}`}
-                        ></i>
-                    </Cell>
+                    <Cell></Cell>
+                    <Cell><i class="fab fa-twitter" title="Tweets"></i></Cell>
+                    <Cell><i class="far fa-heart" title="Likes"></i></Cell>
+                    <Cell><i class="fas fa-retweet" title="Retweets"></i></Cell>
+                    <Cell><i class="fas fa-reply" title="Replies"></i></Cell>
+                    <Cell><i class="fas fa-quote-right" title="Quotes"></i></Cell>
+                    <Cell></Cell>
                 </Row>
-            {/each}
-        </Body>
-    </DataTable>
+            </Head>
+            <Body>
+                {#each display_celebrities as celebrity}
+                    <Row>
+                        <Cell>
+                            <CelebrityLink celebrity={celebrity}/>
+                        </Cell>
+                        <Cell>{celebrity.metrics.length > 0 ? celebrity.metrics[0].tweet_count : 0}</Cell>
+                        <Cell>{celebrity.metrics.length > 0 ? celebrity.metrics[0].like_count : 0}</Cell>
+                        <Cell>{celebrity.metrics.length > 0 ? celebrity.metrics[0].retweet_count : 0}</Cell>
+                        <Cell>{celebrity.metrics.length > 0 ? celebrity.metrics[0].reply_count : 0}</Cell>
+                        <Cell>{celebrity.metrics.length > 0 ? celebrity.metrics[0].quote_count : 0}</Cell>
+                        <Cell>
+                            <i
+                                class="fas fa-plus-circle fa-2x add-icon"
+                                on:click={() => gotoPage(PAGE_CREATE_PREDICTION, celebrity.twitter_username)}
+                                title={`Add a Prediction for ${celebrityTitle(celebrity)}`}
+                            ></i>
+                        </Cell>
+                    </Row>
+                {/each}
+            </Body>
+        </DataTable>
+    {/if}
 </section>
 
 <style lang="scss">
     .content {
-        width: fit-content;
+        min-width: 650px;
 
         .header {
             display: flex;

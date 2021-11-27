@@ -1,7 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from fastapi import Depends, HTTPException, APIRouter, status
 from typing import List
 
+from ..crud.celebrity_crud import (
+    get_celebrity_daily_metrics_list,
+)
 from ..crud.prediction_crud import (
     create_prediction,
     delete_prediction,
@@ -131,14 +134,26 @@ def get_user_locked_prediction_results_route(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> list:
-    """Get yesterday's prediction results that are locked and waiting to be scored."""
-    metric_date = datetime.utcnow().date() - timedelta(days=1)
+    """Get today's prediction results that are locked and waiting to be scored."""
+    metric_date = datetime.utcnow().date()
     try:
         prediction_results = get_prediction_results_by_user_id(db, current_user.id, metric_date)
+        celebrity_ids = [pr.celebrity_id for pr in prediction_results]
+        metrics = get_celebrity_daily_metrics_list(db, celebrity_ids, metric_date, metric_date)
+        results = []
+
+        for pr in prediction_results:
+            result = pr.__dict__
+            current = [getattr(m, f"{pr.metric}_count") for m in metrics if m.celebrity_id == pr.celebrity_id]
+
+            results.append({
+                **result,
+                "current": current[0] if len(current) > 0 else None,
+            })
     except Exception:
         raise HTTPException(status_code=400, detail="Unknown error.")
 
-    return prediction_results
+    return results
 
 
 # This must be last so that it doesn't handle the `prediction` endpoints.

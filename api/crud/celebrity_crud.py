@@ -135,6 +135,7 @@ def update_celebrity_daily_metrics(
         .where(CelebrityDailyMetrics.id == id_)
         .values(**updates.dict())
     )
+    db.commit()
 
 
 def get_celebrity_daily_metrics_list(

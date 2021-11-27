@@ -1,9 +1,8 @@
 from datetime import date
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 
 from ..models import (
-    Celebrity,
     PredictionResult,
 )
 from ..model_types import (
@@ -55,9 +54,11 @@ def get_prediction_results_by_user_id(
 ) -> List[PredictionResult]:
     query = (
         db.query(PredictionResult)
-        .join(Celebrity)
         .filter(
             PredictionResult.user_id == user_id,
+        )
+        .options(
+            joinedload(PredictionResult.celebrity)
         )
     )
 

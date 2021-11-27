@@ -1,5 +1,5 @@
 export function formatDate(dateString) {
-    return new Date(dateString).toLocaleDateString(
+    return new Date(dateString).toUTCString(
         'en-us',
         {
             year: "numeric",
@@ -10,7 +10,7 @@ export function formatDate(dateString) {
 }
 
 export function formatDateAndTime(dateString) {
-    return new Date(dateString).toLocaleDateString(
+    return new Date(dateString).toUTCString(
         'en-us',
         {
             year: "numeric",

@@ -97,3 +97,6 @@ class PredictionResultCreateType(OrmBaseType):
 class PredictionResultType(PredictionResultCreateType):
     id: int
     celebrity: Optional[CelebrityCreateType] = None
+
+    # The metric amount as of now.
+    current: Optional[int] = 0

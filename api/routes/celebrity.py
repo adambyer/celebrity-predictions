@@ -1,5 +1,6 @@
-from datetime import datetime, date, timedelta
+from datetime import datetime
 from fastapi import Depends, HTTPException, status, APIRouter
+import logging
 from typing import List, Optional
 
 from ..celebrity_utils import get_tweet_data
@@ -16,6 +17,7 @@ from ..model_types import (
 
 from .dependencies import get_db
 
+logger = logging.getLogger(__name__)
 
 # These routes do not require authentication.
 router = APIRouter(
@@ -31,7 +33,7 @@ async def get_celebrities_route(
     limit: int = 10,
     search: Optional[str] = None,
 ) -> list:
-    metric_date = datetime.utcnow().date() - timedelta(days=1)
+    metric_date = datetime.utcnow().date()
     try:
         if search:
             db_celebrities = get_celebrities(db, limit=limit, search=search)
@@ -42,7 +44,7 @@ async def get_celebrities_route(
             celebrities = [
                 {
                     **{k: v for k, v in c.__dict__.items()},
-                    "metrics": [metrics_lookup[c.id]],
+                    "metrics": [metrics_lookup[c.id]] if c.id in metrics_lookup else [],
                 }
                 for c in db_celebrities
             ]
@@ -58,6 +60,7 @@ async def get_celebrities_route(
                 if metric.total_count > 0
             ][:limit]
     except Exception as e:
+        logger.exception("")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Unknown error.",
@@ -74,6 +77,7 @@ async def get_celebrity_route(
     try:
         db_celebrity = get_celebrity_by_twitter_username(db, twitter_username)
     except Exception as e:
+        logger.exception("")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid twitter username.",

@@ -157,6 +157,9 @@
                 <Cell>
                     <Label>How Many</Label>
                 </Cell>
+                <Cell>
+                    <Label>So Far</Label>
+                </Cell>
             </Row>
         </Head>
         <Body>
@@ -169,6 +172,7 @@
                         <MetricLabel metric={p.metric} iconOnly={true}/>
                     </Cell>
                     <Cell>{p.amount}</Cell>
+                    <Cell>{p.current}</Cell>
                 </Row>
             {/each}
         </Body>
