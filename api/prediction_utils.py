@@ -1,7 +1,13 @@
-from typing import Optional
+from collections import defaultdict
+from sqlalchemy.orm import Session
+from typing import Optional, List, Dict
 
 from .constants import PredictionMetricEnum
-from .model_types import CelebrityDailyMetricsType
+from .crud.prediction_crud import get_prediction_results
+from .model_types import (
+    CelebrityDailyMetricsType,
+    LeaderType,
+)
 
 
 def get_metric_total(
@@ -51,3 +57,21 @@ def get_prediction_points(prediction_amount: int, actual_amount: int) -> int:
         return -((distance_amount - 50) * 2)
 
     return 0
+
+
+def get_leaders(db: Session) -> dict:
+    prediction_results = get_prediction_results(db, True)
+    user_totals: dict = defaultdict(lambda: {"pr": None, "points": 0})
+
+    for pr in prediction_results:
+        user_totals[pr.user_id]["pr"] = pr
+        user_totals[pr.user_id]["points"] += pr.points
+
+    all_time: List[LeaderType] = [
+        LeaderType(user=ut["pr"].user, points=ut["points"])
+        for ut in user_totals.values()
+    ]
+
+    return {
+        "All Time Leaders": sorted(all_time, key=lambda lt: lt.points, reverse=True),
+    }

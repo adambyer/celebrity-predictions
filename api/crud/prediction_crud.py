@@ -1,13 +1,12 @@
-from sqlalchemy.orm import Session, raiseload
+from sqlalchemy.orm import Session, raiseload, joinedload
 from typing import Optional, List
 
 from ..models import (
-    Celebrity,
     Prediction,
+    PredictionResult,
 )
 from ..model_types import (
     PredictionCreateType,
-    PredictionType,
 )
 
 
@@ -88,14 +87,18 @@ def get_predictions(
     return query.all()
 
 
-def get_user_predictions(
+def get_prediction_results(
     db: Session,
-    user_id: int,
-) -> List[PredictionType]:
-    return (
-        db.query(Prediction)
-        .filter(Prediction.user_id == user_id)
-        .order_by(Prediction.created_at.desc())
-        .join(Celebrity)
-        .all()
+    is_scored_only: bool = False,
+) -> List[PredictionResult]:
+    query = (
+        db.query(PredictionResult)
+        .options(
+            joinedload(PredictionResult.user),
+        )
     )
+
+    if is_scored_only:
+        query = query.where(PredictionResult.points.isnot(None))
+
+    return query.all()

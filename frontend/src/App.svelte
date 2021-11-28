@@ -13,6 +13,7 @@
 		PAGE_CELEBRITY_LIST,
 		PAGE_USER_PREDICTIONS,
 		PAGE_CREATE_PREDICTION,
+		PAGE_LEADERBOARD,
 	} from "./constants"
 
 	import Loading from "./components/common/Loading.svelte"
@@ -25,6 +26,7 @@
 	import Celebrity from "./components/Celebrity.svelte"
 	import UserPredictions from "./components/UserPredictions.svelte"
 	import CreatePrediction from "./components/CreatePrediction.svelte"
+	import Leaderboard from "./components/Leaderboard.svelte"
 </script>
 
 <Nav/>
@@ -50,6 +52,8 @@
 		<UserPredictions/>
 	{:else if $currentPage === PAGE_CREATE_PREDICTION}
 		<CreatePrediction/>
+	{:else if $currentPage === PAGE_LEADERBOARD}
+		<Leaderboard/>
 	{/if}
 </div>
 

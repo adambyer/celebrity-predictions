@@ -9,7 +9,6 @@ from ..crud.prediction_crud import (
     create_prediction,
     delete_prediction,
     get_prediction,
-    get_user_predictions,
     update_prediction,
 )
 from ..crud.prediction_results import (
@@ -17,6 +16,7 @@ from ..crud.prediction_results import (
 )
 from ..crud.user_crud import (
     get_user_by_username,
+    get_user_predictions,
     update_user,
 )
 from ..db import Session

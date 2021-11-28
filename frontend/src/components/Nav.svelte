@@ -9,6 +9,7 @@
         PAGE_ACCOUNT_SETTINGS,
         PAGE_CELEBRITY_LIST,
         PAGE_USER_PREDICTIONS,
+        PAGE_LEADERBOARD,
     } from "../constants"
     import {
         currentPage,
@@ -60,6 +61,17 @@
                 ><i class="far fa-list-alt"></i></a>
 
                 <Tooltip>Predictions</Tooltip>
+            </Wrapper>
+
+            <Wrapper>
+                <a
+                    href="/leaderboard"
+                    class="w3-bar-item w3-button w3-hide-small w3-padding-large"
+                    class:current-page={$currentPage === PAGE_LEADERBOARD}
+                    on:click|preventDefault={() => gotoPage(PAGE_LEADERBOARD)}
+                ><i class="fas fa-trophy"></i></a>
+
+                <Tooltip>Leaderboard</Tooltip>
             </Wrapper>
 
             <div class="w3-dropdown-hover w3-hide-small w3-right">

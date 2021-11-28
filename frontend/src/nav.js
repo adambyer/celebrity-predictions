@@ -11,6 +11,7 @@ import {
     userPredictions,
     userLockedPredictionResults,
     requestedPage,
+    leaders,
 } from "./store"
 import {getRequest} from "./api"
 import {
@@ -18,6 +19,7 @@ import {
     PAGE_CELEBRITY,
     PAGE_CELEBRITY_LIST,
     PAGE_USER_PREDICTIONS,
+    PAGE_LEADERBOARD,
     PAGES_REQUIRING_AUTH,
     PAGES_USING_AUTO_REFRESH,
     REFRESH_PAGE_MINUTES,
@@ -102,6 +104,12 @@ export async function gotoPage(
         
         if (resultsResponse) {
             userLockedPredictionResults.set(resultsResponse.data)
+        }
+    } else if (page === PAGE_LEADERBOARD) {
+        const leadersResponse = await getRequest("/prediction/leaders")
+
+        if (leadersResponse) {
+            leaders.set(leadersResponse.data)
         }
     }
 

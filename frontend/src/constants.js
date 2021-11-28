@@ -6,6 +6,7 @@ export const PAGE_CELEBRITY_LIST = "celebrity-list"
 export const PAGE_CELEBRITY = "celebrity"
 export const PAGE_USER_PREDICTIONS = "user-predictions"
 export const PAGE_CREATE_PREDICTION = "create-prediction"
+export const PAGE_LEADERBOARD = "leaderboard"
 
 export const PAGES_REQUIRING_AUTH = [
     PAGE_ACCOUNT_SETTINGS,
@@ -17,6 +18,7 @@ export const PAGES_USING_AUTO_REFRESH = [
     PAGE_CELEBRITY,
     PAGE_CELEBRITY_LIST,
     PAGE_USER_PREDICTIONS,
+    PAGE_LEADERBOARD,
 ]
 
 export const REFRESH_PAGE_MINUTES = 10

@@ -100,3 +100,8 @@ class PredictionResultType(PredictionResultCreateType):
 
     # The metric amount as of now.
     current: Optional[int] = 0
+
+
+class LeaderType(OrmBaseType):
+    user: UserBaseType
+    points: int
