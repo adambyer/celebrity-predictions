@@ -104,4 +104,5 @@ class PredictionResultType(PredictionResultCreateType):
 
 class LeaderType(OrmBaseType):
     user: UserBaseType
+    metric_date: Optional[str] = None
     points: int

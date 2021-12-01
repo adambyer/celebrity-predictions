@@ -1,24 +1,11 @@
+import dayjs from "dayjs"
+
 export function formatDate(dateString) {
-    return new Date(dateString).toUTCString(
-        'en-us',
-        {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        }
-    )
+    const d = new Date(dateString)
+    return dayjs(d).format("MMM D")
 }
 
 export function formatDateAndTime(dateString) {
-    return new Date(dateString).toUTCString(
-        'en-us',
-        {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-        }
-    )
+    const d = new Date(dateString)
+    return dayjs(d).format("MMM D, h:mm A")
 }

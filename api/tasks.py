@@ -15,14 +15,14 @@ from .crud.celebrity_crud import (
     get_celebrities,
 )
 from .crud.prediction_crud import get_predictions
-from .crud.prediction_results import (
+from .crud.prediction_results_crud import (
     create_prediction_result,
     update_prediction_result,
     get_prediction_results_for_scoring,
 )
 from .db import Session
 from .model_types import CelebrityDailyMetricsCreateType, PredictionResultCreateType
-from .prediction_utils import get_prediction_points, get_metric_total
+from .prediction_results_utils import get_prediction_points, get_metric_total
 from .twitter_api import get_user_tweets
 from .twitter_utils import get_tweet_metric_totals
 
@@ -49,7 +49,7 @@ def create_prediction_results(
                 "metric_date": metric_date,
             })
         except Exception:
-            logger.exception("Invalid PredictionResultCreateType.", extra=pr.dict())
+            logger.exception(f"Invalid PredictionResultCreateType. {str(pr.dict())}")
 
         try:
             create_prediction_result(db, pr)
@@ -170,4 +170,4 @@ def update_prediction_results(
             continue
 
         points = get_prediction_points(pr.amount, actual_amount)
-        update_prediction_result(db, pr, points)
+        update_prediction_result(db, pr, actual_amount, points)

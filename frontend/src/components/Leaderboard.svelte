@@ -7,23 +7,39 @@
         Label,
     } from "@smui/data-table"
 
-    import {leaders} from "../store"
+    import {formatDate} from "../date_helpers"
+    import {
+        leadersAllTime,
+        leadersDaily,
+    } from "../store"
 </script>
 
 <section>
-    {#each Object.entries($leaders) as [title, leaderList]}
-        <h2>{title}</h2>
+    <h2>All Time Leaders</h2>
 
-        <DataTable>
-            <Body>
-                {#each leaderList as leader, i}
-                    <Row>
-                        <Cell>{i + 1}</Cell>
-                        <Cell>{leader["user"]["username"]}</Cell>
-                        <Cell>{leader["points"]}</Cell>
-                    </Row>
-                {/each}
-            </Body>
-        </DataTable>
-    {/each}
+    <DataTable>
+        <Body>
+            {#each $leadersAllTime as leader, i}
+                <Row>
+                    <Cell>{i + 1}</Cell>
+                    <Cell>{leader["user"]["username"]}</Cell>
+                    <Cell>{leader["points"]}</Cell>
+                </Row>
+            {/each}
+        </Body>
+    </DataTable>
+
+    <h2>Daily Leaders</h2>
+
+    <DataTable>
+        <Body>
+            {#each $leadersDaily as leader}
+                <Row>
+                    <Cell>{formatDate(leader["metric_date"])}</Cell>
+                    <Cell>{leader["user"]["username"]}</Cell>
+                    <Cell>{leader["points"]}</Cell>
+                </Row>
+            {/each}
+        </Body>
+    </DataTable>
 </section>

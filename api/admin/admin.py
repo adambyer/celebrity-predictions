@@ -89,7 +89,7 @@ class PredictionModelView(BaseModelView):
 
 class PredictionResultModelView(BaseModelView):
     column_default_sort = ("metric_date", True)
-    column_filters = ("user", "celebrity", "metric_date", "amount", "metric", "points")
+    column_filters = ("user", "celebrity", "metric_date", "amount", "metric", "actual", "points")
 
 
 admin = Admin(current_app, index_view=SecureAdminIndexView())

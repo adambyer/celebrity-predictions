@@ -11,7 +11,8 @@ import {
     userPredictions,
     userLockedPredictionResults,
     requestedPage,
-    leaders,
+    leadersAllTime,
+    leadersDaily,
 } from "./store"
 import {getRequest} from "./api"
 import {
@@ -76,40 +77,73 @@ export async function gotoPage(
     }
 
     if (page === PAGE_ACCOUNT_SETTINGS) {
-        const accountResponse = await getRequest("/user/account")
+        let accountResponse = null
+
+        try {
+            accountResponse = await getRequest("/user/account")
+        } catch(error) {}
 
         if (accountResponse) {
             currentUser.set(accountResponse.data)
         }
     } else if (page === PAGE_CELEBRITY_LIST) {
-        const celebrityListResponse = await getRequest("/celebrity")
+        let celebrityListResponse = null
+
+        try {
+            celebrityListResponse = await getRequest("/celebrity")
+        } catch(error) {}
 
         if (celebrityListResponse) {
             celebrities.set(celebrityListResponse.data)
         }
     } else if (page === PAGE_CELEBRITY) {
-        const celebrityResponse = await getRequest(`/celebrity/${get(celebrityTwitterUsername)}`)
+        let celebrityResponse = null
+        try {
+            celebrityResponse = await getRequest(`/celebrity/${get(celebrityTwitterUsername)}`)
+        } catch(error) {}
 
         if (celebrityResponse) {
             celebrity.set(celebrityResponse.data)
         }
     } else if (page === PAGE_USER_PREDICTIONS) {
-        const predictionsResponse = await getRequest("/user/prediction")
+        let predictionsResponse = null
+
+        try {
+            predictionsResponse = await getRequest("/user/prediction")
+        } catch(error) {}
         
         if (predictionsResponse) {
             userPredictions.set(predictionsResponse.data)
         }
 
-        const resultsResponse = await getRequest("/user/prediction-results/locked")
+        let resultsResponse = null
+
+        try {
+            resultsResponse = await getRequest("/user/prediction-results/locked")
+        } catch(error) {}
         
         if (resultsResponse) {
             userLockedPredictionResults.set(resultsResponse.data)
         }
     } else if (page === PAGE_LEADERBOARD) {
-        const leadersResponse = await getRequest("/prediction/leaders")
+        let leadersAllTimeResponse = null
 
-        if (leadersResponse) {
-            leaders.set(leadersResponse.data)
+        try {
+            leadersAllTimeResponse = await getRequest("/prediction-results/leaders/all-time")
+        } catch(error) {}
+
+        if (leadersAllTimeResponse) {
+            leadersAllTime.set(leadersAllTimeResponse.data)
+        }
+
+        let leadersDailyResponse = null
+
+        try {
+            leadersDailyResponse = await getRequest("/prediction-results/leaders/daily")
+        } catch(error) {}
+
+        if (leadersDailyResponse) {
+            leadersDaily.set(leadersDailyResponse.data)
         }
     }
 

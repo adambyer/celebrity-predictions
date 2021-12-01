@@ -122,5 +122,6 @@ class PredictionResult(BaseMixin, Base):
     amount = Column(Integer, nullable=False)
     metric = Column(String(20), nullable=False)
 
-    # This will start as null since we ar creating these rows the day before scoring.
+    # These will start as null since we are creating these rows the day before scoring.
+    actual = Column(Integer)
     points = Column(Integer)

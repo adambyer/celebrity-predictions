@@ -11,7 +11,7 @@ from ..crud.prediction_crud import (
     get_prediction,
     update_prediction,
 )
-from ..crud.prediction_results import (
+from ..crud.prediction_results_crud import (
     get_prediction_results_by_user_id,
 )
 from ..crud.user_crud import (
