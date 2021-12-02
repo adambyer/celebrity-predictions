@@ -1,4 +1,5 @@
 <script>
+    import {fade} from "svelte/transition"
     import Textfield from "@smui/textfield"
     import DataTable, {
         Head,
@@ -9,11 +10,10 @@
     } from "@smui/data-table"
 
     import {getRequest} from "../api"
-    import {celebrities, celebrityTwitterUsername} from "../store"
+    import {celebrities} from "../store"
     import {gotoPage} from "../nav"
     import {celebrityTitle} from "../celebrity_helpers"
     import {
-        PAGE_CELEBRITY,
         PAGE_CREATE_PREDICTION,
     } from "../constants"
     import CelebrityLink from "./common/CelebrityLink.svelte"
@@ -45,7 +45,7 @@
     }
 </script>
 
-<section class="content">
+<section class="content" in:fade={{duration: 500}}>
     <div class="header">
         <h2 class="header-text">
             {#if searchValue}

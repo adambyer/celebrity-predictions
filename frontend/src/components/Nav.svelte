@@ -1,5 +1,6 @@
 <script>
-    import Tooltip, { Wrapper } from '@smui/tooltip';
+    import Tooltip, { Wrapper } from "@smui/tooltip"
+    import {location} from "svelte-spa-router"
 
     import {gotoPage} from "../nav"
     import {
@@ -8,11 +9,10 @@
         PAGE_LOGIN,
         PAGE_ACCOUNT_SETTINGS,
         PAGE_CELEBRITY_LIST,
-        PAGE_USER_PREDICTIONS,
+        PAGE_PREDICTIONS,
         PAGE_LEADERBOARD,
     } from "../constants"
     import {
-        currentPage,
         isLoggedIn,
         alertMessage,
     } from "../store"
@@ -34,7 +34,7 @@
                 <a 
                     href="/"
                     class="w3-bar-item w3-button w3-hide-small w3-padding-large"
-                    class:current-page={$currentPage === PAGE_HOME}
+                    class:current-page={$location === PAGE_HOME}
                     on:click|preventDefault={() => gotoPage(PAGE_HOME)}
                 ><i class="fa fa-home"></i></a>
 
@@ -43,9 +43,9 @@
 
             <Wrapper>
                 <a 
-                    href="/celebrities"
+                    href="/"
                     class="w3-bar-item w3-button w3-hide-small w3-padding-large"
-                    class:current-page={$currentPage === PAGE_CELEBRITY_LIST}
+                    class:current-page={$location === PAGE_CELEBRITY_LIST}
                     on:click|preventDefault={() => gotoPage(PAGE_CELEBRITY_LIST)}
                 ><i class="fa fa-globe"></i></a>
 
@@ -54,10 +54,10 @@
             
             <Wrapper>
                 <a
-                    href="/predictions"
+                    href="/"
                     class="w3-bar-item w3-button w3-hide-small w3-padding-large"
-                    class:current-page={$currentPage === PAGE_USER_PREDICTIONS}
-                    on:click|preventDefault={() => gotoPage(PAGE_USER_PREDICTIONS)}
+                    class:current-page={$location === PAGE_PREDICTIONS}
+                    on:click|preventDefault={() => gotoPage(PAGE_PREDICTIONS)}
                 ><i class="far fa-list-alt"></i></a>
 
                 <Tooltip>Predictions</Tooltip>
@@ -65,9 +65,9 @@
 
             <Wrapper>
                 <a
-                    href="/leaderboard"
+                    href="/"
                     class="w3-bar-item w3-button w3-hide-small w3-padding-large"
-                    class:current-page={$currentPage === PAGE_LEADERBOARD}
+                    class:current-page={$location === PAGE_LEADERBOARD}
                     on:click|preventDefault={() => gotoPage(PAGE_LEADERBOARD)}
                 ><i class="fas fa-trophy"></i></a>
 

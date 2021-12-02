@@ -15,7 +15,6 @@ function hasAccessToken() {
 export const isLoggedIn = writable(hasAccessToken())
 export const isLoading = writable(false)
 export const currentUser = writable(null)
-export const currentPage = writable("home")
 export const requestedPage = writable("")
 export const alertMessage = writable("")
 export const celebrities = writable([])

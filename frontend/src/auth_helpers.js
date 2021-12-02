@@ -2,18 +2,15 @@ import Cookies from "js-cookie"
 
 import {
     COOKIE_ACCESS_TOKEN,
-    PAGE_LOGIN,
 } from "./constants"
 import {
     alertMessage,
-    currentPage,
     isLoggedIn,
     currentUser,
 } from "./store"
 
 export function authRequired() {
     alertMessage.set("Login Required")
-    currentPage.set(PAGE_LOGIN)
     deleteAccessToken()
 }
 

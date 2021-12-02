@@ -1,10 +1,10 @@
 import {get} from "svelte/store"
+import {push} from "svelte-spa-router"
 
 import {
     isLoading,
     isLoggedIn,
     currentUser,
-    currentPage,
     celebrities,
     celebrityTwitterUsername,
     celebrity,
@@ -13,13 +13,15 @@ import {
     requestedPage,
     leadersAllTime,
     leadersDaily,
+    alertMessage,
 } from "./store"
 import {getRequest} from "./api"
 import {
+    PAGE_LOGIN,
     PAGE_ACCOUNT_SETTINGS,
     PAGE_CELEBRITY,
     PAGE_CELEBRITY_LIST,
-    PAGE_USER_PREDICTIONS,
+    PAGE_PREDICTIONS,
     PAGE_LEADERBOARD,
     PAGES_REQUIRING_AUTH,
     PAGES_USING_AUTO_REFRESH,
@@ -51,6 +53,7 @@ export async function gotoPage(
     isRefresh = false,
 ) {
     clearTimer()
+    alertMessage.set("")
 
     if (!get(requestedPage)) {
         celebrityTwitterUsername.set(twitterUsername)
@@ -59,11 +62,12 @@ export async function gotoPage(
     if (PAGES_REQUIRING_AUTH.includes(page) && !get(isLoggedIn)) {
         requestedPage.set(page)
         authRequired()
+        push(PAGE_LOGIN)
         return
     }
 
     requestedPage.set("")
-    currentPage.set(page)
+    push(page)
 
     if (PAGES_USING_AUTO_REFRESH.includes(page)) {
         await startTimer(page, twitterUsername)
@@ -105,7 +109,7 @@ export async function gotoPage(
         if (celebrityResponse) {
             celebrity.set(celebrityResponse.data)
         }
-    } else if (page === PAGE_USER_PREDICTIONS) {
+    } else if (page === PAGE_PREDICTIONS) {
         let predictionsResponse = null
 
         try {

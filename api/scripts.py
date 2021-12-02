@@ -47,7 +47,7 @@ def import_seed_celebrities() -> None:
     print("*** import_seed_celebrities complete")
 
 
-def import_metrics(celebrity_id: Optional[int], days_ago: int) -> None:
+def import_metrics(celebrity_id: int = None, days_ago: int = 0) -> None:
     metric_date = datetime.strftime(datetime.utcnow() - timedelta(days=days_ago), DATE_FORMAT)
 
     if celebrity_id:

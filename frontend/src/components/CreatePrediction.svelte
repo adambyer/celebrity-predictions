@@ -16,7 +16,7 @@
     } from "../store"
     import {postRequest} from "../api"
     import {
-        PAGE_USER_PREDICTIONS,
+        PAGE_PREDICTIONS,
         METRICS,
     } from "../constants"
     import {gotoPage} from "../nav"
@@ -58,7 +58,7 @@
         $alertMessage = "Prediction Saved!"
         reset()
         celebrityAutocomplete.reset()
-        gotoPage(PAGE_USER_PREDICTIONS)
+        gotoPage(PAGE_PREDICTIONS)
     }
 
     function reset() {

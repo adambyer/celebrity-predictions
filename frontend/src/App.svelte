@@ -1,32 +1,21 @@
 <script>
-	import {
-		isLoading,
-		currentPage,
-	} from "./store"
+	import {onMount} from "svelte"
+	import Router, {location} from "svelte-spa-router"
 
 	import {
-		PAGE_HOME,
-		PAGE_ACCOUNT_REGISTRATION,
-		PAGE_LOGIN,
-		PAGE_ACCOUNT_SETTINGS,
-		PAGE_CELEBRITY,
-		PAGE_CELEBRITY_LIST,
-		PAGE_USER_PREDICTIONS,
-		PAGE_CREATE_PREDICTION,
-		PAGE_LEADERBOARD,
-	} from "./constants"
+		isLoading,
+	} from "./store"
+	import routes from "./routes"
+	import {gotoPage} from "./nav"
 
 	import Loading from "./components/common/Loading.svelte"
 	import Alert from "./components/common/Alert.svelte"
-	import Home from "./components/Home.svelte"
 	import Nav from "./components/Nav.svelte"
-	import Login from "./components/Login.svelte"
-	import AccountSettings from "./components/AccountSettings.svelte"
-	import CelebrityList from "./components/CelebrityList.svelte"
-	import Celebrity from "./components/Celebrity.svelte"
-	import UserPredictions from "./components/UserPredictions.svelte"
-	import CreatePrediction from "./components/CreatePrediction.svelte"
-	import Leaderboard from "./components/Leaderboard.svelte"
+
+	onMount(() => {
+		// This is needed to force any needed fetches on page reload.
+		gotoPage($location)
+	})
 </script>
 
 <Nav/>
@@ -38,23 +27,7 @@
         <Loading/>
     {/if}
 
-	{#if $currentPage === PAGE_HOME}
-		<Home/>
-	{:else if $currentPage === PAGE_LOGIN}
-		<Login/>
-	{:else if [PAGE_ACCOUNT_REGISTRATION, PAGE_ACCOUNT_SETTINGS].includes($currentPage)}
-		<AccountSettings/>
-	{:else if $currentPage === PAGE_CELEBRITY_LIST}
-		<CelebrityList/>
-	{:else if $currentPage === PAGE_CELEBRITY}
-		<Celebrity/>
-	{:else if $currentPage === PAGE_USER_PREDICTIONS}
-		<UserPredictions/>
-	{:else if $currentPage === PAGE_CREATE_PREDICTION}
-		<CreatePrediction/>
-	{:else if $currentPage === PAGE_LEADERBOARD}
-		<Leaderboard/>
-	{/if}
+	<Router routes={routes}/>
 </div>
 
 <style lang="scss">
